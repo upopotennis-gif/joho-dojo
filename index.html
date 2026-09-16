@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="情報社会と法・セキュリティ・情報デザイン・ネットワーク・データの活用など、情報Ⅰの知識を4択10問で確かめるドリル。">
+<title>情報道場 情報Ⅰ 知識</title>
+<style>
+  :root{
+    --head-font:'M PLUS 1 Code','Zen Kaku Gothic New',ui-monospace,monospace;
+    --body-font:'Zen Kaku Gothic New','Hiragino Sans',sans-serif;
+    --code-font:'M PLUS 1 Code',ui-monospace,'SFMono-Regular',Menlo,monospace;
+    --ai:#4b3cc4;
+    --ai-deep:#2e2482;
+    --yamabuki:#27c2d6;
+    --yamabuki-deep:#10808f;
+    --wakatake:#2f8f5b;
+    --wakatake-bg:#e3f3ea;
+    --kobai:#c23b4a;
+    --kobai-bg:#f9e4e7;
+    --bg:#f2f2f8;
+    --surface:#ffffff;
+    --surface-2:#e9e8f4;
+    --ink:#1d1b2e;
+    --ink-soft:#5d5a78;
+    --line:#d0cde4;
+    --shadow:rgba(29,27,46,0.12);
+    --focus:#10808f;
+    --grid:#b9b3e6;
+    --marker:rgba(39,194,214,0.25);
+    --btn-ink:#04262b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ai:#a79dff;
+      --ai-deep:#d3ccff;
+      --yamabuki:#3fd3e6;
+      --yamabuki-deep:#8be8f3;
+      --wakatake:#6fcf98;
+      --wakatake-bg:#183225;
+      --kobai:#f08a95;
+      --kobai-bg:#3a2027;
+      --bg:#0f0e1a;
+      --surface:#171628;
+      --surface-2:#221f3a;
+      --ink:#e7e5f5;
+      --ink-soft:#9d99bd;
+      --line:#35325a;
+      --shadow:rgba(0,0,0,0.45);
+      --focus:#3fd3e6;
+      --grid:#34306a;
+      --marker:rgba(63,211,230,0.22);
+      --btn-ink:#04262b;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ai:#a79dff;
+    --ai-deep:#d3ccff;
+    --yamabuki:#3fd3e6;
+    --yamabuki-deep:#8be8f3;
+    --wakatake:#6fcf98;
+    --wakatake-bg:#183225;
+    --kobai:#f08a95;
+    --kobai-bg:#3a2027;
+    --bg:#0f0e1a;
+    --surface:#171628;
+    --surface-2:#221f3a;
+    --ink:#e7e5f5;
+    --ink-soft:#9d99bd;
+    --line:#35325a;
+    --shadow:rgba(0,0,0,0.45);
+    --focus:#3fd3e6;
+    --grid:#34306a;
+    --marker:rgba(63,211,230,0.22);
+    --btn-ink:#04262b;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body-font);
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{
+    max-width:680px;
+    margin:0 auto;
+    padding:28px 18px 60px;
+    position:relative;
+  }
+  .stage::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0);
+    background-size:16px 16px;
+    opacity:.22;
+    mix-blend-mode:multiply;
+    pointer-events:none;
+    z-index:0;
+  }
+  :root:not([data-theme="light"]) .stage::before{ mix-blend-mode:screen; opacity:.10; }
+  :root[data-theme="dark"] .stage::before{ mix-blend-mode:screen; opacity:.10; }
+
+  .stage > *{ position:relative; z-index:1; }
+
+  .rod{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0 auto;
+  }
+  .rod::before,.rod::after{
+    content:'';
+    flex:1;
+    height:5px;
+    border-radius:3px;
+    background:var(--ai-deep);
+  }
+  .rod .knob{
+    width:14px; height:14px; border-radius:50%;
+    background:var(--yamabuki);
+    box-shadow:0 0 0 2px var(--surface);
+    flex:none;
+  }
+
+  header.masthead{ text-align:center; padding:6px 0 22px; }
+  header.masthead .rod{ margin-bottom:16px; }
+  h1{
+    font-family:var(--head-font);
+    font-weight:800;
+    font-size:clamp(1.6rem, 1.1rem + 3vw, 2.3rem);
+    letter-spacing:.03em;
+    margin:0 0 8px;
+    text-wrap:balance;
+  }
+  header.masthead p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:.92rem;
+    line-height:1.75;
+  }
+
+  section{ display:block; }
+  section[hidden]{ display:none !important; }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:22px 20px;
+    box-shadow:0 3px 14px var(--shadow);
+  }
+  .card + .card{ margin-top:16px; }
+
+  .steps{
+    list-style:none;
+    margin:0 0 20px;
+    padding:0;
+    display:grid;
+    gap:8px;
+    font-size:.9rem;
+    color:var(--ink-soft);
+  }
+  .steps li{ display:flex; gap:10px; align-items:baseline; }
+  .steps .num{
+    font-family:var(--head-font);
+    color:var(--yamabuki-deep);
+    font-weight:700;
+    flex:none;
+    width:1.4em;
+  }
+
+  label.field-label{
+    display:block;
+    font-weight:700;
+    margin-bottom:4px;
+    font-size:.95rem;
+  }
+  .field-hint{
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+
+  .unit-group{ margin-bottom:18px; }
+  .unit-group:last-child{ margin-bottom:0; }
+  .unit-group h3{
+    font-family:var(--head-font);
+    font-size:.95rem;
+    font-weight:700;
+    color:var(--ai);
+    margin:0 0 8px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line);
+  }
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .chip{
+    border:1.5px solid var(--line);
+    background:var(--bg);
+    color:var(--ink);
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:.84rem;
+    line-height:1.4;
+    cursor:pointer;
+    font-family:var(--body-font);
+    text-align:left;
+  }
+  .chip:hover{ border-color:var(--ai); }
+  .chip.active{ background:var(--ai); color:var(--surface); border-color:var(--ai); font-weight:700; }
+
+  .selected-unit-box{
+    margin-top:18px;
+    padding:12px 14px;
+    background:var(--surface-2);
+    border-radius:8px;
+    font-size:.88rem;
+  }
+  .selected-unit-box strong{
+    font-family:var(--head-font);
+    color:var(--ai);
+  }
+
+  textarea:focus-visible, button:focus-visible, .choice:focus-visible, .chip:focus-visible, input:focus-visible{
+    outline:3px solid var(--focus);
+    outline-offset:2px;
+  }
+
+  .actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:20px;
+  }
+  button.btn{
+    font-family:var(--body-font);
+    font-weight:700;
+    font-size:1.02rem;
+    padding:15px 18px;
+    border-radius:10px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  @media (prefers-reduced-motion: reduce){ button.btn{ transition:none; } }
+  button.btn:active{ transform:translateY(1px); }
+  button.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+  .btn-primary{
+    background:var(--yamabuki);
+    color:#2a1c04;
+    box-shadow:0 3px 0 var(--yamabuki-deep);
+  }
+  :root:not([data-theme="light"]) .btn-primary{ color:#241a02; }
+  :root[data-theme="dark"] .btn-primary{ color:#241a02; }
+  .btn-primary:hover:not(:disabled){ filter:brightness(1.04); }
+  .btn-secondary{
+    background:transparent;
+    color:var(--ai);
+    border-color:var(--ai);
+  }
+  .btn-secondary:hover:not(:disabled){ background:var(--surface-2); }
+  .btn-ghost{
+    background:transparent;
+    color:var(--ink-soft);
+    border:none;
+    text-decoration:underline;
+    padding:8px;
+    font-size:.9rem;
+  }
+
+  #error-banner[hidden]{ display:none !important; }
+  #error-banner{
+    background:var(--kobai-bg);
+    border:1px solid var(--kobai);
+    color:var(--kobai);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:.88rem;
+    margin-bottom:14px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:flex-start;
+  }
+  #error-banner button{
+    background:none; border:none; color:inherit; font-weight:700; cursor:pointer; font-size:1rem; line-height:1;
+  }
+
+  .quiz-progress{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:6px;
+    font-family:var(--head-font);
+  }
+  .quiz-progress .count{ font-size:1.1rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  .quiz-progress .score{ font-size:.85rem; color:var(--ink-soft); font-family:var(--body-font); }
+  .quiz-unit{
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  .passage-box{
+    background:var(--surface-2);
+    border-radius:8px;
+    padding:14px 16px;
+    margin:0 0 18px;
+  }
+  .passage-box .label{
+    font-weight:700;
+    color:var(--ai);
+    display:block;
+    margin-bottom:6px;
+    font-size:.78rem;
+    letter-spacing:.04em;
+  }
+  .passage-box p{
+    font-family:var(--head-font);
+    font-size:.98rem;
+    line-height:1.9;
+    margin:0;
+    white-space:pre-wrap;
+  }
+  .dots{ display:flex; gap:5px; margin-bottom:18px; flex-wrap:wrap; }
+  .dots span{ width:9px; height:9px; border-radius:50%; background:var(--line); }
+  .dots span.done-correct{ background:var(--wakatake); }
+  .dots span.done-wrong{ background:var(--kobai); }
+  .dots span.current{ background:var(--yamabuki); }
+
+  .question-text{
+    font-family:var(--head-font);
+    font-size:clamp(1.05rem, .9rem + 1vw, 1.3rem);
+    line-height:1.85;
+    margin:0 0 20px;
+    text-wrap:balance;
+  }
+
+  .choices{ display:grid; gap:10px; }
+  .choice{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    width:100%;
+    background:var(--bg);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    font-family:var(--body-font);
+    font-size:1rem;
+    line-height:1.6;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .choice:hover:not(:disabled){ border-color:var(--ai); }
+  .choice .badge{
+    flex:none;
+    width:28px; height:28px;
+    border-radius:50%;
+    background:var(--surface-2);
+    color:var(--ink-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.85rem;
+    font-family:var(--head-font);
+  }
+  .choice:disabled{ cursor:default; }
+  .choice.correct{ background:var(--wakatake-bg); border-color:var(--wakatake); }
+  .choice.correct .badge{ background:var(--wakatake); color:#fff; }
+  .choice.incorrect{ background:var(--kobai-bg); border-color:var(--kobai); }
+  .choice.incorrect .badge{ background:var(--kobai); color:#fff; }
+
+  .feedback{
+    margin-top:18px;
+    padding-top:16px;
+    border-top:1px dashed var(--line);
+  }
+  .feedback .verdict{
+    font-family:var(--head-font);
+    font-weight:800;
+    font-size:1.15rem;
+    margin:0 0 10px;
+  }
+  .feedback .verdict.correct{ color:var(--wakatake); }
+  .feedback .verdict.incorrect{ color:var(--kobai); }
+  .feedback .explanation{ font-size:.95rem; line-height:1.8; margin:0 0 12px; }
+  .feedback .translation{
+    background:var(--surface-2);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:.9rem;
+    line-height:1.8;
+  }
+  .feedback .translation .label{
+    font-weight:700;
+    color:var(--ai);
+    display:block;
+    margin-bottom:4px;
+    font-size:.78rem;
+    letter-spacing:.04em;
+  }
+
+  .result-head{ text-align:center; padding:8px 0 22px; }
+  .stamp{
+    width:118px; height:118px;
+    margin:0 auto 16px;
+    border-radius:50%;
+    border:3px solid var(--kobai);
+    box-shadow:inset 0 0 0 3px var(--surface), 0 3px 10px var(--shadow);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transform:rotate(-5deg);
+    color:var(--kobai);
+    font-family:var(--head-font);
+  }
+  .stamp .frac{ font-size:1.7rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
+  .stamp .of{ font-size:.7rem; margin-top:2px; }
+  .result-message{ font-size:.98rem; line-height:1.8; color:var(--ink-soft); max-width:32em; margin:0 auto; }
+
+  .guide-content{
+    font-size:.98rem;
+    line-height:1.95;
+  }
+  .guide-content h1,.guide-content h2,.guide-content h3{
+    font-family:var(--head-font);
+    margin:1.2em 0 .5em;
+    line-height:1.5;
+  }
+  .guide-content h1{ font-size:1.25rem; }
+  .guide-content h2{ font-size:1.12rem; }
+  .guide-content h3{ font-size:1.02rem; }
+  .guide-content p{ margin:0 0 .9em; }
+  .guide-content ul,.guide-content ol{ margin:0 0 1em; padding-left:1.4em; }
+  .guide-content li{ margin-bottom:.4em; }
+  .guide-content strong{ color:var(--ai); }
+  .guide-content code{ background:var(--surface-2); padding:.1em .3em; border-radius:4px; }
+  .thinking{ color:var(--ink-soft); }
+
+  footer{
+    text-align:center;
+    font-size:.75rem;
+    color:var(--ink-soft);
+    margin-top:34px;
+    line-height:1.7;
+  }
+
+
+/* ==== 記録機能 追加分 ==== */
+.sub-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:22px; }
+.stat-tile{ border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:var(--bg); }
+.stat-tile .k{ display:block; font-size:.74rem; color:var(--ink-soft); letter-spacing:.06em; }
+.stat-tile .v{ display:block; font-size:1.5rem; font-weight:700; color:var(--ai); font-variant-numeric:tabular-nums; margin-top:2px; }
+.stat-tile .v small{ font-size:.8rem; font-weight:400; color:var(--ink-soft); margin-left:2px; }
+.stats-empty{ color:var(--ink-soft); padding:18px 0; }
+.stat-table{ width:100%; border-collapse:collapse; font-size:.9rem; }
+.stat-table th{ text-align:left; font-size:.72rem; letter-spacing:.08em; color:var(--ink-soft); border-bottom:1px solid var(--line); padding:6px 8px; font-weight:700; }
+.stat-table td{ border-bottom:1px solid var(--line); padding:8px; vertical-align:middle; }
+.stat-table td.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.rate-bar{ display:block; position:relative; height:8px; border-radius:4px; background:var(--line); min-width:70px; }
+.rate-bar i{ position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:var(--wakatake); }
+.rate-bar i.low{ background:var(--kobai); }
+.rate-bar i.mid{ background:var(--yamabuki); }
+.cal{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; max-width:330px; }
+.cal span{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:.74rem;
+  border-radius:6px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+.cal span.head{ color:var(--ink-soft); font-size:.68rem; aspect-ratio:auto; padding-bottom:2px; }
+.cal span.on{ background:var(--wakatake); color:#fff; font-weight:700; }
+.cal span.today{ outline:2px solid var(--yamabuki); outline-offset:-2px; }
+.stats-section-title{ font-size:.95rem; font-weight:700; margin:26px 0 10px; color:var(--ai); }
+.wrongbox-line{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:6px; }
+.privacy-note{ font-size:.76rem; color:var(--ink-soft); margin-top:26px; line-height:1.7; }
+
+/* ==== 狭い画面（スマホ）の調整 ==== */
+@media (max-width:400px){
+  h1{ font-size:1.5rem; letter-spacing:.01em; }
+  .stage{ padding:20px 14px 48px; }
+  .card{ padding:18px 15px; }
+  .chip{ font-size:.82rem; padding:8px 12px; }
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+}
+#btn-next-question{ scroll-margin-bottom:24px; }
+
+/* ==== 道場の切り替え ==== */
+nav.sister{ display:flex; justify-content:center; gap:6px; flex-wrap:wrap; margin:0 0 18px; }
+nav.sister a{ font-size:.82rem; padding:6px 14px; border-radius:999px; border:1px solid var(--line);
+  color:var(--ink-soft); text-decoration:none; background:var(--surface); }
+nav.sister a:hover{ border-color:var(--ai); color:var(--ai); }
+nav.sister a[aria-current]{ background:var(--ai); border-color:var(--ai); color:var(--surface); font-weight:700; }
+
+/* ==== 情報道場の装い: 基板の配線とターミナル ==== */
+.stage::before,
+:root:not([data-theme="light"]) .stage::before,
+:root[data-theme="dark"] .stage::before{
+  background-image:
+    radial-gradient(circle, var(--grid) 1.6px, transparent 2px),
+    linear-gradient(90deg, transparent 47px, var(--grid) 47px, var(--grid) 49px, transparent 49px),
+    linear-gradient(transparent 71px, var(--grid) 71px, var(--grid) 73px, transparent 73px);
+  background-size:24px 24px, 192px 144px, 192px 144px;
+  background-position:0 0, 0 12px, 48px 0;
+  opacity:.40; mix-blend-mode:normal;
+}
+.rod{ gap:6px; }
+.rod::before,.rod::after{ height:2px; border-radius:0; background:var(--ai); }
+.rod .knob{
+  width:10px; height:10px; border-radius:2px;
+  background:var(--yamabuki); box-shadow:0 0 0 3px var(--surface), 0 0 0 4px var(--ai);
+}
+.rod .knob + .knob{ background:var(--ai); }
+header.masthead h1{ font-weight:700; letter-spacing:.01em; }
+header.masthead h1::after{
+  content:'_'; color:var(--yamabuki-deep); margin-left:.12em;
+  animation:caret 1.1s steps(1) infinite;
+}
+@keyframes caret{ 50%{ opacity:0; } }
+@media (prefers-reduced-motion: reduce){ header.masthead h1::after{ animation:none; } }
+.card{ border-radius:12px; position:relative; padding-top:38px; }
+.card::before{
+  content:''; position:absolute; top:15px; left:18px;
+  width:9px; height:9px; border-radius:50%;
+  background:var(--kobai); box-shadow:15px 0 0 var(--yamabuki), 30px 0 0 var(--wakatake);
+  opacity:.85;
+}
+.chip{ border-radius:6px; font-family:var(--body-font); }
+.chip.active::before{ content:'> '; font-family:var(--code-font); }
+.choice{ border-radius:8px; }
+.choice .badge{ border-radius:4px; font-family:var(--code-font); }
+.btn-primary,
+:root:not([data-theme="light"]) .btn-primary,
+:root[data-theme="dark"] .btn-primary{ color:var(--btn-ink); }
+.dots span{ border-radius:2px; width:10px; }
+.stamp{
+  border-radius:10px; transform:rotate(0); border:2px solid var(--ai); color:var(--ai);
+  font-family:var(--code-font);
+  box-shadow:inset 0 0 0 4px var(--surface), inset 0 0 0 5px var(--grid), 0 3px 10px var(--shadow);
+}
+.unit-group h3::before{ content:'# '; color:var(--yamabuki-deep); }
+.question-text{ line-height:1.8; }
+.cal span.on{ color:#fff; }
+
+
+/* ==== コード欄・数式 ==== */
+.question-text{ white-space:pre-line; }
+.code-block{ font-family:var(--code-font); font-size:.9rem; line-height:1.7; background:var(--surface-2);
+  border:1px solid var(--line); border-left:4px solid var(--ai); border-radius:8px; padding:12px 14px;
+  margin:-6px 0 20px; overflow-x:auto; white-space:pre; tab-size:4; }
+.katex{ font-size:1.06em; }
+.choice .katex-display, .question-text .katex-display{ margin:.4em 0; }
+.guide-content .katex-display{ overflow-x:auto; overflow-y:hidden; padding:4px 0; }
+.guide-content pre{ font-family:var(--code-font); background:var(--surface-2); border-radius:8px; padding:12px 14px; overflow-x:auto; font-size:.88rem; line-height:1.65; }
+.guide-content pre code{ background:none; padding:0; }
+/* ==== 英語道場から引き継いだ分 ==== */
+.question-text, .en-sentence, .choice .en{ font-family:'Source Serif 4',var(--head-font); }
+.question-text{ font-weight:500; letter-spacing:.005em; }
+.choice .en{ font-size:1.05rem; }
+.speak-box{ border-left:3px solid var(--yamabuki); padding:4px 0 4px 12px; margin:0 0 14px; }
+.en-sentence{ font-size:1.08rem; line-height:1.7; margin:0 0 8px; }
+.speak-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.speak-btn{ font:inherit; font-size:.84rem; padding:6px 14px; border-radius:999px; cursor:pointer;
+  border:1.5px solid var(--line); background:var(--surface); color:var(--ink); }
+.speak-btn:hover{ border-color:var(--ai); color:var(--ai); }
+.word-table td.w span[lang="en"]{ font-family:'Source Serif 4',var(--head-font); font-size:1.05rem; }
+.speak-mini{ font:inherit; font-size:.72rem; padding:1px 6px; border-radius:6px; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink); vertical-align:middle; }
+.speak-mini[aria-pressed="true"]{ border-color:var(--ai); }
+.speak-btn[aria-pressed="true"]{ background:var(--ai); color:var(--surface); border-color:var(--ai); }
+nav.sister{ display:flex; justify-content:center; gap:6px; flex-wrap:wrap; margin:0 0 18px; }
+nav.sister a{ font-size:.82rem; padding:6px 14px; border-radius:999px; border:1px solid var(--line);
+  color:var(--ink-soft); text-decoration:none; background:var(--surface); }
+nav.sister a:hover{ border-color:var(--ai); color:var(--ai); }
+nav.sister a[aria-current]{ background:var(--ai); border-color:var(--ai); color:var(--surface); font-weight:700; }
+.q-prompt{ font-size:.84rem; color:var(--ink-soft); margin:0 0 8px; }
+.question-text .bosen, .translation .bosen{ text-decoration:underline; text-decoration-thickness:2px;
+  text-underline-offset:.3em; text-decoration-color:var(--yamabuki); font-weight:700; }
+.question-text.big{ font-size:clamp(1.6rem, 1.2rem + 2vw, 2.1rem); text-align:center; letter-spacing:.08em; }
+.q-source{ font-size:.8rem; color:var(--ink-soft); text-align:right; margin:-12px 0 18px; }
+.feedback .word-head{ font-family:var(--head-font); font-weight:700; color:var(--ai); margin:0 0 6px; }
+.feedback .explanation{ white-space:pre-line; }
+.feedback .meta-note{ font-size:.76rem; color:var(--ink-soft); margin:10px 0 0; }
+.range-box{ margin-top:18px; padding-top:16px; border-top:1px dashed var(--line); }
+.range-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.range-row input{ width:5.2em; font:inherit; font-size:1rem; padding:8px 10px; border-radius:8px;
+  border:1.5px solid var(--line); background:var(--bg); color:var(--ink); font-variant-numeric:tabular-nums; }
+.range-row .chip{ margin-left:4px; }
+.word-table{ width:100%; border-collapse:collapse; font-size:.9rem; line-height:1.6; }
+.word-table th{ text-align:left; font-size:.72rem; color:var(--ink-soft); border-bottom:1px solid var(--line); padding:6px; }
+.word-table td{ border-bottom:1px solid var(--line); padding:8px 6px; vertical-align:top; }
+.word-table td.no{ color:var(--ink-soft); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.word-table td.w{ font-family:var(--head-font); font-weight:700; width:8.5em; }
+.word-table td.w small{ display:block; font-weight:500; color:var(--ink-soft); font-size:.74rem; line-height:1.5; }
+.guide-content table{ border-collapse:collapse; font-size:.9rem; margin:0 0 1em; line-height:1.55; }
+.guide-content th, .guide-content td{ border:1px solid var(--line); padding:6px 8px; }
+.guide-content th{ background:var(--surface-2); }
+
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+</head>
+<body>
+
+<div class="stage">
+  <header class="masthead">
+    <div class="rod"><span class="knob"></span><span class="knob"></span></div>
+    <h1>情報道場 情報Ⅰ 知識</h1>
+    <p>情報社会と法からモデル化とシミュレーションまで、情報Ⅰの8単元を4択10問で確かめます。答えるとすぐに解説が出ます。アカウント登録は不要です。</p>
+    <div class="rod" style="margin-top:16px"><span class="knob"></span><span class="knob"></span></div>
+  </header>
+
+  <nav class="sister" aria-label="道場の切り替え"><a href="./" aria-current="page">知識</a><a href="keisan.html">計算・プログラム</a></nav>
+
+  <div id="error-banner" hidden>
+    <span id="error-text"></span>
+    <button type="button" id="error-close" aria-label="閉じる">×</button>
+  </div>
+
+  <main id="app">
+
+    <section id="view-setup">
+      <div class="card">
+        <ol class="steps">
+          <li><span class="num">一</span>単元を選ぶ（先に「学習ガイド」で要点を読むのがおすすめ）</li>
+          <li><span class="num">二</span>「クイズを始める」を押して4択に挑戦</li>
+        </ol>
+
+        <div id="unit-groups"></div>
+
+        
+
+        <div class="selected-unit-box" id="selected-unit-box" hidden>
+          選択中: <strong id="selected-unit-label"></strong>
+          <span id="selected-unit-count" style="color:var(--ink-soft)"></span>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-make-quiz" disabled>クイズを始める</button>
+          <button type="button" class="btn btn-secondary" id="btn-view-guide" disabled>学習ガイドを見る</button>
+        </div>
+
+        <div class="sub-actions">
+          <button type="button" class="btn btn-secondary" id="btn-wrongbox">苦手ボックスから10問</button>
+          <button type="button" class="btn btn-ghost" id="btn-stats">これまでの記録</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-quiz" hidden>
+      <div class="card">
+        <div class="quiz-progress">
+          <span class="count" id="quiz-count">問 1 / 10</span>
+          <span class="score" id="quiz-score">正解 0</span>
+        </div>
+        <p class="quiz-unit" id="quiz-unit"></p>
+        <div class="dots" id="quiz-dots"></div>
+        <p class="q-prompt" id="quiz-prompt" hidden></p>
+        <p class="question-text" id="quiz-question"></p>
+        <pre class="code-block" id="quiz-code" hidden></pre>
+        <p class="q-source" id="quiz-source" hidden></p>
+        <div class="choices" id="quiz-choices"></div>
+
+        <div class="feedback" id="quiz-feedback" hidden>
+          <p class="verdict" id="feedback-verdict"></p>
+          <p class="word-head" id="feedback-head" hidden></p>
+          <div class="speak-box" id="feedback-speak" hidden>
+            <p class="en-sentence" lang="en" id="feedback-sentence"></p>
+            <div class="speak-row">
+              <button type="button" class="speak-btn" id="btn-speak" aria-label="英文を読み上げる">🔊 聞く</button>
+              <button type="button" class="speak-btn" id="btn-speak-slow" aria-label="英文をゆっくり読み上げる">🐢 ゆっくり</button>
+            </div>
+          </div>
+          <p class="explanation" id="feedback-explanation"></p>
+          <div class="translation" id="feedback-translation" hidden>
+            <span class="label">和訳</span>
+            <span id="feedback-translation-text"></span>
+          </div>
+          <p class="meta-note" id="feedback-meta" hidden></p>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-next-question" hidden>次の問題へ</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-result" hidden>
+      <div class="card">
+        <div class="result-head">
+          <div class="stamp"><span class="frac" id="result-frac">0/10</span><span class="of">正解</span></div>
+          <p class="result-message" id="result-message"></p>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-wrong-only" hidden>間違えた問題だけもう一度</button>
+          <button type="button" class="btn btn-secondary" id="btn-retry-quiz">同じ問題にもう一度挑戦</button>
+          <button type="button" class="btn btn-secondary" id="btn-new-quiz">違う10問に挑戦する</button>
+          <button type="button" class="btn btn-secondary" id="btn-guide-from-result">学習ガイドを見る</button>
+          <button type="button" class="btn btn-ghost" id="btn-change-unit">別の単元を選ぶ</button>
+          <button type="button" class="btn btn-ghost" id="btn-stats-from-result">記録を見る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-stats" hidden>
+      <div class="card">
+        <h2 class="card-title">これまでの記録</h2>
+        <div id="stats-body"></div>
+        <p class="privacy-note">
+          記録はこの端末のブラウザの中だけに保存されます。先生や他の人に送られることはありません。
+          ブラウザの履歴やサイトデータを消すと記録も消えます。
+        </p>
+        <div class="actions" style="margin-top:18px">
+          <button type="button" class="btn btn-secondary" id="btn-stats-back">単元選択に戻る</button>
+          <button type="button" class="btn btn-ghost" id="btn-stats-reset">記録を消す</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-guide" hidden>
+      <div class="card">
+        <div class="guide-content" id="guide-content"></div>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-guide-quiz">この範囲でクイズを始める</button>
+          <button type="button" class="btn btn-secondary" id="btn-guide-back">単元選択に戻る</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>情報道場 情報Ⅰ 知識<br>問題・解説はすべて独自に作成しています（市販教材・入試問題からの転載はありません）。<br>試作版です。問題や解説の誤りに気づいたら、先生に知らせてください。</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var CONFIG = {"storeKey":"johoChishiki.v1","unitWord":"単元","lowScoreMessage":"まずは学習ガイドで要点を確認してから、もう一度挑戦してみましょう。プログラムの問題は変数の値を表に書き出すのがコツです。","maxNo":0};
+  var UNITS = [{"chapter":"情報社会と問題解決","items":[{"id":"shakai","label":"情報社会と法","hint":"情報の特性・個人情報保護・知的財産権（著作権・産業財産権・引用の条件・クリエイティブ・コモンズ）・情報モラル"},{"id":"security","label":"情報セキュリティ","hint":"機密性・完全性・可用性、マルウェア、フィッシング、認証（多要素）、暗号（共通鍵・公開鍵）、電子署名"}]},{"chapter":"コミュニケーションと情報デザイン","items":[{"id":"design","label":"情報デザイン","hint":"メディアの特性、ユニバーサルデザイン、アクセシビリティ、ピクトグラム、配色、構造化・抽象化・可視化"},{"id":"digital","label":"デジタル化","hint":"アナログとデジタル、標本化・量子化・符号化、画像（画素・RGB・解像度）、文字コード、圧縮（可逆・非可逆・ランレングス）"}]},{"chapter":"コンピュータとネットワーク","items":[{"id":"computer","label":"コンピュータのしくみ","hint":"CPU・メモリ・記憶装置・入出力、OS とアプリケーション、機械語、クロック周波数、演算誤差"},{"id":"network","label":"情報通信ネットワーク","hint":"LAN と WAN、IP アドレス・DNS、TCP/IP の階層、パケット交換、Web とメール、通信速度"}]},{"chapter":"データとモデル","items":[{"id":"data","label":"データの活用","hint":"データベース（主キー・リレーショナル）、尺度水準、オープンデータ、平均・中央値・散布図と相関、外れ値、テキストマイニング"},{"id":"model","label":"モデル化とシミュレーション","hint":"モデルの分類（静的・動的、確定的・確率的）、状態遷移、待ち行列、モンテカルロ法"}]}];
+  var POOL = [{"g":"shakai","q":"友人に話した情報が、話した自分の記憶からも消えずに残る。この情報の性質を何というか。","c":["複製性","個別性","伝播性","残存性"],"a":3,"e":"情報は人に渡しても元の人の手元からなくならない。この性質が残存性。複製性は簡単にコピーできる性質、伝播性は短時間で広く伝わる性質で、「消えずに残る」とは別の点を表す。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"個人情報保護法の「個人情報」に当たるものはどれか。","c":["すでに亡くなった人の氏名だけが書かれた名簿","生存している生徒の氏名が書かれた名簿","個人が特定できないよう集計した市町村別の人口","ある会社の本社所在地と代表電話番号"],"a":1,"e":"個人情報は、生存する個人に関する情報で特定の個人を識別できるもの。亡くなった人の情報は法律上の個人情報の対象外。集計した人口は個人を識別できず、会社の所在地・代表番号は法人の情報である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"それだけで特定の個人を識別できる「個人識別符号」に当たるものはどれか。","c":["旅券（パスポート）の番号","学校での出席番号","クレジットカードの番号","携帯電話の番号"],"a":0,"e":"個人識別符号は旅券番号・運転免許証番号・マイナンバーや、指紋・顔のデータなど。携帯電話番号やクレジットカード番号は、契約の形態がさまざまで必ず個人を識別できるとは限らないため、個人識別符号に位置づけられていない。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"個人情報保護法の「要配慮個人情報」に当たるものはどれか。","c":["家族構成","勤務先","生年月日","病歴"],"a":3,"e":"要配慮個人情報は、人種・信条・社会的身分・病歴・犯罪の経歴など、不当な差別や偏見につながるおそれがあるもの。取得には原則として本人の同意が必要。生年月日・勤務先・家族構成は個人情報になりうるが、要配慮個人情報ではない。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"特許庁への出願や登録をしなくても、作品を創作した時点で自動的に発生する権利はどれか。","c":["意匠権","著作権","特許権","商標権"],"a":1,"e":"著作権は創作した時点で自動的に発生し、登録は不要（無方式主義）。特許権・意匠権・商標権は産業財産権で、特許庁に出願して登録されてはじめて権利が発生する。「知的財産権はすべて登録が必要」という取り違えに注意。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"ある会社が、新しく作ったマウスの外観を、見た目の美しさを出すために独特な曲線の形にした。この形を保護するために出願する権利として最も適切なものはどれか。","c":["実用新案権","意匠権","商標権","特許権"],"a":1,"e":"物の形や模様など、見た目のデザインを保護するのは意匠権。特許権は高度な発明、実用新案権は物の形や構造に関する使い勝手の工夫（考案）、商標権は商品に付けるマークや名称を保護する。見た目か機能かで区別する。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"著作権法で認められた「引用」として、自分のレポートに他人の文章を載せる。引用の条件として誤っているものはどれか。","c":["引用部分をかぎかっこで囲み、自分の文章と区別する必要がある","引用する前に、著作者の許諾を得る必要がある","自分の文章が主、引用部分が従という関係にする必要がある","引用した文章の出典を明示する必要がある"],"a":1,"e":"引用は、条件を満たせば著作者の許諾なしに著作物を利用できる例外なので、許諾は必要ない。区別を明確にすること、自分の文章が主で引用が従であること、出典を明示することは、いずれも引用の条件に含まれる。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"ある小説の一節を批評する文章を書く。引用の条件を満たしているものはどれか。","c":["批評に必要な2行を抜き出して言い換え、かぎかっこと出典を付けた","批評に必要な2行を原文どおり抜き出し、かぎかっこと出典を付けた","批評に必要な2行を原文どおり抜き出し、かぎかっこだけを付けた","感想を1行だけ書き、原文の全文にかぎかっこと出典を付けた"],"a":1,"e":"必要な部分を原文のまま示し、区別と出典があるものが条件を満たす。言い換えると改変になり引用とはいえない。出典がないものは出所の明示を欠く。感想が1行で全文を載せると、引用部分が主になってしまう。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"日本の著作権法で、著作者が個人である場合の著作権（財産権）の保護期間は、原則としていつまでか。","c":["作品の創作後50年まで","著作者の死後50年まで","作品の公表後70年まで","著作者の死後70年まで"],"a":3,"e":"個人の著作物の著作権は、原則として創作した時から著作者の死後70年まで保護される。以前は死後50年だったが、2018年に70年へ延びた。公表後70年は、団体名義の著作物などに適用される数え方である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"著作者の意に反して、作品の内容や題名を勝手に変えられない権利を何というか。","c":["同一性保持権","翻案権","氏名表示権","公表権"],"a":0,"e":"作品の内容や題名を意に反して変えられない権利は同一性保持権で、著作者人格権の一つ。氏名表示権は名前の表示の仕方を決める権利、公表権は公表するかを決める権利。翻案権は小説の映画化などに関わる財産権のほうに含まれる。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"クリエイティブ・コモンズ・ライセンスの条件のうち、「作品を改変して公開するときは、元の作品と同じライセンスで公開すること」を表すものはどれか。","c":["改変禁止（ND）","非営利（NC）","継承（SA）","表示（BY）"],"a":2,"e":"改変した作品にも同じライセンスを付けて公開することを求める条件が継承（SA）。改変禁止（ND）は改変そのものを認めない条件なので、「改変」という語につられて選ばないように。表示（BY）は作者名などの表示、非営利（NC）は営利利用の禁止。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"ある写真が「表示―非営利（CC BY-NC）」のライセンスで公開されている。ライセンスの条件に合う使い方はどれか。","c":["作者名を表示し、店で売る商品の包装に印刷する","作者名を表示せず、文化祭で無料で配るパンフレットに使う","作者名を表示し、有料で販売する写真集に使う","作者名を表示し、文化祭で無料で配るパンフレットに使う"],"a":3,"e":"BY は作者名などの表示、NC は営利目的で使わないことが条件。無料配布のパンフレットに作者名を表示して使う使い方は両方を満たす。有料の写真集や販売商品の包装は営利目的に当たり、作者名を表示しない使い方は BY に反する。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"著作権法の「私的使用のための複製」について、正しいものはどれか。","c":["自分で買った音楽CDを複製し、自分の動画に入れて動画共有サイトで公開するのは認められる","自分で買った音楽CDを、自分で聴くためにスマートフォンへ複製するのは認められる","自分で買った音楽CDを複製し、クラスの友人全員に配るのは認められる","違法にアップロードされたと知りながら、自分で聴くために音楽をダウンロードするのは認められる"],"a":1,"e":"私的使用は、個人や家庭内などの限られた範囲で使う複製。クラス全員への配布は範囲を超える。違法アップロードと知りながらのダウンロードは、自分で使うだけでも認められない。動画共有サイトでの公開は、複製ではなく公衆への送信に当たり、私的使用の例外に含まれない。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"不正アクセス禁止法について、正しいものはどれか。","c":["他人のIDとパスワードを本人に無断で使ってログインすると、ログイン後に何もしなくても違反になる","他人のIDとパスワードを本人に無断で第三者に教えても、自分がログインしなければ違反にならない","他人のIDとパスワードを本人に無断で使ってログインしても、相手が親しい友人なら違反にならない","他人のIDとパスワードを本人に無断で使ってログインしても、ログイン後に何もしなければ違反にならない"],"a":0,"e":"他人のIDとパスワードを無断で使ってログインすること自体が不正アクセス行為であり、その後の操作の有無や相手との関係は関係ない。また、他人のIDとパスワードを無断で第三者に提供する行為も、不正アクセスを助長する行為として禁止されている。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"shakai","q":"自分の顔や姿を、無断で撮影されたり公開されたりしないように主張できる権利を何というか。","c":["著作隣接権","著作権","肖像権","パブリシティ権"],"a":2,"e":"自分の顔や姿を無断で撮影・公開されない権利は肖像権で、法律の条文ではなく裁判の判例で認められてきた。パブリシティ権は有名人の名前や肖像がもつ経済的な価値を守る権利。写真の著作権は撮影者にあり、写っている人の権利ではない。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"情報機器やインターネットを利用できる人と利用できない人との間に生じる格差を何というか。","c":["デジタルタトゥー","フィルターバブル","エコーチェンバー","デジタルデバイド"],"a":3,"e":"情報機器やインターネットを使える人と使えない人の格差はデジタルデバイド（情報格差）。デジタルタトゥーはネットに出た情報が消えずに残り続けること、フィルターバブルとエコーチェンバーは、偏った情報ばかりに囲まれる現象を指す。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"shakai","q":"SNSで自分と似た意見の人ばかりをフォローした結果、同じような意見ばかりが繰り返し届き、その意見が多数派で正しいと思い込みやすくなった。この現象を何というか。","c":["エコーチェンバー","デジタルタトゥー","フィルターバブル","デジタルデバイド"],"a":0,"e":"似た意見の人どうしで集まり、同じ意見が反響するように繰り返し届いて考えが強まる現象がエコーチェンバー。フィルターバブルは、サービスの側が利用者の好みに合う情報を選んで表示し、見えない情報が生じる現象。この場面は自分のフォローが原因である。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"shakai","q":"個人情報保護法で、事業者が本人の同意を得ずに個人データを第三者に提供できる場合として、正しいものはどれか。","c":["提供するデータが、本人の病歴などの要配慮個人情報である場合","提供先から、提供の見返りに代金を受け取らない場合","人の生命や身体を守るために必要で、本人の同意を得ることが難しい場合","提供先が同じ業界の事業者で、同じ目的で使う場合"],"a":2,"e":"第三者提供には原則として本人の同意が必要だが、人の生命・身体・財産を守るために必要で同意を得ることが難しい場合などは例外とされる。同業者であることや無償であることは例外にならない。要配慮個人情報は、むしろより慎重な扱いが求められる。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"shakai","q":"特定の個人を識別できず、元の個人情報に戻すこともできないように加工した情報で、一定の手続きのもとで本人の同意なく第三者に提供できるものを何というか。","c":["匿名加工情報","要配慮個人情報","仮名加工情報","個人関連情報"],"a":0,"e":"個人を識別できず元に戻せないように加工したものは匿名加工情報で、加工の方法などを守れば同意なく第三者提供できる。仮名加工情報は、ほかの情報と照合しなければ個人を識別できないように加工したもので、原則として第三者提供はできない。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"shakai","q":"著作権法の「学校その他の教育機関における複製」について、正しいものはどれか。","c":["高校の教員が、担当する授業で使うためなら、市販の問題集を1冊まるごとコピーして生徒に配ることも、許諾なしにできる","営利目的の塾の講師が、担当する授業で使うために、公表された文章の一部をコピーして生徒に配ることは、許諾なしにできる","高校の教員が、担当する授業で使うために、公表された文章の一部をコピーして生徒に配ることは、原則として許諾なしにできる","高校の教員が、担当する授業で使うためなら、公表された文章の一部を学校のWebサイトで誰でも見られるよう公開することも、許諾なしにできる"],"a":2,"e":"営利を目的としない学校の授業では、必要な範囲で公表された著作物を複製できる。ただし、問題集のように生徒が買うことを前提とした物を丸ごと複製すると著作権者の利益を不当に害する。営利目的の塾は対象外で、誰でも見られる公開は授業の範囲を超える。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"security","q":"情報セキュリティの要素のうち、「許可された人だけが情報にアクセスできるようにすること」を何というか。","c":["可用性","完全性","真正性","機密性"],"a":3,"e":"許可された人だけが情報を見たり使ったりできることが機密性。完全性は情報が正しく改ざんされていないこと、可用性は必要なときに使えること。真正性は、利用者や情報が本物であることを確かめられる性質である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"次の事例と、主に損なわれた情報セキュリティの要素の組合せとして、正しいものはどれか。","c":["成績データが無断で書き換えられた ― 可用性","成績データが外部に漏れた ― 可用性","成績データが無断で書き換えられた ― 完全性","サーバが止まり成績を見られない ― 完全性"],"a":2,"e":"書き換えは情報の正しさが失われるので完全性、外部への漏えいは機密性、サーバが止まって使えないのは可用性が損なわれた例。「漏れる」「書き換えられる」「使えない」をそれぞれ3要素と結びつけて判断する。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"ほかのプログラムに寄生せず、単独でネットワークを通じて自分の複製を広げていくマルウェアを何というか。","c":["ワーム","トロイの木馬","スパイウェア","コンピュータウイルス"],"a":0,"e":"単独で自己増殖して広がるのがワーム。コンピュータウイルスはほかのプログラムに寄生して増える点が違う。トロイの木馬は役に立つソフトを装って入り込むが自分では増えない。スパイウェアは利用者の情報をひそかに集めて送る。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"ファイルを勝手に暗号化して使えなくし、元に戻す代わりに金銭を要求するランサムウェアへの備えとして、最も有効なものはどれか。","c":["重要なファイルの複製を、常につないだままの外付けディスクに保存する","重要なファイルの複製を、使うとき以外は外しておく外付けディスクに保存する","重要なファイルの複製を、同じパソコンの別のフォルダに保存する","重要なファイルを、パスワード付きの圧縮ファイルにして保存する"],"a":1,"e":"ランサムウェアは、感染したパソコンと、そこにつながっている記憶装置のファイルを暗号化する。ふだん外しておく媒体のバックアップなら被害を受けずに復元できる。つないだままのディスクや同じパソコン内の複製、パスワード付きの圧縮ファイルは、まとめて暗号化されうる。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"実在する銀行などを装ったメールで偽のWebサイトに誘導し、IDやパスワードを入力させてだまし取る手口を何というか。","c":["ショルダーハッキング","フィッシング","ワンクリック詐欺","DoS攻撃"],"a":1,"e":"本物を装って偽サイトへ誘導し、IDやパスワードを入力させるのがフィッシング。ワンクリック詐欺はクリックしただけで契約したように見せて代金を請求する手口。ショルダーハッキングはのぞき見、DoS攻撃は大量の通信でサービスを止める攻撃。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"「アカウントに不審なログインがありました」というメールが届き、本文にログイン画面へのリンクがあった。フィッシングへの対策として最も適切なものはどれか。","c":["リンクを開き、URLが「https」で始まっていればIDとパスワードを入力する","リンクを開き、メールの差出人名が本物と同じであればIDとパスワードを入力する","リンクは開かず、公式アプリや登録済みのブックマークからログインして確かめる","リンクを開き、画面のロゴが本物と同じであればIDとパスワードを入力する"],"a":2,"e":"メール内のリンクを使わず、自分で確かめた正規の入口からアクセスするのが確実。偽サイトも https を使うことができ、ロゴや差出人名も簡単にまねできるので、それらが本物らしいことは安全の根拠にならない。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"パスワードを入力している人の画面や手元を、後ろからのぞき見て盗む行為を何というか。","c":["フィッシング","ブルートフォース攻撃","ショルダーハッキング","キーロガー"],"a":2,"e":"肩越しにのぞき見て情報を盗むのがショルダーハッキングで、人の心理やすきを突くソーシャルエンジニアリングの一つ。キーロガーはキー入力をこっそり記録するソフトウェア、ブルートフォース攻撃はパスワードを全通り試す総当たり攻撃である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"次の認証の組合せのうち、多要素認証になっているものはどれか。","c":["パスワード ＋ 指紋による確認","ICカード ＋ 登録したスマートフォン","パスワード ＋ 秘密の質問の答え","パスワード ＋ 4桁の暗証番号"],"a":0,"e":"多要素認証は、知識・所持・生体のうち種類の違う要素を組み合わせる。パスワード（知識）と指紋（生体）の組合せが該当する。秘密の質問や暗証番号はどちらも知識、ICカードとスマートフォンはどちらも所持で、同じ種類どうしである。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"指紋や顔を使った認証は、認証の3要素のうちどれに当たるか。","c":["所持情報","生体情報","位置情報","知識情報"],"a":1,"e":"指紋や顔など、体の特徴を使うのは生体情報による認証。スマートフォンやICカードを持っていることで確かめるのが所持情報、パスワードなど本人だけが知っていることで確かめるのが知識情報。位置情報は認証の3要素に含まれない。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"ログインに使う4桁の暗証番号を、数字（0〜9の10種類）だけのものから、英小文字と数字（合わせて36種類）を使う4文字のものに変えた。考えられる組合せの数は約何倍になるか。","c":["約47倍","3.6倍","約168倍","14.4倍"],"a":2,"e":"組合せは数字4桁で10の4乗、36種類4文字で36の4乗。36の4乗÷10の4乗＝3.6の4乗＝約168倍。3.6倍は1文字分だけで比べた誤り、14.4倍は3.6を4回足した誤り、約47倍は3.6を3回しか掛けなかった誤り。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"security","q":"暗号化と復号に同じ鍵を使う暗号方式を何というか。","c":["ハイブリッド暗号方式","電子署名方式","公開鍵暗号方式","共通鍵暗号方式"],"a":3,"e":"暗号化と復号に同じ鍵を使うのは共通鍵暗号方式。公開鍵暗号方式は、公開鍵と秘密鍵という異なる2つの鍵を使う。ハイブリッド暗号方式は両方を組み合わせたもので、電子署名は暗号化ではなく改ざんやなりすましを確かめるしくみ。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"AさんがBさんに、公開鍵暗号方式を使って暗号文を送る。Aさんが暗号化に使う鍵はどれか。","c":["Bさんの秘密鍵","Aさんの公開鍵","Aさんの秘密鍵","Bさんの公開鍵"],"a":3,"e":"受信者Bさんの公開鍵で暗号化すると、対になるBさんの秘密鍵を持つBさんだけが復号できる。Bさんの秘密鍵はBさんしか持っていない。Aさんの秘密鍵を使うのは電子署名の場合で、Aさんの鍵で暗号化してもBさんは復号できない。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"6人のグループで、どの2人の間の通信もほかの人に読まれないように、共通鍵暗号方式を使う。必要な共通鍵は全部でいくつか。","c":["12","6","15","30"],"a":2,"e":"共通鍵は2人の組ごとに1つ必要で、6人から2人を選ぶ組は 6×5÷2＝15 通り。30 はAとBの組とBとAの組を別に数えた誤り。12 は公開鍵暗号方式で1人1組（公開鍵と秘密鍵）を持つときの鍵の数と取り違えた誤り。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"共通鍵暗号方式と公開鍵暗号方式を組み合わせた方式（ハイブリッド暗号方式）で、公開鍵暗号方式を使って暗号化するものはどれか。","c":["受信者の秘密鍵","送信者の秘密鍵","送りたい本文","本文用の共通鍵"],"a":3,"e":"公開鍵暗号方式は安全に鍵を渡せるが処理が遅いので、短い共通鍵だけを公開鍵暗号方式で送り、長い本文は速い共通鍵暗号方式で暗号化する。本文全体を公開鍵暗号で処理するとこの方式の利点がなくなる。秘密鍵は持ち主から外に出さない。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"security","q":"電子署名で、送信者が署名の作成に使う鍵と、受信者が署名の検証に使う鍵の組合せとして、正しいものはどれか。","c":["受信者の公開鍵 ― 受信者の秘密鍵","送信者の秘密鍵 ― 受信者の公開鍵","送信者の秘密鍵 ― 送信者の公開鍵","送信者の公開鍵 ― 送信者の秘密鍵"],"a":2,"e":"署名は送信者だけが持つ秘密鍵で作るので、本人が作ったことを示せる。受信者は、誰でも手に入る送信者の公開鍵で検証する。受信者の公開鍵で暗号化し受信者の秘密鍵で復号するのは暗号化の場合で、電子署名と逆になる。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"電子署名だけでは実現できないものはどれか。","c":["文書が途中で改ざんされていないと確かめること","通信の内容を第三者に読まれないようにすること","文書を作ったのが本人であると確かめること","送信者が後から「送っていない」と言えなくすること"],"a":1,"e":"電子署名で確かめられるのは、改ざんされていないこと、本人が作成したこと、そしてその結果として本人が送信を否定できないこと。内容を第三者に読まれないようにする機密性は、電子署名ではなく暗号化で守る。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"security","q":"ソフトウェアの設計の誤りなどによって生じた、情報セキュリティ上の弱点を何というか。","c":["ファイアウォール","マルウェア","バックアップ","脆弱性"],"a":3,"e":"ソフトウェアの欠陥から生じる、攻撃に悪用されうる弱点が脆弱性（セキュリティホール）。OSやアプリの更新は主にこの弱点をふさぐために行う。マルウェアは悪意のあるソフトウェアそのもので、弱点を突いて入り込む側である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"組織の内部ネットワークとインターネットの間に置き、決められた規則に従って通信を通したり遮断したりするしくみを何というか。","c":["ウイルス対策ソフトウェア","認証局","ファイアウォール","電子証明書"],"a":2,"e":"内部と外部の境目で通信を選別するのがファイアウォール。ウイルス対策ソフトウェアはコンピュータの中のファイルなどを調べてマルウェアを見つける。認証局は電子証明書を発行して、公開鍵の持ち主を保証する機関である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"security","q":"アルファベットを後ろに3文字ずらして暗号化する方式（Z の次は A に戻る）で、平文「ZOO」を暗号化した結果はどれか。","c":["BRR","CRR","WLL","ZRR"],"a":1,"e":"Z を3文字後ろにずらすと A、B、C で C、O は P、Q、R で R。よって CRR。WLL は前にずらした誤り、BRR は Z の次の A を数えずに進めた誤り、ZRR は Z から A に戻る処理を忘れた誤りである。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"security","q":"公開鍵暗号方式で、受け取った公開鍵が本当にその相手のものであることを確かめるために、認証局が発行するものはどれか。","c":["暗号文","電子証明書","共通鍵","秘密鍵"],"a":1,"e":"認証局は、公開鍵とその持ち主の情報を結びつけた電子証明書を発行し、公開鍵が本人のものであることを保証する。秘密鍵は本人が管理して誰にも渡さないもので、認証局が発行して配るものではない。共通鍵は共通鍵暗号方式で使う鍵である。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"design","q":"情報を記録して保存するためのメディア（記録のメディア）に当たるものはどれか。","c":["USBメモリ","音声","光ファイバ","電波"],"a":0,"e":"USBメモリは情報を保存しておく記録のメディア。電波や光ファイバは情報を離れた場所へ運ぶ伝達のメディア、音声は文字・画像と同じく情報を表す表現のメディアに分類される。同じ「メディア」でも役割で分けて考える。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"文字で伝える場合と比べたときの、音声で情報を伝える場合の特徴として、最も適切なものはどれか。","c":["感情や雰囲気を伝えやすいが、目の不自由な人には伝わりにくい","感情や雰囲気を伝えやすいが、聞き逃すと確かめ直しにくい","感情や雰囲気を伝えにくく、聞き逃すと確かめ直しにくい","感情や雰囲気を伝えやすく、聞き逃しても確かめ直しやすい"],"a":1,"e":"音声は声の調子や間で感情を伝えやすいが、その場で流れて消えるため、文字のように読み返すことが難しい。また、音声は目の不自由な人にも伝わる手段であり、伝わりにくいのは耳の不自由な人である。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"年齢や障害の有無などにかかわらず、はじめからできるだけ多くの人が使いやすいように製品や環境を設計する考え方を何というか。","c":["バリアフリー","ユニバーサルデザイン","ユーザビリティ","ユーザインタフェース"],"a":1,"e":"はじめから多くの人を対象に設計するのがユニバーサルデザイン。バリアフリーは、すでにある障壁を取り除くという考え方で、出発点が違う。ユーザビリティは使いやすさの度合い、ユーザインタフェースは人と機器が情報をやりとりする接点である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"バリアフリーとユニバーサルデザインの説明の組合せとして、正しいものはどれか。","c":["バリアフリーは見た目の美しさを高める考え方、ユニバーサルデザインははじめから多くの人に使いやすく設計する考え方","バリアフリーははじめから多くの人に使いやすく設計する考え方、ユニバーサルデザインは既存の障壁を取り除く考え方","バリアフリーは既存の障壁を取り除く考え方、ユニバーサルデザインははじめから多くの人に使いやすく設計する考え方","バリアフリーは既存の障壁を取り除く考え方、ユニバーサルデザインは障害のある人専用のものを設計する考え方"],"a":2,"e":"バリアフリーは、段差にスロープを付けるように、今ある障壁を取り除く。ユニバーサルデザインは、特定の人専用にするのではなく、はじめから多くの人が使える形にする。二つを逆にした選択肢や、「専用」とした選択肢に注意する。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"Webページの画像に、画像の内容を説明する代替テキストを付けておく。この工夫が主に役立つのは、どのような人の利用か。","c":["画面の文字を拡大して読む、視力の弱い人","動画の字幕を必要とする、耳の不自由な人","画面読み上げソフトを使う、目の不自由な人","マウスを使わずキーボードで操作する人"],"a":2,"e":"画像そのものは読み上げられないため、画面読み上げソフトは代替テキストを読んで画像の内容を伝える。耳の不自由な人には字幕、視力の弱い人には文字の拡大機能、キーボード操作の人には操作の順序などの配慮がそれぞれ役立つ。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"ピクトグラムの特徴として、最も適切なものはどれか。","c":["色の違いだけで意味を区別するので、だれにでも伝わる","言葉で詳しく説明するので、意味を誤解されにくい","写真を使うので、実物の姿をそのまま伝えられる","言葉に頼らず、形を見ただけで意味が伝わりやすい"],"a":3,"e":"ピクトグラムは、伝えたい内容を単純な図記号にしたもので、言語が違っても意味が伝わりやすい。文字による説明ではなく、写真のように実物をそのまま写すものでもない。色だけで区別すると色の見え方によって伝わらないため、形で意味を表す。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"色覚の多様性に配慮して、複数の折れ線を示すグラフを作る。工夫として最も適切なものはどれか。","c":["線を赤と緑の2色で分け、凡例を右上にまとめる","線を同じ明るさの色で分け、線の種類はそろえる","線を色で分け、色の種類をできるだけ多く使う","線を色で分けたうえで、線の種類や点の形も変える"],"a":3,"e":"色の区別がつきにくい人もいるため、色だけに頼らず線の種類や点の形でも区別する。赤と緑は見分けにくい組合せの代表で、明るさが同じ色どうしも区別しにくい。色の数を増やすと、かえって見分けにくくなる。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"色の三属性のうち、色の明るさの度合いを表すものはどれか。","c":["色相","彩度","明度","輝度"],"a":2,"e":"明るさの度合いは明度。彩度は色の鮮やかさ、色相は赤・黄・青といった色合いの違いを表し、この三つが色の三属性。輝度は画面などの光の明るさを表す量で、三属性には含まれない。明度と彩度の取り違えに注意する。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"背景色の上に文字を置くとき、文字を読みやすくするために最も重要なことはどれか。","c":["背景と文字の色を補色の関係にする","背景と文字の明度の差を大きくする","背景と文字の彩度をどちらも高くする","背景と文字の色相を近い色にそろえる"],"a":1,"e":"文字の読みやすさには明るさの差が最も効く。鮮やかな色どうしは目がちらつきやすい。補色どうしでも明度が近いと境目がちらついて読みにくくなるので、補色であれば読みやすいとは限らない。色相が近いと文字が背景にとけこむ。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"design","q":"鉄道の路線図のように、実際の距離や線路の曲がり方を省き、駅の順番とつながりだけを残して表す手法を何というか。","c":["構造化","規格化","可視化","抽象化"],"a":3,"e":"目的に必要な要素だけを残し、ほかを省くのが抽象化。可視化は数値などを図やグラフにして見えるようにすること、構造化は情報の関係や順序を見出しや表などで整理すること。路線図は「省く」ことが中心なので抽象化に当たる。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"情報の構造化の例として、最も適切なものはどれか。","c":["長い説明文を、見出しと箇条書きに分けて項目の関係がわかるように並べる","非常口の案内を、人が走る姿の単純な図にして意味がわかるように示す","アンケートの集計結果を、棒グラフにして多い少ないがわかるように示す","説明文の重要な語を、太字で赤色にして大事な点がわかるように示す"],"a":0,"e":"見出しや箇条書きで情報どうしの関係や順序を整理するのが構造化。集計結果をグラフにするのは可視化、非常口の図は余分な要素を省いた抽象化の例。重要な語の色や太さを変えるのは強調で、情報の関係を整理するものではない。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"伝えたい内容とグラフの種類の組合せとして、最も適切なものはどれか。","c":["学年全体に占める部活動ごとの人数の割合 ― 散布図","月ごとの平均気温の移り変わり ― 折れ線グラフ","1日の勉強時間とテストの得点の関係 ― 帯グラフ","月ごとの平均気温の移り変わり ― 円グラフ"],"a":1,"e":"時間とともに変わる量の推移は折れ線グラフが向く。円グラフは全体に占める割合、散布図は2つの量の関係を示すのに向く。割合には円グラフや帯グラフ、勉強時間と得点の関係には散布図を使うのが適切である。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"一般に、遠くからでも文字の形を見分けやすく、スライドの見出しなどに向くとされる書体はどれか。","c":["行書体","教科書体","明朝体","ゴシック体"],"a":3,"e":"ゴシック体は線の太さがほぼ一定で、遠くからでも見分けやすく、見出しやスライドに向く。明朝体は横線が細く、長い文章を読むのに向く書体とされる。教科書体は手書きの筆の運びに近い字形、行書体は筆で崩して書いた字形である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"ドアの押す位置に平らな板を付けたり、「押」と表示したりして、どう操作すればよいかの手がかりを示すものを何というか。","c":["ピクトグラム","フールプルーフ","シグニファイア","アフォーダンス"],"a":2,"e":"操作の仕方を利用者に知らせる手がかりがシグニファイア。アフォーダンスは、物とそれを使う人との間にある「どう扱えるか」という関係そのものを指す。フールプルーフは誤操作を防ぐ設計、ピクトグラムは意味を伝える図記号である。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"design","q":"USBの差し込み口のように、決まった向きでしか差し込めない形にして、利用者が誤った操作をできないようにする設計の考え方を何というか。","c":["フェールセーフ","アクセシビリティ","バリアフリー","フールプルーフ"],"a":3,"e":"利用者が誤った操作をしても事故にならない、または誤操作そのものができないようにする考え方がフールプルーフ。フェールセーフは、機械が故障したときに安全な側に止まるようにする考え方で、「誤操作」か「故障」かで区別する。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"特定の利用者が、特定の目的を、効果的・効率的に、満足して達成できる度合いを何というか。","c":["ユーザエクスペリエンス","ユニバーサルデザイン","ユーザビリティ","アクセシビリティ"],"a":2,"e":"目的を効果的・効率的・満足して達成できる度合いがユーザビリティ。アクセシビリティは、障害の有無などにかかわらず利用できるかどうかの度合い。ユーザエクスペリエンスは、利用の前後を含めて利用者が得る体験全体を指す。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"design","q":"図書館で本を「文学」「歴史」「自然科学」などの分野ごとに分けて並べている。これは、次のどの基準による情報の整理か。","c":["時間","五十音","位置","分類"],"a":3,"e":"内容の種類で分けるのは分類による整理。位置は地図のように場所で、時間は年表のように時間の順で、五十音は名前の読みの順で並べる整理である。図書館では分野の中で五十音順に並べることもあるが、この場面は分野ごとなので分類。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"design","q":"発表用のスライドを作るときの工夫として、適切でないものはどれか。","c":["同じ種類の情報は、どのスライドでも同じ位置に置く","強調したい語だけ、色や太さを変えて目立たせる","1枚のスライドに入れる情報を絞り、要点を短く書く","文字の多い説明は、行間をできるだけ詰めて1枚に収める"],"a":3,"e":"行間を詰めると読みにくくなるので、情報を分けて複数枚にするほうがよい。情報を絞って要点を書くこと、強調を必要な語だけにすること、同じ種類の情報を同じ位置に置くこと（反復）は、いずれも見る人にとってわかりやすくする工夫である。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"関係のある項目どうしを近くに配置し、関係の薄い項目とは間をあけて、まとまりが見てわかるようにするデザインの原則を何というか。","c":["近接","整列","反復","対比"],"a":0,"e":"関係のあるものを近づけてまとまりを示すのが近接。整列は要素の端や中心をそろえること、反復は同じ形式を繰り返して一貫性を出すこと、対比は大きさや色の違いをはっきりさせて差を示すことである。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"design","q":"Webページのアクセシビリティを高める工夫として、適切でないものはどれか。","c":["動画に、話している内容の字幕を付ける","リンクの文字を、行き先の内容がわかる言葉にする","入力欄の誤りを、枠の色を赤に変えることだけで知らせる","見出しを、文字の大きさだけでなく見出しとして指定する"],"a":2,"e":"色の変化だけでは、色の区別がつきにくい人や画面読み上げソフトの利用者に伝わらないので、文字でも誤りを知らせる。行き先がわかるリンク、字幕、見出しとしての指定（読み上げソフトが見出しを識別できる）は、いずれも利用しやすさを高める。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"digital","q":"アナログで情報を表しているものはどれか。","c":["0.1℃単位の数字で体温を示す体温計","針が連続的に動いて時刻を示す時計","5段階の点灯で電池の残量を示す表示","数字の表示が1秒ごとに変わる時計"],"a":1,"e":"連続的に変化する量で表すのがアナログで、針の位置が途切れずに動く時計が当たる。数字表示の時計や体温計は、1秒や0.1℃で区切った飛び飛びの値で表すのでデジタル。5段階の点灯も段階に区切った表示なのでデジタルである。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"音声をデジタル化するときの処理の順序として、正しいものはどれか。","c":["標本化 → 量子化 → 符号化","符号化 → 標本化 → 量子化","標本化 → 符号化 → 量子化","量子化 → 標本化 → 符号化"],"a":0,"e":"まず一定の時間間隔で波の値を取り出し（標本化）、その値を決められた段階の整数にそろえ（量子化）、最後に0と1の並びにする（符号化）。値を取り出す前にそろえることはできず、整数にする前に2進数にすることもできない。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"音声をデジタル化するとき、一定の時間間隔で波の値を取り出す処理を何というか。","c":["量子化","符号化","圧縮","標本化"],"a":3,"e":"時間を一定の間隔で区切って値を取り出すのが標本化（サンプリング）。量子化は取り出した値を段階の整数にそろえる処理、符号化はそれを0と1の並びにする処理。「時間を区切る」のが標本化、「値を区切る」のが量子化と区別する。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"量子化ビット数が 4 ビットのとき、波の値を何段階で表すことができるか。","c":["15段階","4段階","8段階","16段階"],"a":3,"e":"1ビットで2通り表せるので、4ビットでは 2の4乗＝16 段階になる。8段階は 2×4 と掛け算した誤り、4段階はビット数をそのまま段階数とした誤り。15 は4ビットで表せる最大の値（0〜15）で、段階の数は0を含めて16である。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"標本化周波数が 8000 Hz のとき、標本化周期（標本を取り出す時間間隔）はいくつか。","c":["8 ミリ秒","1.25 ミリ秒","0.125 ミリ秒","0.0125 ミリ秒"],"a":2,"e":"8000 Hz は1秒に8000回標本を取るので、周期は 1÷8000＝0.000125 秒。1秒＝1000 ミリ秒なので 0.125 ミリ秒。1.25 と 0.0125 は小数点の位置を誤ったもの、8 ミリ秒は 8000÷1000 と割る向きを逆にした誤り。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"最も高い周波数が 20000 Hz の音を、元の波形を再現できるようにデジタル化したい。標本化周波数として適切なものはどれか。","c":["44100 Hz","20000 Hz","30000 Hz","10000 Hz"],"a":0,"e":"標本化定理により、元の音の最も高い周波数の2倍（40000 Hz）より大きい標本化周波数が必要。条件を満たすのは 44100 Hz だけ。20000 Hz は元の周波数と同じでよいと考えた誤り、30000 Hz は2倍に届かず、10000 Hz は半分にした誤り。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"digital","q":"1画素の色を、R・G・B それぞれ 8 ビット（合計 24 ビット）で表す。表せる色は全部で何色か。","c":["16,777,216色","65,536色","768色","16,581,375色"],"a":0,"e":"24ビットなので 2の24乗＝16,777,216 色（256×256×256 と同じ）。768 は各色の256段階を足した誤り、16,581,375 は各色を255段階として掛けた誤り（0〜255は256段階）。65,536 は 16ビットの場合の色数である。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"光の三原色で、赤（R）と緑（G）の光を同じ強さで重ねると、何色に見えるか。","c":["白","黄","青緑","赤紫"],"a":1,"e":"光の加法混色では、赤と緑で黄、緑と青で青緑（シアン）、赤と青で赤紫（マゼンタ）になり、三色すべてを重ねると白になる。絵の具のように混ぜると暗くなる減法混色と混同しないよう、光は重ねるほど明るくなることを押さえる。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"ディスプレイのように、光の三原色を重ねるほど明るくなり、すべてを重ねると白になる色の混ぜ方を何というか。","c":["減法混色","中間混色","加法混色","補色混色"],"a":2,"e":"光を重ねて明るくなる混色は加法混色。減法混色はインクや絵の具のように、シアン・マゼンタ・イエローを重ねるほど暗くなり、黒に近づく混色で、印刷に使われる。「光は加法、インクは減法」と対応づけて覚える。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"画像を拡大しても輪郭がぎざぎざにならない形式と、その理由の組合せとして、正しいものはどれか。","c":["ベクタ形式 ― 図形を座標や線の式で記録しているから","ラスタ形式 ― 図形を座標や線の式で記録しているから","ベクタ形式 ― 図形を画素の色の並びで記録しているから","ラスタ形式 ― 図形を画素の色の並びで記録しているから"],"a":0,"e":"ベクタ形式は図形を座標や線の式で記録し、拡大するたびに描き直すので輪郭がなめらかなまま。ラスタ形式は画素の色の並びで記録するので、拡大すると画素が大きく見え、ぎざぎざ（ジャギー）が現れる。形式と記録の仕方の対応を確かめる。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"ASCIIコードは、1文字を 7 ビットで表す。表すことができる文字の種類は最大いくつか。","c":["256","14","127","128"],"a":3,"e":"7ビットで表せるのは 2の7乗＝128 通り。127 は7ビットで表せる最大の値で、0を含めると128通りになる。256 は8ビット（1バイト）の場合の数、14 は 7×2 と掛け算した誤りである。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"あるWebページを開くと、日本語の部分が意味の通らない記号の並びで表示された。この現象の主な原因として、最も適切なものはどれか。","c":["作成時と表示時で、文字の大きさの設定が違っている","作成時と表示時で、使う文字コードが違っている","作成時と表示時で、画面の解像度が違っている","作成時と表示時で、使う書体（フォント）が違っている"],"a":1,"e":"文字化けは、文字を数値にする規則（文字コード）が作成時と表示時で違うと、同じ数値が別の文字として読まれることで起こる。書体や文字の大きさ、解像度が違っても文字の見た目が変わるだけで、別の文字にはならない。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"UTF-8 では、英数字は1文字1バイト、ひらがなと漢字は1文字3バイトで表されるとする。文字列「AI活用」は何バイトか。","c":["8バイト","4バイト","12バイト","6バイト"],"a":0,"e":"A と I は1バイトずつで2バイト、「活」「用」は3バイトずつで6バイト、合わせて8バイト。4バイトは全部を1文字1バイトとした誤り、12バイトは英字も3バイトとした誤り、6バイトは全部を1文字2バイトとした誤りである。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"元のデータに完全に戻すことができる圧縮方式と、その方式を使うファイル形式の組合せとして、正しいものはどれか。","c":["可逆圧縮 ― ZIP形式","可逆圧縮 ― JPEG形式","可逆圧縮 ― MP3形式","非可逆圧縮 ― ZIP形式"],"a":0,"e":"完全に元に戻せるのは可逆圧縮で、ZIP や PNG が使う。JPEG（写真）や MP3（音楽）は、人が気づきにくい情報を省く非可逆圧縮で、完全には戻せない。方式の名前と形式の例の、どちらの対応も確かめる。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"digital","q":"写真や音楽のデータに、非可逆圧縮がよく使われる理由として、最も適切なものはどれか。","c":["どの情報も省かずに、データ量を大きく減らせるから","人が気づきにくい情報を省いて、データ量を大きく減らせるから","人が気づきにくい情報を省いて、画質や音質が元より良くなるから","人が気づきにくい情報を省いても、完全に元に戻せるから"],"a":1,"e":"非可逆圧縮は、人の目や耳で気づきにくい細かな情報を省くことで、データ量を大きく減らせる。省いた情報は戻らないので完全には元に戻せず、画質や音質が元より良くなることもない。情報を省かない圧縮は可逆圧縮である。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"白をW、黒をBで表したデータを、同じ文字が続く部分ごとに「文字＋個数」で表す方法で圧縮する。次のデータを圧縮した結果はどれか。","c":["W4B2W6B2","W4B3W6B2","W10B5","W3B2W5B1"],"a":1,"e":"W が4個、B が3個、W が6個、B が2個と続くので W4B3W6B2。W10B5 は続く部分ごとではなく色ごとの合計を数えた誤り、W3B2W5B1 は各部分の個数を1つ少なく数えた誤り、W4B2W6B2 は黒が3個続く部分を2個と数え誤ったもの。","p":"次の問いに答えなさい。","k":"WWWWBBBWWWWWWBB","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"白をW、黒をBで表した16文字のデータを、同じ文字が続く部分ごとに「文字＋個数」で表す方法で圧縮する（例: WWWBB は W3B2）。圧縮後の文字数が最も多くなるデータはどれか。","c":["WWWWWWWWBBBBBBBB","WWWWWWWWWWWWWWWB","WBWBWBWBWBWBWBWB","WWWWBBBBWWWWBBBB"],"a":2,"e":"W と B が交互に並ぶと、1文字ごとに「W1」「B1」の2文字になり、圧縮後は32文字と元より長くなる。ほかは W8B8 が4文字、W4B4W4B4 が8文字、W15B1 が5文字。同じ文字が長く続くほど効果が大きい。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"digital","q":"量子化について、正しいものはどれか。","c":["量子化ビット数を増やすと、標本を取り出す時間間隔が短くなり、データ量は増える","量子化ビット数を増やすと、量子化による誤差は小さくなり、データ量も減る","量子化ビット数を増やすと、量子化による誤差は小さくなるが、データ量は増える","量子化ビット数を増やすと、量子化による誤差は大きくなるが、データ量は減る"],"a":2,"e":"量子化ビット数を増やすと段階が細かくなり、元の値との差（量子化誤差）は小さくなるが、1つの値を表すビット数が増えるのでデータ量は増える。標本を取り出す時間間隔を決めるのは標本化周波数で、量子化ビット数とは関係がない。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"digital","q":"情報をデジタルで扱う利点として、適切でないものはどれか。","c":["複製や転送をくり返しても、品質が劣化しにくい","文字・音・画像を、同じ0と1でまとめて扱える","誤りを見つけたり直したりするしくみを組み込みやすい","連続的な変化を、情報を失わずにそのまま記録できる"],"a":3,"e":"デジタル化では、連続的な量を一定の間隔と段階で区切るので、区切りの間の情報は失われる。これはデジタルの利点ではなく、アナログとの違いとして注意すべき点。劣化しにくいこと、まとめて扱えること、誤りを検出・訂正しやすいことは利点である。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"digital","q":"A・B・C の3種類の文字からなる10文字のデータを、下の表の符号で表す。データ全体は何ビットになるか。","c":["10ビット","18ビット","20ビット","14ビット"],"a":3,"e":"A は1ビットが6回で6ビット、B と C は2ビットが2回ずつで4ビットずつ。合計 6＋4＋4＝14 ビット。20 はすべてを2ビットで数えた誤り、10 はすべてを1ビットとした誤り、18 は A を2ビット、B を1ビットと符号を取り違えた誤り。","p":"次の問いに答えなさい。","k":"文字  出現回数  符号\nA     6         0\nB     2         10\nC     2         11","m":"難易度 ★★★ 発展"},{"g":"computer","q":"主記憶装置（メインメモリ）について述べた文として、正しいものはどれか。","c":["電源を切ると記憶内容が消え、補助記憶装置より読み書きが速い","電源を切っても記憶内容が残り、補助記憶装置より読み書きが速い","電源を切ると記憶内容が消え、補助記憶装置より読み書きが遅い","電源を切ると記憶内容が消え、補助記憶装置より記憶容量が大きい"],"a":0,"e":"主記憶装置は電源を切ると内容が消える（揮発性）が、読み書きが速く、CPU が処理中のプログラムやデータを置く。電源を切っても内容が残るのは補助記憶装置の性質。容量はふつう補助記憶装置のほうが大きく、主記憶装置は速い代わりに容量が小さい。","p":"正しいものを選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"CPU（中央処理装置）を構成する装置の組み合わせとして、正しいものはどれか。","c":["制御装置と演算装置","演算装置と主記憶装置","制御装置と主記憶装置","主記憶装置と補助記憶装置"],"a":0,"e":"CPU は、命令を解読して各装置に指示を出す制御装置と、計算や比較を行う演算装置からなる。主記憶装置は CPU と直接データをやり取りするが、CPU の外にある記憶装置なので CPU には含めない。","p":"正しいものを選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"五大装置の間でのデータの流れについて述べた文として、正しいものはどれか。","c":["入力されたデータは主記憶装置に読み込まれ、演算装置で処理される","入力されたデータは補助記憶装置に読み込まれ、演算装置で処理される","入力されたデータは主記憶装置に読み込まれ、制御装置で計算される","入力されたデータは演算装置で処理されてから、主記憶装置に読み込まれる"],"a":0,"e":"入力装置からのデータはいったん主記憶装置に置かれ、演算装置がそこから取り出して処理し、結果も主記憶装置に戻してから出力する。演算装置は補助記憶装置から直接読むのではない。計算をするのは演算装置で、制御装置は各装置への指示を受け持つ。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"OS（オペレーティングシステム）の役割として、適切でないものはどれか。","c":["文書の作成や表計算など、利用者の目的に応じた作業を行う","複数のアプリケーションに、メモリや CPU の使用時間を割り当てる","キーボードやプリンタなどの周辺機器を管理する","ファイルの名前や保存場所を管理する"],"a":0,"e":"文書作成や表計算のように利用者の目的に応じた作業をするのは、アプリケーションソフトウェアの役割。OS はメモリや CPU の割り当て、周辺機器の管理、ファイルの管理など、どのアプリケーションにも共通する基本的な働きを受け持つ。","p":"適切でないものを選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"プリンタなどの周辺機器ごとに用意され、OS がその機器を制御できるようにするソフトウェアを何というか。","c":["デバイスドライバ","ユーティリティソフトウェア","アプリケーションソフトウェア","ファームウェア"],"a":0,"e":"周辺機器を OS から使えるようにするのはデバイスドライバ。ユーティリティソフトウェアは圧縮やウイルス対策など OS の機能を補う道具。ファームウェアは機器の内部に書き込まれてその機器自体を動かすソフトウェアで、OS と機器の橋渡しをするものではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"CPU が直接解釈して実行できる、0 と 1 の並びで表された命令を何というか。","c":["機械語","アセンブリ言語","高水準言語","文字コード"],"a":0,"e":"CPU が直接実行できるのは 0 と 1 で表された機械語だけ。アセンブリ言語は機械語の命令を記号に置き換えたもの、高水準言語は人が読み書きしやすい言語で、どちらも機械語に変換してから実行する。文字コードは文字に割り当てた番号で、命令ではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"高水準言語で書いたプログラムを実行するしくみについて述べた文として、正しいものはどれか。","c":["コンパイラ方式では、実行する前にプログラム全体を機械語に変換する","インタプリタ方式では、実行する前にプログラム全体を機械語に変換する","コンパイラ方式では、命令を1つずつ機械語に変換しながら実行する","コンパイラ方式では、機械語に変換せずに CPU がそのまま実行する"],"a":0,"e":"コンパイラ方式は、実行の前にプログラム全体をまとめて機械語に変換しておく。命令を1つずつ解釈しながら実行するのはインタプリタ方式で、「インタプリタ方式では、実行する前に全体を変換」「コンパイラ方式では、1つずつ変換しながら実行」は、この2つを取り違えている。CPU は高水準言語をそのまま実行できないので、変換が必要。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"CPU が各回路の動作の足並みをそろえるために使う信号が、1秒間に何回発生するかを表す値を何というか。","c":["クロック周波数","標本化周波数","コア数","通信速度"],"a":0,"e":"CPU の動作の基準となるクロック信号の1秒あたりの回数がクロック周波数で、単位は Hz（ヘルツ）。標本化周波数は音をデジタル化するときに1秒間に標本をとる回数で、同じ Hz を使うので取り違えやすい。コア数は CPU の中にある処理装置の数。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"クロック周波数が 2.5GHz の CPU で、クロック信号1回分の時間（周期）は何ナノ秒か。1GHz は10億Hz、1ナノ秒は10億分の1秒とする。","c":["0.4ナノ秒","2.5ナノ秒","4ナノ秒","0.04ナノ秒"],"a":0,"e":"周期は周波数の逆数。2.5GHz は1秒間に25億回なので、1回分は 1÷25億 秒＝0.4ナノ秒。2.5ナノ秒は逆数をとらずに周波数の数値をそのまま使った場合。4ナノ秒と0.04ナノ秒は、割り算で小数点の位置を1桁ずらした場合。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"命令1つを実行するのにクロック信号2回分の時間がかかる CPU がある。クロック周波数が 3GHz のとき、1秒間に実行できる命令の数はいくつか。1GHz は10億Hz とする。","c":["15億個","60億個","30億個","1.5億個"],"a":0,"e":"3GHz は1秒間に30億回のクロック。命令1つにクロック2回分かかるので、30億÷2＝15億個。60億個は2で割るところを2倍した場合、30億個は1命令あたりのクロック数を考えなかった場合、1.5億個は1GHz を1億Hz と数え違えた場合。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"次の記憶装置を、読み書きが速いものから順に並べたものとして、正しいものはどれか。","c":["キャッシュメモリ → メインメモリ → SSD → ハードディスク","メインメモリ → キャッシュメモリ → SSD → ハードディスク","キャッシュメモリ → メインメモリ → ハードディスク → SSD","キャッシュメモリ → SSD → メインメモリ → ハードディスク"],"a":0,"e":"CPU に近いものほど速く、容量が小さい。キャッシュメモリは CPU とメインメモリの速度差を埋める最も速いメモリ。補助記憶装置では、半導体を使う SSD が、円盤を回して読み書きするハードディスクより速い。ただし SSD もメインメモリよりは遅い。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"CPU と主記憶装置の速度の差を埋めるために使われる、高速で容量の小さいメモリを何というか。","c":["キャッシュメモリ","フラッシュメモリ","仮想メモリ","レジスタ"],"a":0,"e":"よく使うデータを高速なキャッシュメモリに置くと、遅い主記憶装置を読みに行く回数が減る。フラッシュメモリは電源を切っても内容が残る記憶素子。仮想メモリは主記憶装置が足りないときに補助記憶装置を代わりに使うしくみ。レジスタは CPU 内部で計算中の値を置く場所。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"SSD や USB メモリに使われ、電源を切っても内容が消えず、書き換えもできる半導体メモリを何というか。","c":["フラッシュメモリ","キャッシュメモリ","メインメモリ","レジスタ"],"a":0,"e":"フラッシュメモリは不揮発性（電源を切っても内容が残る）で書き換えができ、SSD や USB メモリ、SD カードに使われる。キャッシュメモリ、メインメモリ、CPU の中のレジスタは、どれも電源を切ると内容が消える揮発性のメモリ。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"computer","q":"10進数の 0.1 をコンピュータで計算に使うと、誤差が生じることがある。その理由として正しいものはどれか。","c":["0.1 は2進数では無限に続く小数になり、決められたビット数で打ち切るから","0.1 は2進数では無限に続く小数になり、画面に表示するときに四捨五入するから","0.1 は2進数では桁の多い有限小数になり、決められたビット数に収まらないから","0.1 は10進数のまま記憶され、決められた桁数で打ち切るから"],"a":0,"e":"0.1 を2進数にすると 0.000110011… と同じ並びが無限に続く。コンピュータは決められたビット数でしか記憶できないので途中で打ち切り、わずかな誤差が出る。表示のときの四捨五入が原因ではない。また、コンピュータは数を10進数ではなく2進数で記憶する。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"数値を決められたビット数に収めるために、表せない桁を切り捨てたり四捨五入したりすることで生じる誤差を何というか。","c":["丸め誤差","桁落ち","情報落ち","オーバーフロー"],"a":0,"e":"表せない桁を切り捨て・切り上げ・四捨五入して生じるのが丸め誤差。桁落ちは値の近い数どうしの引き算で有効数字が減ること、情報落ちは大きさが大きく違う数の足し算で小さいほうが反映されないこと、オーバーフローは結果が表せる範囲を超えること。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"4ビットで0以上の整数を表すコンピュータで 12＋7 を計算すると、結果の 19 は4ビットで表せない。このように、計算結果が表せる範囲を超えることを何というか。","c":["オーバーフロー","アンダーフロー","丸め誤差","情報落ち"],"a":0,"e":"4ビットで表せる0以上の整数は0〜15で、19 はこの範囲を超える。これをオーバーフロー（桁あふれ）という。アンダーフローは0に近すぎる小さな値が表せなくなること。丸め誤差や情報落ちは、表せる範囲の中での精度の問題。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"computer","q":"4ビットで0以上の整数を表すコンピュータで 12＋7 を計算し、4ビットに入りきらない上の桁を捨てて、下位4ビットだけを残した。残った値は10進数でいくつか。","c":["3","9","11","15"],"a":0,"e":"19 を2進数にすると 10011 で5ビットになる。いちばん上の1桁（16の位）を捨てると 0011 で 3。9 は上から4ビット（1001）を残した場合、11 は16の位ではなく8の位を捨てた場合（19−8）、15 は表せる最大値で止まると考えた場合。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"computer","q":"表のように、主記憶装置に命令とデータが入っている。0番地から順に命令を実行したとき、STOP で止まった時点の12番地の値はいくつか。READ n は n番地の値をレジスタに読み込む、ADD n は n番地の値をレジスタの値に加える、WRITE n はレジスタの値を n番地に書き込む命令である。","c":["11","8","0","27"],"a":0,"e":"READ 10 でレジスタは5、ADD 11 を2回実行して 5+3+3＝11 になり、WRITE 12 で12番地に11が書き込まれる。8 は ADD を1回しか数えなかった場合、0 は WRITE を読み込みと取り違えて12番地が変わらないとした場合、27 は番地の数 11 を値として足した場合（5+11+11）。","p":"次の簡単なコンピュータの動作を読んで答えなさい。","k":"番地  内容\n 0    READ 10\n 1    ADD 11\n 2    ADD 11\n 3    WRITE 12\n 4    STOP\n10    5\n11    3\n12    0","m":"難易度 ★★★ 発展"},{"g":"computer","q":"CPU の中で、次に実行する命令が主記憶装置の何番地にあるかを記憶しているレジスタを何というか。","c":["プログラムカウンタ","命令レジスタ","汎用レジスタ","キャッシュメモリ"],"a":0,"e":"プログラムカウンタは次に実行する命令の番地を持ち、命令を取り出すたびに次の番地へ進む。命令レジスタは取り出した命令そのものを置く場所、汎用レジスタは計算途中の値を置く場所。キャッシュメモリは CPU とメインメモリの間の高速なメモリで、番地を管理するものではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★★★ 発展"},{"g":"computer","q":"10進数で有効数字3桁までしか記憶できない計算機がある。この計算機で 123000 と 4.56 を足した結果として記憶される値はどれか。有効数字に収まらない桁は四捨五入する。","c":["123000","123005","123004.6","123004.56"],"a":0,"e":"正確な和 123004.56 を有効数字3桁に四捨五入すると 123000 となり、足した 4.56 が結果に残らない。これを情報落ちという。123005 や 123004.6 は整数や小数第1位で四捨五入した場合で、有効数字の桁数で考えていない。123004.56 は記憶できる桁数の制限を考えなかった場合。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"network","q":"学校や家庭、1つの建物の中など、限られた範囲に作られたネットワークを何というか。","c":["LAN","WAN","ISP","インターネット"],"a":0,"e":"限られた範囲のネットワークは LAN（ローカルエリアネットワーク）。WAN は離れた場所の LAN どうしを結ぶ広い範囲のネットワーク。ISP はインターネットへの接続を提供する事業者、インターネットは世界中のネットワークを相互につないだもので、どちらも限られた範囲のネットワークではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"インターネットで通信するとき、通信相手の機器を指定するために使う番号で、接続するネットワークに応じて割り当てられるものを何というか。","c":["IP アドレス","MAC アドレス","ポート番号","ドメイン名"],"a":0,"e":"インターネット上で通信相手を指定する番号は IP アドレス。MAC アドレスは機器の通信部品ごとに製造時に付けられる番号で、同じネットワーク内での通信に使う。ポート番号は機器の中のどのアプリケーションとやり取りするかを表す番号。ドメイン名は人が覚えやすいように付けた名前で、番号ではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"www.example.jp のようなドメイン名を、IP アドレスに対応づけるしくみを何というか。","c":["DNS","DHCP","NAT","HTTP"],"a":0,"e":"ドメイン名と IP アドレスを対応づけるのは DNS。DHCP は機器に IP アドレスを自動で割り当てるしくみ、NAT はプライベート IP アドレスとグローバル IP アドレスを変換するしくみで、どちらも IP アドレスを扱うので取り違えやすい。HTTP は Web ページをやり取りするプロトコル。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"パケット交換方式について述べた文として、正しいものはどれか。","c":["データを分割して送るので、1本の回線を複数の通信で共有できる","データを分割して送るので、通信の間は回線を1組の利用者が占有する","データを分割せずに送るので、1本の回線を複数の通信で共有できる","データを分割して送るので、すべてのパケットが必ず同じ経路を通る"],"a":0,"e":"パケット交換方式では、データをパケットに分けて送るので、1本の回線に複数の通信のパケットを混ぜて流せる。回線を占有するのは回線交換方式の特徴。パケットはそれぞれ宛先の情報を持つので、途中の経路が同じとは限らない。","p":"正しいものを選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"IPv4 のアドレスは何ビットで表されるか。","c":["32ビット","128ビット","48ビット","8ビット"],"a":0,"e":"IPv4 のアドレスは32ビットで、8ビットずつ4つに区切って 192.168.1.10 のように書く。128ビットは IPv6 のアドレス、48ビットは MAC アドレスの長さ。8ビットは区切った1つ分の長さで、アドレス全体ではない。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"電子メールを送信するときや、メールサーバの間でメールを転送するときに使われるプロトコルを何というか。","c":["SMTP","POP","IMAP","HTTP"],"a":0,"e":"メールの送信とサーバ間の転送には SMTP を使う。POP と IMAP は、メールサーバに届いたメールを受信するときに使うプロトコルで、送信と受信の向きを取り違えやすい。HTTP は Web ページのやり取りに使う。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"異なるネットワークどうしをつなぎ、パケットの宛先を見て次にどこへ送るかを決める機器を何というか。","c":["ルータ","スイッチングハブ","無線 LAN アクセスポイント","DNS サーバ"],"a":0,"e":"ネットワークどうしをつなぎ、宛先の IP アドレスをもとに転送先（経路）を決めるのはルータ。スイッチングハブは同じネットワークの中で機器をつなぐ機器、無線 LAN アクセスポイントは無線の端末を LAN につなぐ機器。DNS サーバはドメイン名から IP アドレスを調べるサーバで、パケットを転送しない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"複数の人に同じ電子メールを送るとき、受信者どうしにメールアドレスが知られないように宛先を入れる欄はどれか。","c":["BCC","CC","To","From"],"a":0,"e":"BCC に入れた宛先は、ほかの受信者に表示されない。CC は「参考までに送る」宛先で、To と同じくすべての受信者にアドレスが表示される。From は送信者のアドレスを表す欄で、宛先を入れる欄ではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"network","q":"TCP/IP の4つの階層を、利用者に近い側から順に並べたものとして、正しいものはどれか。","c":["アプリケーション層 → トランスポート層 → インターネット層 → ネットワークインタフェース層","アプリケーション層 → インターネット層 → トランスポート層 → ネットワークインタフェース層","トランスポート層 → アプリケーション層 → インターネット層 → ネットワークインタフェース層","アプリケーション層 → トランスポート層 → ネットワークインタフェース層 → インターネット層"],"a":0,"e":"利用者に近いほうから、Web やメールなどのアプリケーション層、TCP で確実に届けるトランスポート層、IP で宛先まで中継するインターネット層、同じネットワーク内で信号を届けるネットワークインタフェース層の順。TCP（トランスポート層）が IP（インターネット層）より上にある。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"network","q":"受信したメールをサーバに残したまま管理し、複数の端末から同じメールを読むのに向いている受信用のプロトコルはどれか。","c":["IMAP","POP","SMTP","FTP"],"a":0,"e":"IMAP はメールをサーバに残したまま読むので、スマートフォンとパソコンのように複数の端末で同じ状態を見られる。POP はメールを端末に取り込んで読む方式。SMTP は送信用のプロトコル、FTP はファイルを転送するプロトコルで、メールの受信には使わない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"network","q":"プロトコルとその主な働きの組み合わせとして、正しいものはどれか。","c":["IP ― パケットを宛先のネットワークまで中継する","TCP ― パケットを宛先のネットワークまで中継する","IP ― 届いたデータに欠けがないかを確かめる","SMTP ― Web ページのデータをやり取りする"],"a":0,"e":"IP はインターネット層のプロトコルで、宛先の IP アドレスをもとにパケットを中継する。届いたデータの欠けや順番を確かめ、必要なら再送を求めるのはトランスポート層の TCP で、「TCP ― 中継する」「IP ― 欠けを確かめる」は TCP と IP の働きを入れ替えている。Web ページのやり取りは HTTP、SMTP はメールの送信。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"network","q":"50MB のファイルを、通信速度 20Mbps の回線で送るのにかかる時間は何秒か。1MB は1000000バイト、1Mbps は1秒間に1000000ビットとし、圧縮や伝送効率は考えない。","c":["20秒","2.5秒","160秒","0.4秒"],"a":0,"e":"50MB は 50×8＝400Mb（メガビット）。20Mbps で送ると 400÷20＝20秒。2.5秒はバイトをビットに直さず 50÷20 とした場合、160秒は8倍を2回かけた場合、0.4秒は割る向きを逆にして 20÷50 とした場合。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"network","q":"通信速度 100Mbps の回線で、5秒間に送れるデータ量は何MBか。1MB は1000000バイト、1Mbps は1秒間に1000000ビットとし、伝送効率は考えない。","c":["62.5MB","500MB","4000MB","20MB"],"a":0,"e":"5秒間に送れるのは 100×5＝500Mb（メガビット）。8ビットで1バイトなので 500÷8＝62.5MB。500MB はビットをバイトに直さなかった場合、4000MB は8で割るところを8倍した場合、20MB は時間をかけずに 100÷5 とした場合。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"network","q":"クライアントサーバ方式について述べた文として、正しいものはどれか。","c":["サービスを提供するコンピュータに、利用者側のコンピュータが要求を送る","対等な立場のコンピュータどうしが、直接データをやり取りする","サービスを提供するコンピュータが、利用者側のコンピュータに要求を送る","通信している間は、1本の回線を1組の利用者だけで使う"],"a":0,"e":"クライアントサーバ方式では、利用者側のクライアントがサーバに要求を送り、サーバが処理結果を返す。対等なコンピュータどうしでやり取りするのはピアツーピア方式。要求を送るのはサーバではなくクライアント側。回線を占有するのは回線交換方式の説明。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"network","q":"Web ブラウザに URL を入力してから Web ページが表示されるまでの流れを、起こる順に並べたものはどれか。","c":["イ → エ → ア → ウ","エ → イ → ア → ウ","イ → ア → エ → ウ","イ → エ → ウ → ア"],"a":0,"e":"まず DNS でドメイン名から Web サーバの IP アドレスを調べ（イ）、その IP アドレスに HTTP で要求を送る（エ）。サーバが HTML ファイルなどを返し（ア）、ブラウザが表示する（ウ）。IP アドレスが分からないと要求を送れないので、エより先にイがくる。","p":"次のア〜エを並べかえて答えなさい。","k":"ア　Web サーバが HTML ファイルなどを送り返す\nイ　DNS サーバに問い合わせて IP アドレスを調べる\nウ　ブラウザが受け取ったデータをもとにページを表示する\nエ　Web サーバに HTTP でページを要求する","m":"難易度 ★★☆ 標準"},{"g":"network","q":"IPv4 に加えて IPv6 が使われるようになった主な理由として、正しいものはどれか。","c":["IPv4 で割り当てられるアドレスの数が足りなくなってきたから","IPv4 で送れるデータの通信速度が足りなくなってきたから","IPv4 のアドレスが長く、人が覚えにくかったから","IPv4 ではドメイン名との対応づけができなかったから"],"a":0,"e":"32ビットの IPv4 で表せるアドレスは約43億個で、インターネットにつながる機器の増加で足りなくなってきた。そこで128ビットの IPv6 が使われるようになった。IPv6 のアドレスは IPv4 より長い。通信速度の問題ではなく、ドメイン名との対応づけは IPv4 でも DNS でできる。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"network","q":"1GB のファイルを、通信速度 100Mbps、伝送効率 80% の回線で送るのにかかる時間は何秒か。1GB は1000MB、1MB は1000000バイト、1Mbps は1秒間に1000000ビットとする。伝送効率 80% とは、通信速度のうち実際にデータの送信に使える割合が80%であることを表す。","c":["100秒","64秒","80秒","12.5秒"],"a":0,"e":"1GB は 1000×8＝8000Mb。実際に使える速度は 100×0.8＝80Mbps なので、8000÷80＝100秒。64秒は伝送効率を時間にかけた場合（8000÷100×0.8）、80秒は伝送効率を考えなかった場合、12.5秒はバイトをビットに直さなかった場合（1000÷80）。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"network","q":"家庭の LAN の中の機器には、プライベート IP アドレスが割り当てられることが多い。プライベート IP アドレスについて述べた文として、正しいものはどれか。","c":["LAN の中だけで使い、別の LAN の機器と同じアドレスでもよい","インターネット全体で、重ならないように割り当てられる","LAN の中だけで使い、同じ LAN の機器と同じアドレスでもよい","インターネット上の機器と、ルータを通さず直接通信できる"],"a":0,"e":"プライベート IP アドレスは LAN の中だけで使うので、同じ LAN の中では重ならないようにするが、別の家庭の LAN と同じ値でもかまわない。インターネット全体で重ならないのはグローバル IP アドレス。インターネットと通信するときは、ルータがグローバル IP アドレスに変換する。","p":"正しいものを選びなさい。","m":"難易度 ★★★ 発展"},{"g":"network","q":"IPv4 アドレスのうち、上位24ビットがネットワーク部、残りの8ビットがホスト部であるネットワークがある。ホスト部のビットがすべて0のアドレスとすべて1のアドレスは機器に割り当てられないとき、このネットワークで機器に割り当てられるアドレスは最大いくつか。","c":["254","256","255","16777214"],"a":0,"e":"ホスト部は8ビットなので 2の8乗＝256 通り。すべて0とすべて1の2つを除いて 256−2＝254。256 は除く分を引かなかった場合、255 は1つしか引かなかった場合、16777214 はネットワーク部の24ビットで計算した場合（2の24乗−2）。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"},{"g":"network","q":"送信側で、7ビットのデータの末尾に1ビットを付け、8ビット全体の1の個数が偶数になるようにして送る（偶数パリティ）。受信した次の8ビットのうち、誤りがあると判定されるものはどれか。","c":["11100101","10110010","01101100","00011011"],"a":0,"e":"偶数パリティでは、正しく届いたデータの1の個数は偶数になる。11100101 は1が5個で奇数なので、どこかのビットが反転したと判定できる。ほかの3つは1がどれも4個で偶数なので、誤りは検出されない。1の個数を数え間違えないよう、1つずつ印をつけて数える。","p":"正しいものを選びなさい。","m":"難易度 ★★★ 発展"},{"g":"data","q":"データベースの表で、各レコードを1つに特定するために使う、値が重複しない項目を何というか。","c":["主キー","外部キー","フィールド","レコード"],"a":0,"e":"レコードを1つに特定できる、値が重複しない項目が主キー（生徒番号など）。外部キーは別の表の主キーを参照する項目で、重複してもよい。フィールドは表の列（項目）そのもの、レコードは表の1行分のデータを指す。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"データを行と列からなる表で管理し、共通する項目を使って複数の表を関連づけるデータベースを何というか。","c":["リレーショナルデータベース","キー・バリュー型データベース","ドキュメント型データベース","グラフ型データベース"],"a":0,"e":"表の形でデータを持ち、共通の項目で表どうしを関連づけるのがリレーショナルデータベース。キー・バリュー型、ドキュメント型、グラフ型は、表の形にとらわれずにデータを持つ NoSQL と呼ばれるデータベースの種類。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"血液型（A型・B型・O型・AB型）のデータは、どの尺度水準に当たるか。","c":["名義尺度","順序尺度","間隔尺度","比例尺度"],"a":0,"e":"血液型は区別するための分類で、順序も大小もないので名義尺度。順序尺度は満足度や順位のように順番に意味があるもの。間隔尺度と比例尺度は数値の差に意味がある量的データで、血液型には当てはまらない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"6人の小テストの得点が次のようになった。得点の平均値はいくつか。","c":["7点","7.5点","8.4点","6.5点"],"a":0,"e":"合計は 8+3+9+5+10+7＝42 で、6人で割って平均値は7点。7.5点は小さい順に並べたときの中央値と取り違えた場合、8.4点は人数を1人少なく数えて5で割った場合、6.5点は最大値と最小値の平均（(10+3)÷2）を求めた場合。","p":"次の問いに答えなさい。","k":"8, 3, 9, 5, 10, 7","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"8人の1週間の読書時間（時間）が次のようになった。中央値はいくつか。","c":["10.5時間","11.5時間","9時間","13時間"],"a":0,"e":"小さい順に並べると 5, 6, 8, 9, 12, 15, 20, 29。個数が偶数なので、真ん中の2つ（9と12）の平均で 10.5時間。11.5時間は並べずに4番目と5番目（8と15）の平均をとった場合、9時間は真ん中の片方だけをとった場合、13時間は平均値（104÷8）を求めた場合。","p":"次の問いに答えなさい。","k":"12, 5, 20, 8, 15, 9, 29, 6","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"オープンデータの説明として、正しいものはどれか。","c":["誰でも二次利用できるルールで、機械で読み取りやすい形式で公開されたデータ","誰でも閲覧できるが、二次利用は禁止するルールで公開されたデータ","誰でも二次利用できるルールで、印刷用の画像など人が読む形式だけで公開されたデータ","登録した人だけが二次利用できるルールで、機械で読み取りやすい形式で公開されたデータ"],"a":0,"e":"オープンデータは、国や自治体などが、誰でも自由に二次利用できるルールで、CSV など機械で読み取りやすい形式で公開したデータ。閲覧できても二次利用が禁止されていれば当たらない。画像だけではプログラムで扱いにくい。利用者を限る場合もオープンデータとはいえない。","p":"正しいものを選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"2つの量の散布図で、一方の値が大きいほど他方の値が小さくなる傾向が見られるとき、この関係を何というか。","c":["負の相関","正の相関","相関がない","因果関係"],"a":0,"e":"一方が大きいほど他方が小さい（点が右下がりに並ぶ）関係は負の相関。一方が大きいほど他方も大きい（右上がり）のが正の相関。傾向が見られない場合は相関がないという。散布図の傾向だけでは、一方が他方の原因である因果関係かどうかは分からない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"次のうち、量的データに当たるものはどれか。","c":["通学にかかる時間（分）","出席番号","郵便番号","部活動の満足度（1:不満〜5:満足）"],"a":0,"e":"通学時間は、足したり平均したりすることに意味がある量的データ。出席番号と郵便番号は数字で書かれているが、区別するための記号なので質的データ（名義尺度）。満足度は順番に意味がある質的データ（順序尺度）。","p":"正しいものを選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"data","q":"気温（℃）のデータは、どの尺度水準に当たるか。","c":["間隔尺度","比例尺度","順序尺度","名義尺度"],"a":0,"e":"気温は差（何度高いか）に意味があるが、0℃は「温度がない」ことを表さず、20℃が10℃の2倍の暑さともいえないので間隔尺度。0が「ない」を表し比にも意味がある比例尺度（身長、時間など）と取り違えやすい。順序尺度と名義尺度は質的データ。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"data","q":"次の5つのデータのうち、7 を 50 に書き換えた。平均値と中央値はどう変わるか。","c":["平均値は大きくなり、中央値は変わらない","平均値は変わらず、中央値は大きくなる","平均値も中央値も大きくなる","平均値も中央値も変わらない"],"a":0,"e":"平均値は 25÷5＝5 から 68÷5＝13.6 に大きくなる。中央値は小さい順に並べた真ん中の値で、書き換えても真ん中は 5 のまま変わらない。このように、外れ値の影響は平均値には大きく出るが、中央値にはほとんど出ない。","p":"正しいものを選びなさい。","k":"3, 4, 5, 6, 7","m":"難易度 ★★☆ 標準"},{"g":"data","q":"相関係数について述べた文として、正しいものはどれか。","c":["−1 から 1 までの値をとり、絶対値が 1 に近いほど直線的な関係が強い","0 から 1 までの値をとり、1 に近いほど直線的な関係が強い","−1 から 1 までの値をとり、0 に近いほど直線的な関係が強い","−1 から 1 までの値をとり、−1 に近いほど直線的な関係が弱い"],"a":0,"e":"相関係数は −1 から 1 の値をとる。正負は右上がりか右下がりかを表し、関係の強さは絶対値で見る。−1 に近いのは強い負の相関で、関係が弱いわけではない。0 に近いほど直線的な関係は弱い。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"data","q":"ある町で、1日のアイスクリームの売上個数と水難事故の件数との間に、強い正の相関が見られた。このことからいえることとして、最も適切なものはどれか。","c":["気温など別の要因が両方に影響しうるので、因果関係があるとは言えない","アイスクリームの販売を減らせば、水難事故の件数は減ると言える","水難事故が増えたことが原因で、アイスクリームが売れたと言える","相関係数が 1 ではないので、2つの量には関係がないと言える"],"a":0,"e":"暑い日にはアイスクリームも売れ、水辺に出かける人も増える。このように別の要因が両方を増やすと、直接の関係がなくても相関が出る（見かけの相関）。相関だけでは因果関係もその向きも決められない。相関係数が 1 でなくても、強い相関は関係の強さを表す。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"data","q":"4組のデータについて相関係数を求めた。散布図にしたとき、点が右下がりの直線に最も近く並ぶのはどれか。","c":["−0.9","0.9","−0.3","0.2"],"a":0,"e":"右下がりは負の相関で、直線に近いほど相関係数の絶対値が 1 に近い。よって −0.9。0.9 は直線に近いが右上がり。−0.3 は右下がりだが関係が弱い。0.2 は0に近く、直線的な関係はほとんどない。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"data","q":"テキストマイニングで、文章を意味をもつ最小の単位の語に区切り、それぞれの品詞を判別する処理を何というか。","c":["形態素解析","テキストマイニング","ワードクラウド","共起ネットワーク"],"a":0,"e":"文章を単語に区切って品詞を判別する処理が形態素解析で、テキストマイニングの最初の段階。テキストマイニングは文章から傾向を取り出す分析全体を指す。ワードクラウドは出現回数の多い語を大きく表示する図、共起ネットワークはいっしょに出てくる語を線で結んだ図。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"data","q":"リレーショナルデータベースの操作のうち、表から条件に合う行（レコード）だけを取り出す操作を何というか。","c":["選択","射影","結合","並べ替え"],"a":0,"e":"条件に合う行を取り出すのが選択。必要な列（フィールド）だけを取り出すのが射影で、行と列を取り違えやすい。結合は共通の項目を使って複数の表をつなぐ操作、並べ替えは行の順番を変える操作で、行を絞り込むものではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"data","q":"5段階（1〜5）で答えるアンケートで、未回答の人がいたので、その人の回答を 0 として平均値を計算した。回答した人だけで計算した平均値と比べて、どうなるか。","c":["小さくなる","大きくなる","変わらない","未回答の人数によって、大きくなる場合も小さくなる場合もある"],"a":0,"e":"回答はどれも1以上なので、0 を加えると合計は増えないのに人数だけが増え、平均値は必ず小さくなる。未回答が何人でも小さくなる向きは同じ。このような欠損値は 0 とせず、除いて計算するなど扱い方を決めておく。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"data","q":"8人の値が次のようになった。第1四分位数を小さいほうの半分（4個）の中央値、第3四分位数を大きいほうの半分（4個）の中央値とするとき、四分位範囲はいくつか。","c":["8.5","17","9","4.25"],"a":0,"e":"小さい順に並べると 1, 3, 6, 7, 9, 12, 14, 18。第1四分位数は (3+6)÷2＝4.5、第3四分位数は (12+14)÷2＝13 で、四分位範囲は 13−4.5＝8.5。17 は範囲（最大値−最小値）、9 は各半分の中央値をとらず2番目と6番目の値の差（12−3）にした場合、4.25 は四分位範囲を2で割った場合。","p":"次の問いに答えなさい。","k":"12, 3, 18, 7, 1, 14, 9, 6","m":"難易度 ★★★ 発展"},{"g":"data","q":"4人の得点が次のようになった。得点の分散はいくつか。分散は、各値と平均値の差（偏差）を2乗した値の平均とする。","c":["5","20","30","2.24"],"a":0,"e":"平均値は 20÷4＝5。偏差は −3, 3, −1, 1 で、2乗すると 9, 9, 1, 1。その平均は 20÷4＝5。20 は2乗の合計を人数で割り忘れた場合、30 は偏差ではなく得点そのものを2乗して平均した場合、2.24 は分散の平方根である標準偏差を答えた場合。","p":"次の問いに答えなさい。","k":"2, 8, 4, 6","m":"難易度 ★★★ 発展"},{"g":"data","q":"次の5組のデータ x, y の相関係数はいくつか。相関係数は、x と y の共分散を、x の標準偏差と y の標準偏差の積で割った値とする。共分散は偏差の積の平均である。","c":["0.8","1.6","0.4","−0.8"],"a":0,"e":"x, y の平均値はどちらも3。偏差の積は 2, 2, 0, 0, 4 で、共分散は 8÷5＝1.6。x と y の分散はどちらも 10÷5＝2 なので、標準偏差の積は 2。相関係数は 1.6÷2＝0.8。1.6 は共分散のまま答えた場合、0.4 は分散の積（4）で割った場合、−0.8 は符号を取り違えた場合。","p":"次の問いに答えなさい。","k":"x  1  2  3  4  5\ny  2  1  4  3  5","m":"難易度 ★★★ 発展"},{"g":"data","q":"生徒表と部活表を部活ID で結合したとき、部活名が「陸上」になる生徒の氏名をすべて挙げたものはどれか。","c":["青木と江藤","井上と大野","井上","青木"],"a":0,"e":"部活表で「陸上」の部活ID は B2。生徒表で部活ID が B2 の行は青木と江藤。井上と大野は部活表の1行目 B1（吹奏楽）と対応させた場合、井上は部活表で陸上が2行目にあることから生徒表の2行目と対応させた場合、青木は最初に見つけた1人で探すのをやめた場合。","p":"次の2つの表を読んで答えなさい。","k":"生徒表\n番号  氏名  部活ID\n 1    青木   B2\n 2    井上   B1\n 3    上田   B3\n 4    江藤   B2\n 5    大野   B1\n\n部活表\n部活ID  部活名\n B1     吹奏楽\n B2     陸上\n B3     美術","m":"難易度 ★★★ 発展"},{"g":"model","q":"現実の物事や現象から、目的に必要な要素だけを取り出して単純化し、わかりやすく表したものを何というか。","c":["モデル","シミュレーション","アルゴリズム","プロトタイプ"],"a":0,"e":"目的に必要な要素を取り出して単純化して表したものがモデル。シミュレーションは、そのモデルを使って変化を模擬的に調べること。アルゴリズムは問題を解く手順、プロトタイプは製品を作る前に試しに作る試作品で、どちらも単純化した表現そのものではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"モデルを使って、現実には試しにくい条件で、現象がどのように変わるかを模擬的に調べることを何というか。","c":["シミュレーション","モデル化","可視化","最適化"],"a":0,"e":"モデルを動かして結果を調べることがシミュレーション。モデル化は現実からモデルを作る段階で、シミュレーションの前に行う。可視化はデータや結果をグラフなどで見える形にすること、最適化は条件の中で最もよい答えを探すこと。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"建物の模型や、風の当たり方を調べるための自動車の縮小模型のように、実物を拡大・縮小して表したモデルを何というか。","c":["物理モデル","図的モデル","数式モデル","確率的モデル"],"a":0,"e":"実物を拡大・縮小したり、実物そのものを使ったりするモデルが物理モデル。図的モデルは状態遷移図などの図で、数式モデルは式で表したもの。確率的モデルは偶然の要素を含むかどうかによる分類で、表し方による分類ではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"時間の経過にともなって、状態が変化していく様子を表すモデルを何というか。","c":["動的モデル","静的モデル","確定的モデル","確率的モデル"],"a":0,"e":"時間とともに変化する様子を表すのが動的モデル（毎年の預金額の変化など）。静的モデルは時間の影響を考えないモデル（代金＝価格×個数など）。確定的モデルと確率的モデルは、偶然の要素を含むかどうかによる分類で、時間による分類ではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"銀行の窓口やレジのように、客が到着してサービスを受けるまで並んで待つ様子を表すモデルを何というか。","c":["待ち行列モデル","在庫管理モデル","物理モデル","静的モデル"],"a":0,"e":"到着した客が並んで順番を待つようすを表すのが待ち行列モデル。在庫管理モデルは商品の仕入れと在庫量の変化を表すモデル。物理モデルは模型などで表すモデルの分類。待ち行列は時間とともに列の長さが変わるので、静的モデルではなく動的モデル。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"乱数を使った試行を多数回くり返して、確率や面積などの近似値を求める方法を何というか。","c":["モンテカルロ法","最小二乗法","二分探索","回帰分析"],"a":0,"e":"乱数で多数回試して近似値を求めるのがモンテカルロ法。最小二乗法はデータに最もよく合う直線などを求める方法で、回帰分析で使われる。二分探索は並んだデータを半分ずつに絞って探す方法。どれも乱数のくり返しで近似値を求めるものではない。","p":"次の説明に当てはまる用語を選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"モンテカルロ法で近似値を求めるとき、乱数で試す回数を増やすことについて述べた文として、正しいものはどれか。","c":["近似値が真の値に近づく傾向がある","近似値が毎回必ず同じ値になる","近似値が必ず真の値に一致する","試す回数を増やしても誤差は変わらない"],"a":0,"e":"試す回数を増やすと、近似値は真の値に近づいていく傾向がある。ただし乱数を使うので、実行のたびに値は少しずつ変わり、真の値にぴったり一致するとは限らない。回数が少ないときほど、誤差は大きくなりやすい。","p":"正しいものを選びなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"モデル化とシミュレーションを行う手順を、順に並べたものとして正しいものはどれか。","c":["イ → エ → ウ → ア","エ → イ → ウ → ア","イ → ウ → エ → ア","イ → エ → ア → ウ"],"a":0,"e":"まず何を調べるかという目的を決め（イ）、目的に必要な要素と関係を明らかにし（エ）、それを図や式のモデルに表し（ウ）、シミュレーションして結果を検証する（ア）。要素は目的によって選ぶので、エはイの後。モデルを表す前にシミュレーションはできない。","p":"次のア〜エを並べかえて答えなさい。","k":"ア　モデルを使ってシミュレーションし、結果を検証する\nイ　目的を明確にする\nウ　モデルを図や式で表す\nエ　対象を構成する要素とその関係を明らかにする","m":"難易度 ★☆☆ 基礎"},{"g":"model","q":"確率的モデルに当たるものはどれか。","c":["1日に来店する客の数を乱数で決めて、レジの混雑を調べるモデル","毎年一定の利率で利息がつくときの、預金額の変化を表すモデル","教室の机の配置を縮小して表した模型","商品の価格と個数から、代金の合計を求める式"],"a":0,"e":"偶然の要素を含み、乱数などで表すモデルが確率的モデル。客の数を乱数で決めるモデルはこれに当たる。一定の利率の預金は、同じ条件なら毎回同じ結果になる確定的モデル（時間で変わるので動的）。縮小模型と代金の式も偶然の要素を含まない。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"model","q":"10000円を年利10%で預け、毎年つく利息を元金に加えていく（複利）。3年後の預金額はいくらか。利息にかかる税金は考えない。","c":["13310円","13000円","12100円","14641円"],"a":0,"e":"複利では毎年、前の年の預金額に1.1をかける。10000→11000→12100→13310円。13000円は毎年10000円の10%（1000円）だけを加える単利で計算した場合、12100円は2年後、14641円は4年後で、年数を1つずらした場合。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"model","q":"表は、扇風機のボタン操作と状態の移り変わりを表している。停止の状態から「運転」「運転」「運転」「運転」「切」「運転」「運転」の順にボタンを押したとき、最後の状態はどれか。","c":["中","強","弱","停止"],"a":0,"e":"状態は 弱→中→強→弱→停止→弱→中 と移るので、最後は中。強は「切」を押したことを見落とし、停止に戻さずに数え続けた場合。弱は最後の「運転」を1回数え落とした場合。停止は「切」の後の操作を見落とした場合。","p":"次の状態遷移表を読んで答えなさい。","k":"現在の状態   「運転」を押す   「切」を押す\n  停止            弱              停止\n  弱              中              停止\n  中              強              停止\n  強              弱              停止","m":"難易度 ★★☆ 標準"},{"g":"model","q":"表の4人の客が窓口に来る。窓口が1つで、客は到着順に並び、前の客が終わるとすぐに次の客が窓口を使う。4人の待ち時間の合計は何分か。待ち時間は、到着してから窓口を使い始めるまでの時間とする。","c":["9分","5分","8分","12分"],"a":0,"e":"A は0分から4分、B は4分から7分（待ち3分）、C は7分から9分（待ち5分）、D は8分に着き9分から使う（待ち1分）。合計 0+3+5+1＝9分。5分は C の開始を B の到着時刻＋利用時間（4分）とした場合、8分は D の待ちを0分とした場合、12分は D が終わる時刻。","p":"次の問いに答えなさい。","k":"客   到着時刻(分)   窓口の利用時間(分)\n A        0                4\n B        1                3\n C        2                2\n D        8                3","m":"難易度 ★★☆ 標準"},{"g":"model","q":"1辺の長さが1の正方形の中に、乱数で1000個の点を打った。そのうち、正方形の1つの頂点を中心とする半径1の円の内側（円の4分の1の部分）に入った点は780個だった。この結果から求めた円周率の近似値はいくつか。","c":["3.12","0.78","1.56","0.88"],"a":0,"e":"正方形の面積は1、円の4分の1の面積は π÷4。点が入る割合 780÷1000＝0.78 が π÷4 に近いので、π は 0.78×4＝3.12 と求められる。0.78 は4倍を忘れた場合、1.56 は半円と考えて2倍した場合、0.88 は円の外側に入った220個を使った場合。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"model","q":"乱数() が0以上1未満の値を返し、整数(x) が x の小数点以下を切り捨てた値を返すとき、1〜6 の整数を同じ確率で作る式はどれか。","c":["整数(乱数() * 6) + 1","整数(乱数() * 6)","整数(乱数() * 7)","整数(乱数() * 5) + 1"],"a":0,"e":"乱数()*6 は0以上6未満なので、切り捨てると 0〜5 の6通りが同じ確率で出る。1 を足して 1〜6 になる。整数(乱数()*6) は 0〜5 で、+1 を忘れた場合。整数(乱数()*7) は 0〜6 の7通りで0も出る。整数(乱数()*5)+1 は 1〜5 で6が出ない。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"model","q":"水そうに毎分3Lの水を入れ、同時に毎分1Lがもれるようすを表したプログラムである。実行したとき、表示される値はいくつか。","c":["10","11","9","15"],"a":0,"e":"水は1分ごとに2Lずつ増え、10→12→…→30 となる。30 になった時点で「mizu < 30」が成り立たなくなり、繰り返しは10回で終わる。11 は条件を「30 以下の間」と読み、30 のときももう1回繰り返した場合。9 は回数を1回少なく数えた場合。15 は初めの10Lを考えずに 30÷2 とした場合。","p":"次のプログラムを読んで答えなさい。","k":"mizu = 10\nfun = 0\nmizu < 30 の間繰り返す:\n｜ mizu = mizu + 3 - 1\n⎿ fun = fun + 1\n表示する(fun)","m":"難易度 ★★☆ 標準"},{"g":"model","q":"シミュレーションの結果の扱い方として、最も適切なものはどれか。","c":["結果を現実のデータと比べ、ずれが大きければモデルを見直す","結果を現実のデータと比べ、ずれが大きければ現実のデータを直す","結果が現実のデータとずれても、モデルに従って結果のほうを採用する","モデルは単純化したものなので、結果を現実のデータと比べる必要はない"],"a":0,"e":"モデルは現実を単純化したものなので、省いた要素の影響で結果がずれることがある。そのため結果を現実のデータと比べて検証し、ずれが大きければモデルを見直す。現実のデータを結果に合わせて直すのは誤り。単純化しているからこそ、比べて確かめる必要がある。","p":"正しいものを選びなさい。","m":"難易度 ★★☆ 標準"},{"g":"model","q":"天気が表の確率で移り変わるとする。今日が晴れのとき、2日後が晴れである確率はいくつか。","c":["0.61","0.49","0.7","0.12"],"a":0,"e":"2日後に晴れになる道すじは「晴れ→晴れ→晴れ」と「晴れ→雨→晴れ」の2つ。0.7×0.7＝0.49 と 0.3×0.4＝0.12 を足して 0.61。0.49 と 0.12 は、どちらか一方の道すじだけを考えた場合。0.7 は1日後の確率を答えた場合。","p":"次の問いに答えなさい。","k":"ある日の天気 翌日が晴れ   翌日が雨\n  晴れ          0.7         0.3\n  雨            0.4         0.6","m":"難易度 ★★★ 発展"},{"g":"model","q":"表の4人の客が窓口に来る。窓口を2つにして、空いている窓口があればすぐに使い、両方ふさがっていれば先に空いた窓口を使うことにした。4人の待ち時間の合計は何分か。待ち時間は、到着してから窓口を使い始めるまでの時間とする。","c":["2分","0分","4.5分","9分"],"a":0,"e":"A は窓口1を0〜4分、B は窓口2を1〜4分に使う。C は2分に着くが両方ふさがっているので、空く4分まで待つ（待ち2分）。D は8分に着き、すぐ使える。合計は2分。0分は窓口が2つなら誰も待たないと考えた場合、4.5分は窓口1つのときの9分を半分にした場合、9分は窓口の数で変わらないと考えた場合。","p":"次の問いに答えなさい。","k":"客   到着時刻(分)   窓口の利用時間(分)\n A        0                4\n B        1                3\n C        2                2\n D        8                3","m":"難易度 ★★★ 発展"},{"g":"model","q":"モンテカルロ法で円周率の近似値を求めるプログラムである。乱数() は0以上1未満の値を返す。点(x, y) が、原点を中心とする半径1の円の内側にあるときだけ kosuu を増やすには、空欄［ア］に何を入れればよいか。","c":["x * x + y * y < 1","x + y < 1","x * x + y * y > 1","x * 2 + y * 2 < 1"],"a":0,"e":"原点からの距離が1未満なら円の内側。距離の2乗は x*x + y*y なので、x * x + y * y < 1 とする。x + y < 1 は円ではなく直線の下側。> 1 は円の外側を数えてしまう。x * 2 + y * 2 は2乗を2倍と取り違えている。","p":"次のプログラムの空欄に入るものを選びなさい。","k":"kosuu = 0\ni を 1 から 1000 まで 1 ずつ増やしながら繰り返す:\n｜ x = 乱数()\n｜ y = 乱数()\n｜ もし ［ア］ ならば:\n⎿ ⎿ kosuu = kosuu + 1\n表示する(4 * kosuu / 1000)","m":"難易度 ★★★ 発展"},{"g":"model","q":"数直線上の点が、コインを投げて表なら +1、裏なら −1 だけ動く。0 から始めて4回投げたとき、点がちょうど 0 に戻っている確率はいくつか。表と裏は同じ確率で出るとする。","c":["3/8","1/2","1/8","1/16"],"a":0,"e":"4回の出方は全部で16通り。0 に戻るのは表と裏が2回ずつのときで、その並び方は6通りなので 6/16＝3/8。1/2 は表と裏が半々で出るから、と考えた場合。1/8 は表裏が交互に出る2通りだけ数えた場合、1/16 は表裏表裏の1通りだけ数えた場合。","p":"次の問いに答えなさい。","m":"難易度 ★★★ 発展"}];
+  var GUIDES = {"shakai":"## 情報社会と法 ― 学習ガイド\n\n### 1. 情報の特性\n\n| 性質 | 意味 | 例 |\n|---|---|---|\n| 残存性 | 人に伝えても元の人の手元から消えない | 友人に教えた話は自分も覚えている |\n| 複製性 | 簡単に、劣化なくコピーできる | 写真データを何枚でも複製できる |\n| 伝播性 | 短時間で広い範囲に伝わる | SNSの投稿が一晩で拡散する |\n\nいったん公開した情報は消しきれない（デジタルタトゥー）ので、投稿前に考えることが大切です。\n\n### 2. 個人情報の保護\n- **個人情報**: 生存する個人に関する情報で、特定の個人を識別できるもの（ほかの情報と容易に照合して識別できるものを含む）\n- **個人識別符号**: それだけで個人を識別できる符号。旅券番号・運転免許証番号・マイナンバー・指紋や顔のデータなど。携帯電話番号やクレジットカード番号は含まれない\n- **要配慮個人情報**: 人種・信条・病歴・犯罪の経歴など。取得には原則として本人の同意が必要\n- 個人データを第三者に渡すときは原則として本人の同意が必要（人の生命・身体などを守るために必要で、同意を得るのが難しい場合などは例外）\n- **匿名加工情報**は個人を識別できず元に戻せないように加工したもの、**仮名加工情報**はほかの情報と照合しなければ識別できないように加工したもの\n\n### 3. 知的財産権\n| 種類 | 発生 | 例 |\n|---|---|---|\n| 著作権 | 創作した時点で自動的に発生（登録不要） | 文章・音楽・絵・プログラム |\n| 産業財産権 | 特許庁への出願・登録が必要 | 特許権（発明）・実用新案権（小さな工夫）・意匠権（見た目のデザイン）・商標権（マーク・名称） |\n\n- 著作権（財産権）の保護期間は、原則として著作者の死後70年\n- 著作者人格権（公表権・氏名表示権・同一性保持権）は譲渡できない\n- 歌手や演奏家などには**著作隣接権**がある\n\n### 4. 引用の条件\n許諾なしに他人の著作物を使える例外の一つが「引用」です。\n1. 引用部分をかぎかっこなどで**はっきり区別**する\n2. 自分の文章が**主**、引用部分が**従**\n3. 引用する**必然性**があり、必要な範囲にとどめる\n4. 原文を**改変しない**（言い換えたら引用ではない）\n5. **出典を示す**\n\nほかに「私的使用のための複製」「学校の授業での複製」などの例外があります。ただし、違法にアップロードされたと知りながらのダウンロードは私的使用でも認められません。\n\n### 5. クリエイティブ・コモンズ（CC）\n作者が「この条件を守れば使ってよい」と示すしくみです。\n- **表示（BY）**: 作者名などを表示する\n- **非営利（NC）**: 営利目的で使わない\n- **改変禁止（ND）**: 作品を改変しない\n- **継承（SA）**: 改変したら同じライセンスで公開する\n\n### 6. よくある誤り\n- 「引用するには許諾が必要」→ 条件を満たせば許諾は不要\n- 「著作権は登録して発生する」→ 登録が必要なのは産業財産権\n- 「友人のIDなら無断で使ってもよい」→ 不正アクセス禁止法違反。IDとパスワードを無断で他人に教えることも禁止\n\n### 7. 共通テストでの問われ方\n具体的な場面から「条件を満たすもの」「適切でないもの」を選ぶ形が中心です。**どの条件が欠けているか**を一つずつ確かめましょう。\n","security":"## 情報セキュリティ ― 学習ガイド\n\n### 1. 情報セキュリティの3要素\n| 要素 | 意味 | 損なわれる例 | 対策の例 |\n|---|---|---|---|\n| 機密性 | 許可された人だけが見られる | 成績が外部に漏れる | パスワード、暗号化、アクセス制限 |\n| 完全性 | 内容が正しく、改ざんされていない | 成績が勝手に書き換えられる | 電子署名、変更の記録 |\n| 可用性 | 必要なときに使える | サーバが止まって使えない | バックアップ、予備の機器、停電対策 |\n\n「漏れる＝機密性」「書き換えられる＝完全性」「使えない＝可用性」と結びつけて覚えましょう。\n\n### 2. マルウェアと攻撃の手口\n- **ウイルス**: ほかのプログラムに寄生して増える\n- **ワーム**: 寄生せず単独でネットワークを通じて増える\n- **トロイの木馬**: 役に立つソフトを装って入り込む（自分では増えない）\n- **ランサムウェア**: ファイルを暗号化し、元に戻す代わりに金銭を要求する\n- **フィッシング**: 本物を装ったメールなどで偽サイトに誘導し、IDやパスワードを入力させる\n- **ショルダーハッキング**: 画面や手元を後ろからのぞき見る（ソーシャルエンジニアリングの一つ）\n\n対策の基本は、OSやアプリの更新で**脆弱性**をふさぐこと、ネットワークから切り離したバックアップをとること、メールのリンクから重要な情報を入力しないことです。\n\n### 3. 認証\n認証の要素は3種類です。\n\n| 要素 | 例 |\n|---|---|\n| 知識 | パスワード、暗証番号、秘密の質問 |\n| 所持 | スマートフォン、ICカード |\n| 生体 | 指紋、顔 |\n\n**多要素認証**は、**種類の違う**要素を組み合わせます。「パスワード＋秘密の質問」は2回確認していても、どちらも知識なので多要素ではありません。\n\n### 4. 暗号\n| | 共通鍵暗号方式 | 公開鍵暗号方式 |\n|---|---|---|\n| 鍵 | 暗号化と復号に同じ鍵 | 受信者の公開鍵で暗号化し、受信者の秘密鍵で復号 |\n| 速さ | 速い | 遅い |\n| 課題 | 鍵を安全に渡すのが難しい | 公開鍵が本人のものか確かめる必要がある |\n| n人で必要な鍵 | n(n−1)÷2 個 | 2n 個（1人1組） |\n\n実際の通信では、本文は速い共通鍵で暗号化し、その共通鍵を公開鍵暗号方式で送る（ハイブリッド暗号）ことが多いです。\n\n### 5. 電子署名\n- 送信者が**自分の秘密鍵**で署名し、受信者は**送信者の公開鍵**で確かめる\n- わかること: 改ざんされていないこと、本人が作ったこと（あとで否定できない）\n- わからないこと: 内容を第三者から隠すこと（機密性は暗号化で守る）\n- 公開鍵が本人のものであることは、認証局が発行する**電子証明書**で確かめる\n\n### 6. よくある誤り\n- 公開鍵暗号で「送信者の鍵」で暗号化してしまう → 使うのは受信者の公開鍵\n- 電子署名と暗号化で、秘密鍵と公開鍵の役割を逆にする\n- 「https で始まるサイトは本物」→ 偽サイトも https を使える\n\n### 7. 共通テストでの問われ方\n事例と3要素の対応、どの鍵を使うか、鍵の個数の計算などが出ます。「誰の」「どちらの」鍵かを必ず言葉にして確かめましょう。\n","design":"## 情報デザイン ― 学習ガイド\n\n### 1. メディアの分類と特性\n| 分類 | 役割 | 例 |\n|---|---|---|\n| 表現のメディア | 情報をどう表すか | 文字・音声・画像・動画 |\n| 伝達のメディア | 情報をどう運ぶか | 電波・光ファイバ・紙 |\n| 記録のメディア | 情報をどう残すか | USBメモリ・DVD・紙 |\n\n文字は読み返しやすく正確に伝わりますが、感情は伝えにくい。音声は感情を伝えやすい一方、聞き逃すと確かめ直しにくい。目的と相手に合わせて選びます。\n\n### 2. だれもが使えるデザイン\n- **ユニバーサルデザイン**: 年齢や障害の有無にかかわらず、**はじめから**多くの人が使いやすいように設計する\n- **バリアフリー**: 高齢者や障害のある人にとっての**既存の障壁を取り除く**\n- **アクセシビリティ**: 障害の有無などにかかわらず、情報や機器を利用できる度合い\n- **ユーザビリティ**: 特定の利用者が目的を、効果的・効率的・満足して達成できる度合い\n- **フールプルーフ**: 誤った操作をしても事故にならない、または誤った操作ができない設計\n\nWebページでは、画像に代替テキストを付ける、動画に字幕を付ける、色だけで情報を区別しない、といった工夫がアクセシビリティを高めます。\n\n### 3. 色と文字\n- 色の三属性: **色相**（色合い）・**明度**（明るさ）・**彩度**（鮮やかさ）\n- 文字を読みやすくするには、背景と文字の**明度の差**を大きくする\n- 補色どうしで明るさが近いと、境目がちらついて読みにくい\n- 色覚の多様性に配慮し、色に加えて形・線の種類・文字でも区別する\n- 見出しやスライドには遠くから見やすいゴシック体、長い文章には明朝体がよく使われる\n\n### 4. 情報を整理して伝える\n| 手法 | 内容 | 例 |\n|---|---|---|\n| 抽象化 | 必要な要素だけを残し、ほかを省く | ピクトグラム、路線図 |\n| 可視化 | 数値や関係を図やグラフで見えるようにする | 棒グラフ、散布図 |\n| 構造化 | 情報の関係や順序を整理して示す | 見出し、箇条書き、表 |\n\n情報を並べる基準には、位置・五十音（アルファベット）・時間・分類・連続量（大小）があります。\n\nグラフは目的で選びます: 推移は折れ線グラフ、割合は円グラフや帯グラフ、2つの量の関係は散布図。\n\n配置の原則: **近接**（関係するものを近くに）、**整列**（端をそろえる）、**反復**（同じ形式を繰り返す）、**対比**（違いをはっきりさせる）。\n\n### 5. よくある誤り\n- バリアフリーとユニバーサルデザインを「どちらも同じ」と考える\n- 「目立たせたい」と強調を増やしすぎて、どこが大事かわからなくなる\n- 赤と緑など、色だけで区別する\n\n### 6. 共通テストでの問われ方\nWebページやポスター、案内表示などの具体例を示し、「どの工夫がどの考え方に当たるか」「改善として適切なものはどれか」を問う形が中心です。\n","digital":"## デジタル化 ― 学習ガイド\n\n### 1. アナログとデジタル\n- **アナログ**: 連続的に変化する量で表す（針の時計、温度計の液柱）\n- **デジタル**: 区切った飛び飛びの値（数値）で表す（数字表示の時計）\n\nデジタルの利点は、複製や転送で劣化しにくい、文字・音・画像を同じ0と1でまとめて扱える、誤りの検出や訂正がしやすいこと。一方、連続量を区切るので、元の情報の一部は失われます。\n\n### 2. 音のデジタル化（標本化 → 量子化 → 符号化）\n| 手順 | 内容 | 決めるもの |\n|---|---|---|\n| 標本化 | 一定の時間間隔で波の値を取り出す | 標本化周波数（1秒あたりの回数） |\n| 量子化 | 取り出した値を決められた段階の整数にそろえる | 量子化ビット数（nビットなら2のn乗段階） |\n| 符号化 | 整数を0と1の並びにする | ― |\n\n- 標本化周期＝1÷標本化周波数（例: 8000 Hz なら 0.000125 秒＝0.125 ミリ秒）\n- 元の音の最も高い周波数の**2倍より大きい**標本化周波数で標本化すると、元の波形を再現できる（標本化定理）\n- 量子化ビット数を増やすと誤差は小さくなるが、データ量は増える\n\n### 3. 画像のデジタル化\n- 画像を細かいマス（**画素**）に分け、各画素の色を数値で表す\n- 光の三原色（RGB）を重ねる**加法混色**: R＋G＝黄、G＋B＝シアン、R＋B＝マゼンタ、全部で白\n- RGB各8ビット（計24ビット）なら 2の24乗＝16,777,216 色\n- **ラスタ形式**は画素の並びで記録し、拡大するとぎざぎざ（ジャギー）が出る。**ベクタ形式**は座標や線の式で記録し、拡大してもなめらか\n\n### 4. 文字コード\n- 文字に番号を割り当てたもの。ASCII は1文字7ビットで 128 種類\n- 日本語には Shift_JIS、Unicode（UTF-8 など）がある。UTF-8 では英数字1バイト、多くのひらがな・漢字は3バイト\n- 作成時と表示時で文字コードが違うと**文字化け**が起こる\n\n### 5. 圧縮\n| | 可逆圧縮 | 非可逆圧縮 |\n|---|---|---|\n| 元に戻せるか | 完全に戻せる | 完全には戻せない |\n| 例 | ZIP、PNG | JPEG、MP3 |\n\n**ランレングス圧縮**は、同じ値の連続を「値＋個数」で表します。\n\n```\nWWWWBBBWW  →  W4B3W2\n```\n\n同じ値が続かないデータ（WBWB…）では、かえって長くなります。出現回数の多い文字に短い符号を割り当てる方法（ハフマン符号化）もあります。\n\n### 6. よくある誤り\n- 量子化ビット数 n を「n段階」や「2×n段階」とする → 2のn乗段階\n- 標本化と量子化の取り違え（時間を区切る／値を区切る）\n- 光の三原色（加法混色）と色の三原色（減法混色）の混同\n\n### 7. 共通テストでの問われ方\nデジタル化の手順の意味、ビット数と表せる段階数、圧縮の方法と効果などが、図や数値の例とともに問われます。数え方を式にして確かめる習慣をつけましょう。\n","computer":"## コンピュータのしくみ\n\n### 五大装置\n| 装置 | 働き | 例 |\n|---|---|---|\n| 入力装置 | データや命令を取り込む | キーボード、マウス、カメラ |\n| 出力装置 | 処理の結果を外に出す | ディスプレイ、プリンタ |\n| 記憶装置 | プログラムやデータを記憶する | 主記憶装置、補助記憶装置 |\n| 演算装置 | 計算や比較をする | CPU の一部 |\n| 制御装置 | 命令を解読し、各装置に指示を出す | CPU の一部 |\n\n**CPU ＝ 制御装置＋演算装置。** 主記憶装置は CPU の外にある。\nデータは「入力 → 主記憶 → 演算 → 主記憶 → 出力」と流れる。\n\n### 記憶装置の速さと容量\n速い・小容量 ← キャッシュメモリ ＞ メインメモリ ＞ SSD ＞ ハードディスク → 遅い・大容量\n\n- 主記憶装置（メインメモリ）は電源を切ると内容が消える（揮発性）\n- SSD や USB メモリのフラッシュメモリは、電源を切っても内容が残る（不揮発性）\n\n### ソフトウェア\n- **OS**：メモリや CPU の割り当て、周辺機器・ファイルの管理など共通の働き\n- **アプリケーションソフトウェア**：文書作成など利用者の目的に応じた作業\n- **デバイスドライバ**：周辺機器を OS から使えるようにする\n\nCPU が直接実行できるのは **機械語** だけ。高水準言語は、実行前にまとめて変換する **コンパイラ方式** か、1命令ずつ解釈して実行する **インタプリタ方式** で動かす。\n\n### CPU の動作とクロック周波数\nCPU は「命令の取り出し → 解読 → 実行」をくり返す。次の命令の番地を持つのが **プログラムカウンタ**。\nクロック周波数は1秒あたりのクロック信号の回数（Hz）。\n\n```\n3GHz の CPU、1命令にクロック2回分かかる\n1秒間の命令数 ＝ 30億 ÷ 2 ＝ 15億\nクロック1回分の時間 ＝ 1 ÷ 30億 秒\n```\n\n### 演算誤差\n| 名前 | 起こる場面 |\n|---|---|\n| 丸め誤差 | 表せない桁を切り捨て・四捨五入する |\n| オーバーフロー | 結果が表せる範囲を超える（4ビットで19など） |\n| 情報落ち | 大きい数＋とても小さい数で、小さい数が消える |\n| 桁落ち | 近い値どうしの引き算で有効数字が減る |\n\n10進数の 0.1 は2進数では無限小数になるので、0.1 を10回足しても 1 ちょうどにならないことがある。\n\n### よくある誤り\n- 主記憶装置を CPU に含めてしまう\n- クロック周波数と標本化周波数を混同する（どちらも Hz）\n- 周期を求めるとき逆数をとり忘れる\n- コンパイラとインタプリタの説明を逆にする\n\n### 共通テストでの問われ方\n装置の働きの組み合わせ、簡単な CPU の命令を1つずつたどって主記憶の値を答える問題、クロック周波数からの計算、演算誤差の原因を選ぶ問題などが考えられる。命令の表は1行ずつ、レジスタの値を書き出しながら追う。\n","network":"## 情報通信ネットワーク\n\n### LAN と WAN\n- **LAN**：学校・家庭・建物の中など限られた範囲のネットワーク\n- **WAN**：離れた LAN どうしを、通信事業者の回線などで結んだ広い範囲のネットワーク\n- **ルータ**：異なるネットワークをつなぎ、宛先を見てパケットの転送先を決める機器\n- **ISP**：インターネットへの接続を提供する事業者\n\n### パケット交換\nデータを小さな **パケット** に分け、宛先などの情報を付けて送る。1本の回線を多くの通信で共有でき、パケットごとに別の経路を通ることもある。\n通信の間、回線を占有するのは **回線交換**（昔の電話）。\n\n### IP アドレスと DNS\n- IPv4 は **32ビット**。8ビットずつ区切り `192.168.1.10` のように10進数で書く（各区切りは0〜255）\n- IPv4 のアドレスが足りなくなり、**128ビット** の IPv6 が使われるようになった\n- 家庭の LAN では **プライベート IP アドレス** を使う。別の LAN と同じ値でもよく、インターネットへはルータを通して出る\n- **DNS**：`www.example.jp` のようなドメイン名を IP アドレスに対応づけるしくみ\n\n### TCP/IP の4階層\n| 階層 | おもなプロトコル | 働き |\n|---|---|---|\n| アプリケーション層 | HTTP、SMTP、POP、IMAP | Web やメールなどのサービス |\n| トランスポート層 | TCP | 欠けや順番を確認し、届かなければ再送 |\n| インターネット層 | IP | 宛先のネットワークまで中継 |\n| ネットワークインタフェース層 | イーサネット など | 同じネットワーク内の転送 |\n\n### Web とメール\n- Web ページの表示：DNS で IP アドレスを調べる → HTTP で要求 → サーバが HTML などを返す → ブラウザが表示\n- HTTPS は HTTP の通信を暗号化したもの\n- メールの送信・サーバ間の転送は **SMTP**、受信は **POP**（端末に取り込む）と **IMAP**（サーバに残して読む）\n- **BCC** に入れた宛先は、ほかの受信者に表示されない\n\n### 通信速度の計算\nbps は1秒間に送れる **ビット** 数。ファイルの大きさ（バイト）は **8倍してビットにする**。\n\n```\n50MB のファイルを 20Mbps で送る\n50 × 8 ＝ 400Mb\n400 ÷ 20 ＝ 20秒\n伝送効率 80% なら 400 ÷ (20 × 0.8) ＝ 25秒\n```\n\n### 誤り検出（パリティ）\n偶数パリティでは、1の個数が偶数になるように1ビットを付けて送る。受け取ったデータの1の個数が奇数なら誤りがあると分かる。\n\n### よくある誤り\n- バイトとビットを取り違え、8倍を忘れる\n- TCP と IP の働きを逆に覚える\n- POP と IMAP、SMTP の向き（送信か受信か）を混同する\n- 伝送効率を、時間にかけてしまう（正しくは速度にかける）\n\n### 共通テストでの問われ方\nWeb ページが表示されるまでの手順の並べかえ、プロトコルと働きの組み合わせ、通信時間の計算、ネットワーク部とホスト部から接続できる台数を考える問題などが考えられる。単位の条件（1MB＝1000KB など）は問題文で必ず確かめる。\n","data":"## データの活用\n\n### データベース\n- **リレーショナルデータベース**：データを行（レコード）と列（フィールド）の表で管理し、共通の項目で表どうしを関連づける\n- **主キー**：レコードを1つに特定する、値が重複しない項目（生徒番号など）\n- **外部キー**：別の表の主キーを参照する項目\n- 操作：**選択**（条件に合う行を取り出す）、**射影**（必要な列を取り出す）、**結合**（共通の項目で表をつなぐ）\n- 表の形にこだわらない NoSQL（キー・バリュー型など）もある\n\n### データの種類と尺度水準\n| 種類 | 尺度 | 例 | できること |\n|---|---|---|---|\n| 質的データ | 名義尺度 | 血液型、出席番号、郵便番号 | 同じか違うか |\n| 質的データ | 順序尺度 | 満足度（1〜5）、順位 | 大小の順 |\n| 量的データ | 間隔尺度 | 気温（℃）、西暦 | 差に意味がある |\n| 量的データ | 比例尺度 | 身長、時間、金額 | 比にも意味がある（0が「ない」） |\n\n数字で書いてあっても、出席番号や満足度は質的データ。\n\n### オープンデータ\n誰でも**二次利用できるルール**で、**機械で読み取りやすい形式**（CSV など）で公開されたデータ。\n\n### 代表値と散らばり\n```\n得点 8, 3, 9, 5, 10, 7\n平均値 42 ÷ 6 ＝ 7\n並べると 3, 5, 7, 8, 9, 10 → 中央値は (7＋8) ÷ 2 ＝ 7.5\n```\n- 中央値は**小さい順に並べてから**真ん中を見る。個数が偶数なら真ん中2つの平均\n- 外れ値があると平均値は大きく動くが、中央値はほとんど動かない\n- 分散は「偏差の2乗の平均」、標準偏差は分散の正の平方根\n- 四分位範囲＝第3四分位数−第1四分位数。箱ひげ図の箱の長さに当たる\n- 未回答を 0 として計算すると、平均値が実際より小さくなる\n\n### 散布図と相関\n- 右上がりの傾向＝正の相関、右下がり＝負の相関\n- 相関係数は −1〜1。**絶対値**が1に近いほど直線的な関係が強い。−0.9 は強い負の相関\n- 相関係数＝共分散 ÷（x の標準偏差 × y の標準偏差）\n- **相関があっても因果関係があるとは限らない。** 気温のような別の要因（第3の変数）が両方に影響していることがある\n\n### テキストマイニング\n文章を**形態素解析**で単語に区切って品詞を判別し、出現回数や、いっしょに出てくる単語（共起）を分析する。出現回数の多い語を大きく表示する図がワードクラウド。\n\n### よくある誤り\n- 並べずに中央値をとる\n- 相関係数 −0.9 を「関係が弱い」と読む\n- 相関を因果関係と考える\n- 気温（℃）を比例尺度にする（20℃は10℃の2倍の暑さではない）\n\n### 共通テストでの問われ方\n散布図や箱ひげ図の読み取り、相関係数から言えることの正誤、表の結合結果の読み取り、外れ値や欠損値の扱いを問う問題などが考えられる。グラフから言えることと言えないことを分けて読む。\n","model":"## モデル化とシミュレーション\n\n### モデルとシミュレーション\n- **モデル**：現実の物事から、目的に必要な要素だけを取り出して単純化して表したもの\n- **シミュレーション**：モデルを使って、現実には試しにくい条件での変化を模擬的に調べること\n- 手順：①目的を明確にする → ②要素とその関係を明らかにする → ③図や式でモデルを表す → ④シミュレーションし、結果を検証する\n- 結果が現実のデータと大きくずれたら、**モデルを見直す**\n\n### モデルの分類\n| 見方 | 分類 | 例 |\n|---|---|---|\n| 表し方 | 物理モデル | 建物の模型、縮小した車の模型 |\n| 表し方 | 図的モデル | 状態遷移図、フローチャート |\n| 表し方 | 数式モデル | 預金の複利計算の式 |\n| 時間 | 静的モデル | 代金＝価格×個数 |\n| 時間 | 動的モデル | 毎年の預金額の変化 |\n| 偶然 | 確定的モデル | 一定の利率での利息 |\n| 偶然 | 確率的モデル | 乱数で客の到着を決めるレジの混雑 |\n\n### 数式モデルの例\n```\n10000円を年利10%の複利で預ける\n1年後 10000 × 1.1 ＝ 11000\n2年後 11000 × 1.1 ＝ 12100\n3年後 12100 × 1.1 ＝ 13310\n```\n単利（毎年 1000円ずつ）と混同しない。\n\n### 状態遷移\n状態と、操作によってどの状態に移るかを表や図で表す。表を使うときは、**今の状態の行**を見て、押したボタンの列を読む。1回ごとに状態を書き出すと間違えにくい。\n確率で移り変わる場合、2日後の確率は「経由する道すじ」ごとにかけ算し、最後に足す。\n\n### 待ち行列\n窓口に客が到着し、並んで待つようすのモデル。\n- 窓口を使い始める時刻＝「到着時刻」と「前の客が終わる時刻」の遅いほう\n- 待ち時間＝使い始める時刻 − 到着時刻\n- 窓口を増やすと待ち時間は減るが、0 になるとは限らない\n\n### モンテカルロ法\n乱数を多数回使って、確率や面積の近似値を求める方法。試す回数を増やすと、近似値は真の値に**近づく傾向**がある（必ず一致するわけではない）。\n\n```\nkosuu = 0\ni を 1 から 1000 まで 1 ずつ増やしながら繰り返す:\n｜ x = 乱数()\n｜ y = 乱数()\n｜ もし x * x + y * y < 1 ならば:\n⎿ ⎿ kosuu = kosuu + 1\n表示する(4 * kosuu / 1000)\n```\n正方形の中の点のうち、半径1の円の4分の1に入る割合は π÷4 に近いので、4倍すると円周率の近似値になる。\n\n1〜6 の整数を同じ確率で作るには `整数(乱数() * 6) + 1` とする（乱数() は0以上1未満）。\n\n### よくある誤り\n- 複利を単利で計算する\n- 待ち行列で、前の客の終了時刻ではなく到着時刻を基準にする\n- 円周率の近似で4倍を忘れる\n- 乱数の式で +1 を忘れて 0〜5 にしてしまう\n\n### 共通テストでの問われ方\n待ち行列の表を完成させる問題、状態遷移の表の読み取り、乱数を使ったプログラムの空欄補充、シミュレーション結果のグラフから言えることを選ぶ問題などが考えられる。\n"};
+  var WORDS = [];
+
+  var els = {};
+  ["unit-groups","selected-unit-box","selected-unit-label","selected-unit-count",
+   "btn-make-quiz","btn-view-guide",
+   "error-banner","error-text","error-close",
+   "view-setup","view-quiz","view-result","view-guide","view-stats",
+   "quiz-count","quiz-score","quiz-unit","quiz-dots","quiz-prompt","quiz-question","quiz-code","quiz-source","quiz-choices",
+   "quiz-feedback","feedback-speak","feedback-sentence","btn-speak","btn-speak-slow","feedback-verdict","feedback-head","feedback-explanation","feedback-translation","feedback-translation-text","feedback-meta",
+   "btn-next-question",
+   "result-frac","result-message","btn-retry-quiz","btn-new-quiz","btn-guide-from-result","btn-change-unit",
+   "guide-content","btn-guide-back","btn-guide-quiz",
+   "stats-body","btn-stats","btn-stats-back","btn-stats-reset","btn-stats-from-result",
+   "btn-wrongbox","btn-wrong-only","range-from","range-to","btn-range"
+  ].forEach(function(id){ els[id.replace(/-([a-z])/g, function(_,c){return c.toUpperCase();})] = document.getElementById(id); });
+
+  var SET_SIZE = 10;
+  var quizData = [];
+  var currentIndex = 0;
+  var score = 0;
+  var results = [];
+  var selectedUnit = null;
+  var isWrongReview = false;
+
+  // 問題文と正解から安定したIDを作る（データの並び順が変わってもずれない）
+  function qid(text){
+    var h = 5381, s = String(text);
+    for(var i=0;i<s.length;i++){ h = ((h*33) ^ s.charCodeAt(i)) >>> 0; }
+    return h.toString(36);
+  }
+  var QID_MAP = {};
+  POOL.forEach(function(q){
+    q.id = qid(q.q + "|" + q.c[q.a]);
+    QID_MAP[q.id] = q;
+  });
+
+  // ===================== 学習記録（この端末のブラウザ内だけに保存） =====================
+  var RECENT_MAX = 60;
+  var DAYS_MAX  = 400;
+
+  function emptyStore(){ return { units:{}, wrong:[], recent:{}, days:[] }; }
+
+  var store = (function(){
+    try{
+      var raw = window.localStorage.getItem(CONFIG.storeKey);
+      if(!raw) return emptyStore();
+      var o = JSON.parse(raw);
+      return {
+        units:  o.units  || {},
+        wrong:  Array.isArray(o.wrong) ? o.wrong : [],
+        recent: o.recent || {},
+        days:   o.days   || []
+      };
+    }catch(e){ return emptyStore(); }
+  })();
+
+  var storageOK = true;
+  function saveStore(){
+    try{ window.localStorage.setItem(CONFIG.storeKey, JSON.stringify(store)); }
+    catch(e){ storageOK = false; }
+  }
+
+  function rangeUnit(from, to){
+    return { id: "r" + from + "-" + to, label: "No." + from + "〜" + to, from: from, to: to };
+  }
+
+  function findUnit(uid){
+    var found = null;
+    UNITS.forEach(function(g){
+      g.items.forEach(function(it){ if(it.id === uid) found = it; });
+    });
+    if(!found){
+      var m = /^r(\d+)-(\d+)$/.exec(uid);
+      if(m) found = rangeUnit(+m[1], +m[2]);
+    }
+    return found;
+  }
+  function unitLabelOf(uid){
+    var u = findUnit(uid);
+    return u ? u.label : uid;
+  }
+
+  function poolOf(unit){
+    if(unit.from){
+      return POOL.filter(function(q){ return q.no >= unit.from && q.no <= unit.to; });
+    }
+    return POOL.filter(function(q){ return q.g === unit.id; });
+  }
+
+  function todayKey(){
+    var d = new Date();
+    function p(n){ return (n<10?"0":"") + n; }
+    return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());
+  }
+
+  function recordAnswer(id, isCorrect){
+    var at = store.wrong.indexOf(id);
+    if(isCorrect){
+      if(at >= 0) store.wrong.splice(at, 1);   // 正解したら苦手ボックスから外す
+    } else if(at < 0){
+      store.wrong.push(id);
+    }
+  }
+
+  function recordQuizFinished(unitId, asked, correct){
+    var u = store.units[unitId] || { attempts:0, asked:0, correct:0, last:"" };
+    u.attempts += 1;
+    u.asked    += asked;
+    u.correct  += correct;
+    u.last      = todayKey();
+    store.units[unitId] = u;
+    if(store.days.indexOf(u.last) < 0){
+      store.days.push(u.last);
+      if(store.days.length > DAYS_MAX) store.days = store.days.slice(-DAYS_MAX);
+    }
+    saveStore();
+  }
+
+  function rememberAsked(unitId, questions){
+    var seen = store.recent[unitId] || [];
+    questions.forEach(function(q){
+      var at = seen.indexOf(q.id);
+      if(at >= 0) seen.splice(at, 1);
+      seen.push(q.id);
+    });
+    if(seen.length > RECENT_MAX) seen = seen.slice(-RECENT_MAX);
+    store.recent[unitId] = seen;
+    saveStore();
+  }
+
+  function wrongBoxQuestions(limit){
+    var out = [];
+    store.wrong.forEach(function(id){ if(QID_MAP[id]) out.push(QID_MAP[id]); });
+    return shuffleArray(out).slice(0, limit || SET_SIZE);
+  }
+  function wrongBoxCount(){
+    return store.wrong.filter(function(id){ return QID_MAP[id]; }).length;
+  }
+
+  function switchView(name){
+    ["setup","quiz","result","guide","stats"].forEach(function(v){
+      els["view"+v[0].toUpperCase()+v.slice(1)].hidden = (v !== name);
+    });
+    if(name !== "quiz") stopSpeaking();
+    window.scrollTo(0, 0);
+  }
+
+  function showError(msg){
+    els.errorText.textContent = msg;
+    els.errorBanner.hidden = false;
+  }
+  function clearError(){ els.errorBanner.hidden = true; }
+  els.errorClose.addEventListener("click", clearError);
+
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, function(ch){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch];
+    });
+  }
+  // $...$ を数式として組む（KaTeX が読めないときは元の文字のまま）
+  function typeset(el){
+    try{
+      if(el && window.renderMathInElement){
+        window.renderMathInElement(el, {
+          delimiters: [{left:"$$", right:"$$", display:true}, {left:"$", right:"$", display:false}],
+          throwOnError: false
+        });
+      }
+    }catch(e){}
+  }
+
+  // 《》で囲んだ部分を傍線にする
+  function markup(s){
+    return escapeHTML(s).replace(/《(.+?)》/g, '<span class="bosen">$1</span>');
+  }
+
+  // ---- 単元選び ----
+  function renderUnitGroups(){
+    els.unitGroups.innerHTML = "";
+    UNITS.forEach(function(group){
+      var wrap = document.createElement("div");
+      wrap.className = "unit-group";
+      var h3 = document.createElement("h3");
+      h3.textContent = group.chapter;
+      wrap.appendChild(h3);
+      var chips = document.createElement("div");
+      chips.className = "chips";
+      group.items.forEach(function(item){
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip";
+        btn.textContent = item.label;
+        btn.dataset.unitId = item.id;
+        btn.addEventListener("click", function(){ selectUnit(item); });
+        chips.appendChild(btn);
+      });
+      wrap.appendChild(chips);
+      els.unitGroups.appendChild(wrap);
+    });
+  }
+  renderUnitGroups();
+
+  function selectUnit(item){
+    selectedUnit = item;
+    Array.prototype.forEach.call(els.unitGroups.querySelectorAll(".chip"), function(chip){
+      chip.classList.toggle("active", chip.dataset.unitId === item.id);
+    });
+    els.selectedUnitLabel.textContent = item.label + (item.hint ? "（" + item.hint + "）" : "");
+    els.selectedUnitCount.textContent = " 全" + poolOf(item).length + "問";
+    els.selectedUnitBox.hidden = false;
+    els.btnMakeQuiz.disabled = false;
+    els.btnViewGuide.disabled = false;
+    clearError();
+  }
+
+  if(els.btnRange){
+    els.btnRange.addEventListener("click", function(){
+      var a = parseInt(els.rangeFrom.value, 10), b = parseInt(els.rangeTo.value, 10);
+      if(isNaN(a) || isNaN(b)){ showError("はじめとおわりの番号を数字で入れてください。"); return; }
+      if(a > b){ var t = a; a = b; b = t; }
+      a = Math.max(1, a); b = Math.min(CONFIG.maxNo, b);
+      var u = rangeUnit(a, b);
+      if(!poolOf(u).length){ showError("No." + a + "〜" + b + " には問題がありません。"); return; }
+      els.rangeFrom.value = a; els.rangeTo.value = b;
+      selectUnit(u);
+      els.selectedUnitBox.scrollIntoView({ block:"nearest" });
+    });
+  }
+
+  // ---- 出題 ----
+  function shuffleArray(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function shuffleChoices(q){
+    var order = shuffleArray(q.c.map(function(_, i){ return i; }));
+    var copy = {};
+    Object.keys(q).forEach(function(k){ copy[k] = q[k]; });
+    copy.c = order.map(function(i){ return q.c[i]; });
+    copy.a = order.indexOf(q.a);
+    return copy;
+  }
+
+  // 同じ語が1セットに重ならないように選ぶ（足りなければ重ねる）
+  function pickDistinct(list, n){
+    var used = {}, out = [], rest = [];
+    list.forEach(function(q){
+      if(out.length >= n){ return; }
+      if(q.w && used[q.w]){ rest.push(q); return; }
+      if(q.w) used[q.w] = true;
+      out.push(q);
+    });
+    return out.concat(rest).slice(0, n);
+  }
+
+  function pickQuizForUnit(unit){
+    var pool = poolOf(unit);
+    if(!pool.length) return null;
+    // 直近に出した問題をいったん後回しにして、同じ問題の再出現を減らす
+    var seen = store.recent[unit.id] || [];
+    var fresh = pool.filter(function(q){ return seen.indexOf(q.id) < 0; });
+    var picked;
+    if(fresh.length >= SET_SIZE){
+      picked = pickDistinct(shuffleArray(fresh), SET_SIZE);
+    } else {
+      // 未出題が足りなくなったら一巡したとみなし、記憶を流して全体から選び直す
+      picked = pickDistinct(shuffleArray(fresh).concat(
+        shuffleArray(pool.filter(function(q){ return fresh.indexOf(q) < 0; }))
+      ), SET_SIZE);
+      store.recent[unit.id] = [];
+    }
+    rememberAsked(unit.id, picked);
+    return picked.map(shuffleChoices);
+  }
+
+  function beginQuiz(questions, title){
+    quizData = questions;
+    currentIndex = 0; score = 0; results = [];
+    renderQuizDots();
+    els.quizUnit.textContent = title;
+    renderQuestion();
+    switchView("quiz");
+  }
+
+  function startQuizWith(questions, title){
+    if(!questions || !questions.length) return false;
+    isWrongReview = true;
+    beginQuiz(questions.map(shuffleChoices), title);
+    return true;
+  }
+
+  function startQuiz(){
+    clearError();
+    if(!selectedUnit) return;
+    isWrongReview = false;
+    var qs = pickQuizForUnit(selectedUnit);
+    if(!qs){
+      showError("「" + selectedUnit.label + "」の問題は準備中です。別の単元をお試しください。");
+      switchView("setup");
+      return;
+    }
+    beginQuiz(qs, CONFIG.unitWord + ": " + selectedUnit.label);
+  }
+
+  function renderQuizDots(){
+    els.quizDots.innerHTML = "";
+    quizData.forEach(function(){ els.quizDots.appendChild(document.createElement("span")); });
+    updateDots();
+  }
+  function updateDots(){
+    var dots = els.quizDots.children;
+    for(var i=0;i<dots.length;i++){
+      dots[i].className = "";
+      if(results[i] === "correct") dots[i].classList.add("done-correct");
+      else if(results[i] === "wrong") dots[i].classList.add("done-wrong");
+      else if(i === currentIndex) dots[i].classList.add("current");
+    }
+  }
+
+  // ---- 英語 ----
+  function isEnglish(s){
+    return false;
+    var t = String(s || "").replace(/[\s\d\p{P}《》]/gu, "");
+    if(!t) return false;
+    var ascii = t.replace(/[^A-Za-z]/g, "").length;
+    return ascii / t.length > 0.6;
+  }
+  var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+  var enVoice = null;
+  function pickVoice(){
+    if(!canSpeak) return;
+    var vs = window.speechSynthesis.getVoices() || [];
+    var en = vs.filter(function(v){ return /^en[-_]/i.test(v.lang); });
+    var pref = function(re){ return en.filter(function(v){ return re.test(v.lang); }); };
+    var us = pref(/US/i), gb = pref(/GB/i);
+    var cand = us.length ? us : (gb.length ? gb : en);
+    // 高品質な音声（Enhanced / Premium / Google / Natural）を優先
+    enVoice = cand.filter(function(v){ return /enhanced|premium|natural|google|samantha/i.test(v.name); })[0] || cand[0] || null;
+  }
+  if(canSpeak){
+    pickVoice();
+    if(window.speechSynthesis.addEventListener) window.speechSynthesis.addEventListener("voiceschanged", pickVoice);
+  }
+  function stopSpeaking(){
+    if(!canSpeak) return;
+    try{ window.speechSynthesis.cancel(); }catch(e){}
+    if(els.btnSpeak){ els.btnSpeak.setAttribute("aria-pressed","false"); els.btnSpeakSlow.setAttribute("aria-pressed","false"); }
+  }
+  function speak(text, rate, btn){
+    if(!canSpeak || !text) return;
+    stopSpeaking();
+    // 長い文で読み上げが途中で止まるブラウザがあるので、文ごとに分けて順に読む
+    var parts = String(text).match(/[^.!?]+[.!?]*["')]*\s*/g) || [text];
+    btn.setAttribute("aria-pressed","true");
+    parts.forEach(function(part, i){
+      var u = new SpeechSynthesisUtterance(part.trim());
+      u.lang = enVoice ? enVoice.lang : "en-US";
+      if(enVoice) u.voice = enVoice;
+      u.rate = rate;
+      if(i === parts.length-1){ u.onend = u.onerror = function(){ btn.setAttribute("aria-pressed","false"); }; }
+      window.speechSynthesis.speak(u);
+    });
+  }
+  els.btnSpeak.addEventListener("click", function(){ speak(quizData[currentIndex].en, 0.95, els.btnSpeak); });
+  els.btnSpeakSlow.addEventListener("click", function(){ speak(quizData[currentIndex].en, 0.7, els.btnSpeakSlow); });
+
+  function renderQuestion(){
+    var q = quizData[currentIndex];
+    els.quizCount.textContent = "問 " + (currentIndex+1) + " / " + quizData.length;
+    els.quizScore.textContent = "正解 " + score;
+    els.quizPrompt.textContent = q.p || "";
+    els.quizPrompt.hidden = !q.p;
+    els.quizQuestion.innerHTML = markup(q.q);
+    els.quizQuestion.lang = isEnglish(q.q) ? "en" : "ja";
+    stopSpeaking();
+    els.quizQuestion.classList.toggle("big", !!q.big);
+    els.quizCode.textContent = q.k || "";
+    els.quizCode.hidden = !q.k;
+    els.quizSource.textContent = q.s || "";
+    els.quizSource.hidden = !q.s;
+    els.quizFeedback.hidden = true;
+    els.btnNextQuestion.hidden = true;
+    updateDots();
+
+    els.quizChoices.innerHTML = "";
+    var letters = ["A","B","C","D","E","F"];
+    q.c.forEach(function(choiceText, idx){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "choice";
+      btn.innerHTML = '<span class="badge">' + letters[idx] + '</span><span></span>';
+      var label = btn.querySelector("span:last-child");
+      label.textContent = choiceText;
+      if(isEnglish(choiceText)){ label.className = "en"; label.lang = "en"; }
+      btn.addEventListener("click", function(){ onChoose(idx); });
+      els.quizChoices.appendChild(btn);
+    });
+    typeset(els.quizPrompt);
+    typeset(els.quizQuestion);
+    typeset(els.quizChoices);
+  }
+
+  function onChoose(idx){
+    var q = quizData[currentIndex];
+    var buttons = els.quizChoices.querySelectorAll(".choice");
+    Array.prototype.forEach.call(buttons, function(b){ b.disabled = true; });
+
+    var isCorrect = (idx === q.a);
+    buttons[idx].classList.add(isCorrect ? "correct" : "incorrect");
+    if(!isCorrect) buttons[q.a].classList.add("correct");
+
+    if(isCorrect) score++;
+    results[currentIndex] = isCorrect ? "correct" : "wrong";
+    recordAnswer(q.id, isCorrect);
+    saveStore();
+    updateDots();
+    els.quizScore.textContent = "正解 " + score;
+
+    els.feedbackVerdict.textContent = isCorrect ? "○ 正解！" : "× 残念、不正解";
+    els.feedbackVerdict.className = "verdict " + (isCorrect ? "correct" : "incorrect");
+    els.feedbackHead.textContent = q.h || "";
+    els.feedbackHead.hidden = !q.h;
+    els.feedbackExplanation.textContent = q.e || "";
+    els.feedbackSentence.textContent = q.en || "";
+    els.feedbackSpeak.hidden = !q.en;
+    els.btnSpeak.hidden = els.btnSpeakSlow.hidden = !canSpeak;
+    if(q.t){
+      els.feedbackTranslationText.innerHTML = markup(q.t);
+      els.feedbackTranslation.hidden = false;
+    } else {
+      els.feedbackTranslation.hidden = true;
+    }
+    els.feedbackMeta.textContent = q.m || "";
+    els.feedbackMeta.hidden = !q.m;
+    els.quizFeedback.hidden = false;
+    typeset(els.quizFeedback);
+    els.btnNextQuestion.hidden = false;
+    els.btnNextQuestion.textContent = (currentIndex === quizData.length-1) ? "結果を見る" : "次の問題へ";
+    // 解説とボタンが画面の外に出ないように寄せる
+    try{
+      var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      els.btnNextQuestion.scrollIntoView({ block: "end", behavior: reduceMotion ? "auto" : "smooth" });
+    }catch(e){
+      els.btnNextQuestion.scrollIntoView(false);
+    }
+  }
+
+  els.btnNextQuestion.addEventListener("click", function(){
+    if(currentIndex < quizData.length-1){
+      currentIndex++;
+      renderQuestion();
+      els.quizCount.scrollIntoView({ block: "nearest" });
+    } else {
+      showResult();
+    }
+  });
+
+  function showResult(){
+    var total = quizData.length;
+    els.resultFrac.textContent = score + "/" + total;
+    var ratio = score/total;
+    var msg;
+    if(score === total) msg = "満点です！お見事な出来栄え。もう一つ別の範囲にも挑戦してみましょう。";
+    else if(ratio >= 0.7) msg = "よくできました。間違えた問題の解説を読み返して、仕上げていきましょう。";
+    else if(ratio >= 0.4) msg = "もう少しです。解説を読み直して、同じ範囲にもう一度挑戦してみましょう。";
+    else msg = CONFIG.lowScoreMessage;
+    els.resultMessage.textContent = msg;
+
+    if(selectedUnit && !isWrongReview){
+      recordQuizFinished(selectedUnit.id, total, score);
+    } else {
+      saveStore();
+    }
+
+    var wrongCount = results.filter(function(r){ return r === "wrong"; }).length;
+    els.btnWrongOnly.hidden = (wrongCount === 0);
+    if(wrongCount) els.btnWrongOnly.textContent = "間違えた" + wrongCount + "問だけもう一度";
+    els.btnGuideFromResult.hidden = !selectedUnit || isWrongReview;
+    els.btnNewQuiz.hidden = !selectedUnit || isWrongReview;
+
+    switchView("result");
+  }
+
+  els.btnRetryQuiz.addEventListener("click", function(){
+    beginQuiz(quizData.map(shuffleChoices), els.quizUnit.textContent);
+  });
+  els.btnNewQuiz.addEventListener("click", function(){ startQuiz(); });
+  els.btnChangeUnit.addEventListener("click", function(){ clearError(); refreshWrongBoxButton(); switchView("setup"); });
+  els.btnGuideFromResult.addEventListener("click", function(){ showGuide(); });
+  els.btnGuideBack.addEventListener("click", function(){ clearError(); refreshWrongBoxButton(); switchView("setup"); });
+  els.btnGuideQuiz.addEventListener("click", function(){ startQuiz(); });
+
+  // ---- 学習ガイド / 単語一覧 ----
+  function renderMarkdown(text){
+    // Markdown の変換で数式の \\ や _ が崩れないよう、数式をいったん退避する
+    var math = [];
+    var safe = String(text).replace(/\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/g, function(m){
+      math.push(m); return "@@MATH" + (math.length-1) + "@@";
+    });
+    try{
+      if(window.marked && typeof window.marked.parse === "function"){
+        return window.marked.parse(safe).replace(/@@MATH(\d+)@@/g, function(_, i){ return escapeHTML(math[+i]); });
+      }
+    }catch(e){}
+    return escapeHTML(text).replace(/\n/g, "<br>");
+  }
+
+  function wordListHTML(unit){
+    var rows = WORDS.filter(function(w){
+      return unit.from ? (w.no >= unit.from && w.no <= unit.to) : w.g === unit.id;
+    });
+    if(!rows.length) return "";
+    var html = '<h2>' + escapeHTML(unit.label) + ' の語</h2>'
+             + '<div style="overflow-x:auto"><table class="word-table"><thead><tr>'
+             + '<th>' + (unit.from ? "No." : "頁") + '</th><th>語</th><th>意味</th></tr></thead><tbody>';
+    rows.forEach(function(w){
+      html += '<tr><td class="no">' + (unit.from ? w.no : "p." + w.pg) + '</td>'
+           +  '<td class="w"><span lang="en">' + escapeHTML(w.w) + '</span>'
+           +  (canSpeak ? ' <button type="button" class="speak-mini" data-say="' + escapeHTML(w.w) + '" aria-label="' + escapeHTML(w.w) + ' の発音を聞く">🔊</button>' : '')
+           +  (w.k ? '<small>' + escapeHTML(w.k) + (w.h ? "・" + escapeHTML(w.h) : "") + '</small>' : "") + '</td>'
+           +  '<td>' + escapeHTML(w.m) + (unit.from && w.pg ? ' <span style="color:var(--ink-soft);font-size:.78rem">p.' + w.pg + '</span>' : "") + '</td></tr>';
+    });
+    return html + '</tbody></table></div>';
+  }
+
+  els.guideContent.addEventListener("click", function(ev){
+    var b = ev.target.closest ? ev.target.closest(".speak-mini") : null;
+    if(b) speak(b.getAttribute("data-say"), 0.85, b);
+  });
+
+  function showGuide(){
+    clearError();
+    if(!selectedUnit) return;
+    var html = GUIDES[selectedUnit.id] ? renderMarkdown(GUIDES[selectedUnit.id]) : wordListHTML(selectedUnit);
+    els.guideContent.innerHTML = html || "<p>「" + escapeHTML(selectedUnit.label) + "」のガイドは準備中です。</p>";
+    typeset(els.guideContent);
+    switchView("guide");
+  }
+
+  // ===================== 記録画面 =====================
+  function pct(n, d){ return d ? Math.round(n / d * 100) : 0; }
+
+  function dayKey(d){
+    function p(x){ return (x<10?"0":"") + x; }
+    return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());
+  }
+  function streakDays(){
+    if(!store.days.length) return 0;
+    var set = {};
+    store.days.forEach(function(d){ set[d] = true; });
+    var n = 0, cur = new Date();
+    if(!set[dayKey(cur)]) cur.setDate(cur.getDate() - 1);   // 今日まだなら昨日から数える
+    while(set[dayKey(cur)]){ n++; cur.setDate(cur.getDate() - 1); }
+    return n;
+  }
+
+  function calendarHTML(){
+    var now = new Date();
+    var year = now.getFullYear(), month = now.getMonth();
+    var first = new Date(year, month, 1).getDay();
+    var last = new Date(year, month+1, 0).getDate();
+    var set = {};
+    store.days.forEach(function(d){ set[d] = true; });
+    var html = '<div class="cal">';
+    ["日","月","火","水","木","金","土"].forEach(function(w){ html += '<span class="head">' + w + '</span>'; });
+    for(var i=0;i<first;i++) html += '<span></span>';
+    for(var d=1; d<=last; d++){
+      var cls = [];
+      if(set[dayKey(new Date(year, month, d))]) cls.push("on");
+      if(d === now.getDate()) cls.push("today");
+      html += '<span class="' + cls.join(" ") + '">' + d + '</span>';
+    }
+    return html + '</div>';
+  }
+
+  function renderStats(){
+    var uids = Object.keys(store.units);
+    var totalAttempts = 0, totalAsked = 0, totalCorrect = 0;
+    uids.forEach(function(u){
+      totalAttempts += store.units[u].attempts;
+      totalAsked    += store.units[u].asked;
+      totalCorrect  += store.units[u].correct;
+    });
+
+    var html = "";
+    if(!storageOK){
+      html += '<p class="stats-empty">このブラウザでは記録を保存できない設定になっています（プライベートモードなど）。'
+           +  'その場合でも、いま解いている分の「間違えた問題だけもう一度」は使えます。</p>';
+    }
+    if(!totalAttempts){
+      html += '<p class="stats-empty">まだ記録がありません。範囲を選んで10問解くと、ここに正答率と学習した日が残ります。</p>';
+      els.statsBody.innerHTML = html;
+      return;
+    }
+
+    html += '<div class="stat-grid">'
+         +  '<div class="stat-tile"><span class="k">挑戦した回数</span><span class="v">' + totalAttempts + '<small>回</small></span></div>'
+         +  '<div class="stat-tile"><span class="k">解いた問題</span><span class="v">' + totalAsked + '<small>問</small></span></div>'
+         +  '<div class="stat-tile"><span class="k">通算の正答率</span><span class="v">' + pct(totalCorrect, totalAsked) + '<small>%</small></span></div>'
+         +  '<div class="stat-tile"><span class="k">連続学習日数</span><span class="v">' + streakDays() + '<small>日</small></span></div>'
+         +  '</div>';
+
+    var wn = wrongBoxCount();
+    html += '<div class="stats-section-title">苦手ボックス</div>';
+    if(wn){
+      html += '<div class="wrongbox-line"><span>間違えたまま正解していない問題が <strong>' + wn + '問</strong> あります。</span>'
+           +  '<button type="button" class="btn btn-primary" id="btn-wrongbox-2">ここから10問解く</button></div>';
+    } else {
+      html += '<p class="stats-empty">いまは空です。間違えた問題がここにたまり、正解すると消えます。</p>';
+    }
+
+    uids.sort(function(a,b){
+      return pct(store.units[a].correct, store.units[a].asked) - pct(store.units[b].correct, store.units[b].asked);
+    });
+    html += '<div class="stats-section-title">' + CONFIG.unitWord + 'ごとの成績（正答率の低い順）</div>';
+    html += '<div style="overflow-x:auto"><table class="stat-table"><thead><tr>'
+         +  '<th>' + CONFIG.unitWord + '</th><th class="num">挑戦</th><th class="num">正答率</th><th style="width:90px"></th><th class="num">最終</th>'
+         +  '</tr></thead><tbody>';
+    uids.forEach(function(uid){
+      var u = store.units[uid];
+      var r = pct(u.correct, u.asked);
+      var cls = r < 50 ? "low" : (r < 80 ? "mid" : "");
+      html += '<tr><td>' + escapeHTML(unitLabelOf(uid)) + '</td>'
+           +  '<td class="num">' + u.attempts + '回</td>'
+           +  '<td class="num">' + r + '%</td>'
+           +  '<td><span class="rate-bar"><i class="' + cls + '" style="width:' + r + '%"></i></span></td>'
+           +  '<td class="num">' + (u.last || "-").slice(5).replace("-", "/") + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    html += '<div class="stats-section-title">今月の学習した日</div>' + calendarHTML();
+
+    els.statsBody.innerHTML = html;
+    var btn2 = document.getElementById("btn-wrongbox-2");
+    if(btn2) btn2.addEventListener("click", openWrongBox);
+  }
+
+  function openWrongBox(){
+    clearError();
+    var qs = wrongBoxQuestions(SET_SIZE);
+    if(!qs.length){
+      showError("苦手ボックスは空です。まずは範囲を選んで挑戦してみましょう。");
+      switchView("setup");
+      return;
+    }
+    startQuizWith(qs, "苦手ボックス(" + qs.length + "問)");
+  }
+
+  function showStats(){ clearError(); renderStats(); switchView("stats"); }
+
+  els.btnStats.addEventListener("click", showStats);
+  els.btnStatsFromResult.addEventListener("click", showStats);
+  els.btnStatsBack.addEventListener("click", function(){ clearError(); refreshWrongBoxButton(); switchView("setup"); });
+  els.btnWrongbox.addEventListener("click", openWrongBox);
+
+  els.btnStatsReset.addEventListener("click", function(){
+    if(!window.confirm("これまでの記録と苦手ボックスをすべて消します。よろしいですか？")) return;
+    store = emptyStore();
+    try{ window.localStorage.removeItem(CONFIG.storeKey); }catch(e){}
+    renderStats();
+  });
+
+  els.btnWrongOnly.addEventListener("click", function(){
+    var wrong = quizData.filter(function(_, i){ return results[i] === "wrong"; });
+    if(!wrong.length) return;
+    startQuizWith(wrong, "間違えた問題の解き直し(" + wrong.length + "問)");
+  });
+
+  function refreshWrongBoxButton(){
+    var n = wrongBoxCount();
+    els.btnWrongbox.textContent = n ? ("苦手ボックスから10問(" + n + "問たまっています)") : "苦手ボックスから10問";
+    els.btnWrongbox.disabled = (n === 0);
+  }
+  refreshWrongBoxButton();
+
+  els.btnMakeQuiz.addEventListener("click", function(){ startQuiz(); });
+  els.btnViewGuide.addEventListener("click", function(){ showGuide(); });
+})();
+</script>
+</body>
+</html>

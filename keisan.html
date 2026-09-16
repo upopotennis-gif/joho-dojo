@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="2進数・データ量・論理回路の計算と、共通テスト用プログラム表記のプログラムを読み解く練習をする4択ドリル。">
+<title>情報道場 情報Ⅰ 計算・プログラム</title>
+<style>
+  :root{
+    --head-font:'M PLUS 1 Code','Zen Kaku Gothic New',ui-monospace,monospace;
+    --body-font:'Zen Kaku Gothic New','Hiragino Sans',sans-serif;
+    --code-font:'M PLUS 1 Code',ui-monospace,'SFMono-Regular',Menlo,monospace;
+    --ai:#4b3cc4;
+    --ai-deep:#2e2482;
+    --yamabuki:#27c2d6;
+    --yamabuki-deep:#10808f;
+    --wakatake:#2f8f5b;
+    --wakatake-bg:#e3f3ea;
+    --kobai:#c23b4a;
+    --kobai-bg:#f9e4e7;
+    --bg:#f2f2f8;
+    --surface:#ffffff;
+    --surface-2:#e9e8f4;
+    --ink:#1d1b2e;
+    --ink-soft:#5d5a78;
+    --line:#d0cde4;
+    --shadow:rgba(29,27,46,0.12);
+    --focus:#10808f;
+    --grid:#b9b3e6;
+    --marker:rgba(39,194,214,0.25);
+    --btn-ink:#04262b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ai:#a79dff;
+      --ai-deep:#d3ccff;
+      --yamabuki:#3fd3e6;
+      --yamabuki-deep:#8be8f3;
+      --wakatake:#6fcf98;
+      --wakatake-bg:#183225;
+      --kobai:#f08a95;
+      --kobai-bg:#3a2027;
+      --bg:#0f0e1a;
+      --surface:#171628;
+      --surface-2:#221f3a;
+      --ink:#e7e5f5;
+      --ink-soft:#9d99bd;
+      --line:#35325a;
+      --shadow:rgba(0,0,0,0.45);
+      --focus:#3fd3e6;
+      --grid:#34306a;
+      --marker:rgba(63,211,230,0.22);
+      --btn-ink:#04262b;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ai:#a79dff;
+    --ai-deep:#d3ccff;
+    --yamabuki:#3fd3e6;
+    --yamabuki-deep:#8be8f3;
+    --wakatake:#6fcf98;
+    --wakatake-bg:#183225;
+    --kobai:#f08a95;
+    --kobai-bg:#3a2027;
+    --bg:#0f0e1a;
+    --surface:#171628;
+    --surface-2:#221f3a;
+    --ink:#e7e5f5;
+    --ink-soft:#9d99bd;
+    --line:#35325a;
+    --shadow:rgba(0,0,0,0.45);
+    --focus:#3fd3e6;
+    --grid:#34306a;
+    --marker:rgba(63,211,230,0.22);
+    --btn-ink:#04262b;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body-font);
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{
+    max-width:680px;
+    margin:0 auto;
+    padding:28px 18px 60px;
+    position:relative;
+  }
+  .stage::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0);
+    background-size:16px 16px;
+    opacity:.22;
+    mix-blend-mode:multiply;
+    pointer-events:none;
+    z-index:0;
+  }
+  :root:not([data-theme="light"]) .stage::before{ mix-blend-mode:screen; opacity:.10; }
+  :root[data-theme="dark"] .stage::before{ mix-blend-mode:screen; opacity:.10; }
+
+  .stage > *{ position:relative; z-index:1; }
+
+  .rod{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0 auto;
+  }
+  .rod::before,.rod::after{
+    content:'';
+    flex:1;
+    height:5px;
+    border-radius:3px;
+    background:var(--ai-deep);
+  }
+  .rod .knob{
+    width:14px; height:14px; border-radius:50%;
+    background:var(--yamabuki);
+    box-shadow:0 0 0 2px var(--surface);
+    flex:none;
+  }
+
+  header.masthead{ text-align:center; padding:6px 0 22px; }
+  header.masthead .rod{ margin-bottom:16px; }
+  h1{
+    font-family:var(--head-font);
+    font-weight:800;
+    font-size:clamp(1.6rem, 1.1rem + 3vw, 2.3rem);
+    letter-spacing:.03em;
+    margin:0 0 8px;
+    text-wrap:balance;
+  }
+  header.masthead p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:.92rem;
+    line-height:1.75;
+  }
+
+  section{ display:block; }
+  section[hidden]{ display:none !important; }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:22px 20px;
+    box-shadow:0 3px 14px var(--shadow);
+  }
+  .card + .card{ margin-top:16px; }
+
+  .steps{
+    list-style:none;
+    margin:0 0 20px;
+    padding:0;
+    display:grid;
+    gap:8px;
+    font-size:.9rem;
+    color:var(--ink-soft);
+  }
+  .steps li{ display:flex; gap:10px; align-items:baseline; }
+  .steps .num{
+    font-family:var(--head-font);
+    color:var(--yamabuki-deep);
+    font-weight:700;
+    flex:none;
+    width:1.4em;
+  }
+
+  label.field-label{
+    display:block;
+    font-weight:700;
+    margin-bottom:4px;
+    font-size:.95rem;
+  }
+  .field-hint{
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+
+  .unit-group{ margin-bottom:18px; }
+  .unit-group:last-child{ margin-bottom:0; }
+  .unit-group h3{
+    font-family:var(--head-font);
+    font-size:.95rem;
+    font-weight:700;
+    color:var(--ai);
+    margin:0 0 8px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line);
+  }
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .chip{
+    border:1.5px solid var(--line);
+    background:var(--bg);
+    color:var(--ink);
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:.84rem;
+    line-height:1.4;
+    cursor:pointer;
+    font-family:var(--body-font);
+    text-align:left;
+  }
+  .chip:hover{ border-color:var(--ai); }
+  .chip.active{ background:var(--ai); color:var(--surface); border-color:var(--ai); font-weight:700; }
+
+  .selected-unit-box{
+    margin-top:18px;
+    padding:12px 14px;
+    background:var(--surface-2);
+    border-radius:8px;
+    font-size:.88rem;
+  }
+  .selected-unit-box strong{
+    font-family:var(--head-font);
+    color:var(--ai);
+  }
+
+  textarea:focus-visible, button:focus-visible, .choice:focus-visible, .chip:focus-visible, input:focus-visible{
+    outline:3px solid var(--focus);
+    outline-offset:2px;
+  }
+
+  .actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:20px;
+  }
+  button.btn{
+    font-family:var(--body-font);
+    font-weight:700;
+    font-size:1.02rem;
+    padding:15px 18px;
+    border-radius:10px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  @media (prefers-reduced-motion: reduce){ button.btn{ transition:none; } }
+  button.btn:active{ transform:translateY(1px); }
+  button.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+  .btn-primary{
+    background:var(--yamabuki);
+    color:#2a1c04;
+    box-shadow:0 3px 0 var(--yamabuki-deep);
+  }
+  :root:not([data-theme="light"]) .btn-primary{ color:#241a02; }
+  :root[data-theme="dark"] .btn-primary{ color:#241a02; }
+  .btn-primary:hover:not(:disabled){ filter:brightness(1.04); }
+  .btn-secondary{
+    background:transparent;
+    color:var(--ai);
+    border-color:var(--ai);
+  }
+  .btn-secondary:hover:not(:disabled){ background:var(--surface-2); }
+  .btn-ghost{
+    background:transparent;
+    color:var(--ink-soft);
+    border:none;
+    text-decoration:underline;
+    padding:8px;
+    font-size:.9rem;
+  }
+
+  #error-banner[hidden]{ display:none !important; }
+  #error-banner{
+    background:var(--kobai-bg);
+    border:1px solid var(--kobai);
+    color:var(--kobai);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:.88rem;
+    margin-bottom:14px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:flex-start;
+  }
+  #error-banner button{
+    background:none; border:none; color:inherit; font-weight:700; cursor:pointer; font-size:1rem; line-height:1;
+  }
+
+  .quiz-progress{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:6px;
+    font-family:var(--head-font);
+  }
+  .quiz-progress .count{ font-size:1.1rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  .quiz-progress .score{ font-size:.85rem; color:var(--ink-soft); font-family:var(--body-font); }
+  .quiz-unit{
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  .passage-box{
+    background:var(--surface-2);
+    border-radius:8px;
+    padding:14px 16px;
+    margin:0 0 18px;
+  }
+  .passage-box .label{
+    font-weight:700;
+    color:var(--ai);
+    display:block;
+    margin-bottom:6px;
+    font-size:.78rem;
+    letter-spacing:.04em;
+  }
+  .passage-box p{
+    font-family:var(--head-font);
+    font-size:.98rem;
+    line-height:1.9;
+    margin:0;
+    white-space:pre-wrap;
+  }
+  .dots{ display:flex; gap:5px; margin-bottom:18px; flex-wrap:wrap; }
+  .dots span{ width:9px; height:9px; border-radius:50%; background:var(--line); }
+  .dots span.done-correct{ background:var(--wakatake); }
+  .dots span.done-wrong{ background:var(--kobai); }
+  .dots span.current{ background:var(--yamabuki); }
+
+  .question-text{
+    font-family:var(--head-font);
+    font-size:clamp(1.05rem, .9rem + 1vw, 1.3rem);
+    line-height:1.85;
+    margin:0 0 20px;
+    text-wrap:balance;
+  }
+
+  .choices{ display:grid; gap:10px; }
+  .choice{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    width:100%;
+    background:var(--bg);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    font-family:var(--body-font);
+    font-size:1rem;
+    line-height:1.6;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .choice:hover:not(:disabled){ border-color:var(--ai); }
+  .choice .badge{
+    flex:none;
+    width:28px; height:28px;
+    border-radius:50%;
+    background:var(--surface-2);
+    color:var(--ink-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.85rem;
+    font-family:var(--head-font);
+  }
+  .choice:disabled{ cursor:default; }
+  .choice.correct{ background:var(--wakatake-bg); border-color:var(--wakatake); }
+  .choice.correct .badge{ background:var(--wakatake); color:#fff; }
+  .choice.incorrect{ background:var(--kobai-bg); border-color:var(--kobai); }
+  .choice.incorrect .badge{ background:var(--kobai); color:#fff; }
+
+  .feedback{
+    margin-top:18px;
+    padding-top:16px;
+    border-top:1px dashed var(--line);
+  }
+  .feedback .verdict{
+    font-family:var(--head-font);
+    font-weight:800;
+    font-size:1.15rem;
+    margin:0 0 10px;
+  }
+  .feedback .verdict.correct{ color:var(--wakatake); }
+  .feedback .verdict.incorrect{ color:var(--kobai); }
+  .feedback .explanation{ font-size:.95rem; line-height:1.8; margin:0 0 12px; }
+  .feedback .translation{
+    background:var(--surface-2);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:.9rem;
+    line-height:1.8;
+  }
+  .feedback .translation .label{
+    font-weight:700;
+    color:var(--ai);
+    display:block;
+    margin-bottom:4px;
+    font-size:.78rem;
+    letter-spacing:.04em;
+  }
+
+  .result-head{ text-align:center; padding:8px 0 22px; }
+  .stamp{
+    width:118px; height:118px;
+    margin:0 auto 16px;
+    border-radius:50%;
+    border:3px solid var(--kobai);
+    box-shadow:inset 0 0 0 3px var(--surface), 0 3px 10px var(--shadow);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transform:rotate(-5deg);
+    color:var(--kobai);
+    font-family:var(--head-font);
+  }
+  .stamp .frac{ font-size:1.7rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
+  .stamp .of{ font-size:.7rem; margin-top:2px; }
+  .result-message{ font-size:.98rem; line-height:1.8; color:var(--ink-soft); max-width:32em; margin:0 auto; }
+
+  .guide-content{
+    font-size:.98rem;
+    line-height:1.95;
+  }
+  .guide-content h1,.guide-content h2,.guide-content h3{
+    font-family:var(--head-font);
+    margin:1.2em 0 .5em;
+    line-height:1.5;
+  }
+  .guide-content h1{ font-size:1.25rem; }
+  .guide-content h2{ font-size:1.12rem; }
+  .guide-content h3{ font-size:1.02rem; }
+  .guide-content p{ margin:0 0 .9em; }
+  .guide-content ul,.guide-content ol{ margin:0 0 1em; padding-left:1.4em; }
+  .guide-content li{ margin-bottom:.4em; }
+  .guide-content strong{ color:var(--ai); }
+  .guide-content code{ background:var(--surface-2); padding:.1em .3em; border-radius:4px; }
+  .thinking{ color:var(--ink-soft); }
+
+  footer{
+    text-align:center;
+    font-size:.75rem;
+    color:var(--ink-soft);
+    margin-top:34px;
+    line-height:1.7;
+  }
+
+
+/* ==== 記録機能 追加分 ==== */
+.sub-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:22px; }
+.stat-tile{ border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:var(--bg); }
+.stat-tile .k{ display:block; font-size:.74rem; color:var(--ink-soft); letter-spacing:.06em; }
+.stat-tile .v{ display:block; font-size:1.5rem; font-weight:700; color:var(--ai); font-variant-numeric:tabular-nums; margin-top:2px; }
+.stat-tile .v small{ font-size:.8rem; font-weight:400; color:var(--ink-soft); margin-left:2px; }
+.stats-empty{ color:var(--ink-soft); padding:18px 0; }
+.stat-table{ width:100%; border-collapse:collapse; font-size:.9rem; }
+.stat-table th{ text-align:left; font-size:.72rem; letter-spacing:.08em; color:var(--ink-soft); border-bottom:1px solid var(--line); padding:6px 8px; font-weight:700; }
+.stat-table td{ border-bottom:1px solid var(--line); padding:8px; vertical-align:middle; }
+.stat-table td.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.rate-bar{ display:block; position:relative; height:8px; border-radius:4px; background:var(--line); min-width:70px; }
+.rate-bar i{ position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:var(--wakatake); }
+.rate-bar i.low{ background:var(--kobai); }
+.rate-bar i.mid{ background:var(--yamabuki); }
+.cal{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; max-width:330px; }
+.cal span{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:.74rem;
+  border-radius:6px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+.cal span.head{ color:var(--ink-soft); font-size:.68rem; aspect-ratio:auto; padding-bottom:2px; }
+.cal span.on{ background:var(--wakatake); color:#fff; font-weight:700; }
+.cal span.today{ outline:2px solid var(--yamabuki); outline-offset:-2px; }
+.stats-section-title{ font-size:.95rem; font-weight:700; margin:26px 0 10px; color:var(--ai); }
+.wrongbox-line{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:6px; }
+.privacy-note{ font-size:.76rem; color:var(--ink-soft); margin-top:26px; line-height:1.7; }
+
+/* ==== 狭い画面（スマホ）の調整 ==== */
+@media (max-width:400px){
+  h1{ font-size:1.5rem; letter-spacing:.01em; }
+  .stage{ padding:20px 14px 48px; }
+  .card{ padding:18px 15px; }
+  .chip{ font-size:.82rem; padding:8px 12px; }
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+}
+#btn-next-question{ scroll-margin-bottom:24px; }
+
+/* ==== 道場の切り替え ==== */
+nav.sister{ display:flex; justify-content:center; gap:6px; flex-wrap:wrap; margin:0 0 18px; }
+nav.sister a{ font-size:.82rem; padding:6px 14px; border-radius:999px; border:1px solid var(--line);
+  color:var(--ink-soft); text-decoration:none; background:var(--surface); }
+nav.sister a:hover{ border-color:var(--ai); color:var(--ai); }
+nav.sister a[aria-current]{ background:var(--ai); border-color:var(--ai); color:var(--surface); font-weight:700; }
+
+/* ==== 情報道場の装い: 基板の配線とターミナル ==== */
+.stage::before,
+:root:not([data-theme="light"]) .stage::before,
+:root[data-theme="dark"] .stage::before{
+  background-image:
+    radial-gradient(circle, var(--grid) 1.6px, transparent 2px),
+    linear-gradient(90deg, transparent 47px, var(--grid) 47px, var(--grid) 49px, transparent 49px),
+    linear-gradient(transparent 71px, var(--grid) 71px, var(--grid) 73px, transparent 73px);
+  background-size:24px 24px, 192px 144px, 192px 144px;
+  background-position:0 0, 0 12px, 48px 0;
+  opacity:.40; mix-blend-mode:normal;
+}
+.rod{ gap:6px; }
+.rod::before,.rod::after{ height:2px; border-radius:0; background:var(--ai); }
+.rod .knob{
+  width:10px; height:10px; border-radius:2px;
+  background:var(--yamabuki); box-shadow:0 0 0 3px var(--surface), 0 0 0 4px var(--ai);
+}
+.rod .knob + .knob{ background:var(--ai); }
+header.masthead h1{ font-weight:700; letter-spacing:.01em; }
+header.masthead h1::after{
+  content:'_'; color:var(--yamabuki-deep); margin-left:.12em;
+  animation:caret 1.1s steps(1) infinite;
+}
+@keyframes caret{ 50%{ opacity:0; } }
+@media (prefers-reduced-motion: reduce){ header.masthead h1::after{ animation:none; } }
+.card{ border-radius:12px; position:relative; padding-top:38px; }
+.card::before{
+  content:''; position:absolute; top:15px; left:18px;
+  width:9px; height:9px; border-radius:50%;
+  background:var(--kobai); box-shadow:15px 0 0 var(--yamabuki), 30px 0 0 var(--wakatake);
+  opacity:.85;
+}
+.chip{ border-radius:6px; font-family:var(--body-font); }
+.chip.active::before{ content:'> '; font-family:var(--code-font); }
+.choice{ border-radius:8px; }
+.choice .badge{ border-radius:4px; font-family:var(--code-font); }
+.btn-primary,
+:root:not([data-theme="light"]) .btn-primary,
+:root[data-theme="dark"] .btn-primary{ color:var(--btn-ink); }
+.dots span{ border-radius:2px; width:10px; }
+.stamp{
+  border-radius:10px; transform:rotate(0); border:2px solid var(--ai); color:var(--ai);
+  font-family:var(--code-font);
+  box-shadow:inset 0 0 0 4px var(--surface), inset 0 0 0 5px var(--grid), 0 3px 10px var(--shadow);
+}
+.unit-group h3::before{ content:'# '; color:var(--yamabuki-deep); }
+.question-text{ line-height:1.8; }
+.cal span.on{ color:#fff; }
+
+
+/* ==== コード欄・数式 ==== */
+.question-text{ white-space:pre-line; }
+.code-block{ font-family:var(--code-font); font-size:.9rem; line-height:1.7; background:var(--surface-2);
+  border:1px solid var(--line); border-left:4px solid var(--ai); border-radius:8px; padding:12px 14px;
+  margin:-6px 0 20px; overflow-x:auto; white-space:pre; tab-size:4; }
+.katex{ font-size:1.06em; }
+.choice .katex-display, .question-text .katex-display{ margin:.4em 0; }
+.guide-content .katex-display{ overflow-x:auto; overflow-y:hidden; padding:4px 0; }
+.guide-content pre{ font-family:var(--code-font); background:var(--surface-2); border-radius:8px; padding:12px 14px; overflow-x:auto; font-size:.88rem; line-height:1.65; }
+.guide-content pre code{ background:none; padding:0; }
+/* ==== 英語道場から引き継いだ分 ==== */
+.question-text, .en-sentence, .choice .en{ font-family:'Source Serif 4',var(--head-font); }
+.question-text{ font-weight:500; letter-spacing:.005em; }
+.choice .en{ font-size:1.05rem; }
+.speak-box{ border-left:3px solid var(--yamabuki); padding:4px 0 4px 12px; margin:0 0 14px; }
+.en-sentence{ font-size:1.08rem; line-height:1.7; margin:0 0 8px; }
+.speak-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.speak-btn{ font:inherit; font-size:.84rem; padding:6px 14px; border-radius:999px; cursor:pointer;
+  border:1.5px solid var(--line); background:var(--surface); color:var(--ink); }
+.speak-btn:hover{ border-color:var(--ai); color:var(--ai); }
+.word-table td.w span[lang="en"]{ font-family:'Source Serif 4',var(--head-font); font-size:1.05rem; }
+.speak-mini{ font:inherit; font-size:.72rem; padding:1px 6px; border-radius:6px; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink); vertical-align:middle; }
+.speak-mini[aria-pressed="true"]{ border-color:var(--ai); }
+.speak-btn[aria-pressed="true"]{ background:var(--ai); color:var(--surface); border-color:var(--ai); }
+nav.sister{ display:flex; justify-content:center; gap:6px; flex-wrap:wrap; margin:0 0 18px; }
+nav.sister a{ font-size:.82rem; padding:6px 14px; border-radius:999px; border:1px solid var(--line);
+  color:var(--ink-soft); text-decoration:none; background:var(--surface); }
+nav.sister a:hover{ border-color:var(--ai); color:var(--ai); }
+nav.sister a[aria-current]{ background:var(--ai); border-color:var(--ai); color:var(--surface); font-weight:700; }
+.q-prompt{ font-size:.84rem; color:var(--ink-soft); margin:0 0 8px; }
+.question-text .bosen, .translation .bosen{ text-decoration:underline; text-decoration-thickness:2px;
+  text-underline-offset:.3em; text-decoration-color:var(--yamabuki); font-weight:700; }
+.question-text.big{ font-size:clamp(1.6rem, 1.2rem + 2vw, 2.1rem); text-align:center; letter-spacing:.08em; }
+.q-source{ font-size:.8rem; color:var(--ink-soft); text-align:right; margin:-12px 0 18px; }
+.feedback .word-head{ font-family:var(--head-font); font-weight:700; color:var(--ai); margin:0 0 6px; }
+.feedback .explanation{ white-space:pre-line; }
+.feedback .meta-note{ font-size:.76rem; color:var(--ink-soft); margin:10px 0 0; }
+.range-box{ margin-top:18px; padding-top:16px; border-top:1px dashed var(--line); }
+.range-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.range-row input{ width:5.2em; font:inherit; font-size:1rem; padding:8px 10px; border-radius:8px;
+  border:1.5px solid var(--line); background:var(--bg); color:var(--ink); font-variant-numeric:tabular-nums; }
+.range-row .chip{ margin-left:4px; }
+.word-table{ width:100%; border-collapse:collapse; font-size:.9rem; line-height:1.6; }
+.word-table th{ text-align:left; font-size:.72rem; color:var(--ink-soft); border-bottom:1px solid var(--line); padding:6px; }
+.word-table td{ border-bottom:1px solid var(--line); padding:8px 6px; vertical-align:top; }
+.word-table td.no{ color:var(--ink-soft); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.word-table td.w{ font-family:var(--head-font); font-weight:700; width:8.5em; }
+.word-table td.w small{ display:block; font-weight:500; color:var(--ink-soft); font-size:.74rem; line-height:1.5; }
+.guide-content table{ border-collapse:collapse; font-size:.9rem; margin:0 0 1em; line-height:1.55; }
+.guide-content th, .guide-content td{ border:1px solid var(--line); padding:6px 8px; }
+.guide-content th{ background:var(--surface-2); }
+
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+</head>
+<body>
+
+<div class="stage">
+  <header class="masthead">
+    <div class="rod"><span class="knob"></span><span class="knob"></span></div>
+    <h1>情報道場 情報Ⅰ 計算・プログラム</h1>
+    <p>2進数・データ量・論理回路の計算と、共通テストの表記で書いたプログラムの読み取りを練習します。変数の値を表に書き出しながら（トレースしながら）解きましょう。アカウント登録は不要です。</p>
+    <div class="rod" style="margin-top:16px"><span class="knob"></span><span class="knob"></span></div>
+  </header>
+
+  <nav class="sister" aria-label="道場の切り替え"><a href="./">知識</a><a href="keisan.html" aria-current="page">計算・プログラム</a></nav>
+
+  <div id="error-banner" hidden>
+    <span id="error-text"></span>
+    <button type="button" id="error-close" aria-label="閉じる">×</button>
+  </div>
+
+  <main id="app">
+
+    <section id="view-setup">
+      <div class="card">
+        <ol class="steps">
+          <li><span class="num">一</span>単元を選ぶ（先に「学習ガイド」で要点を読むのがおすすめ）</li>
+          <li><span class="num">二</span>「クイズを始める」を押して4択に挑戦</li>
+        </ol>
+
+        <div id="unit-groups"></div>
+
+        
+
+        <div class="selected-unit-box" id="selected-unit-box" hidden>
+          選択中: <strong id="selected-unit-label"></strong>
+          <span id="selected-unit-count" style="color:var(--ink-soft)"></span>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-make-quiz" disabled>クイズを始める</button>
+          <button type="button" class="btn btn-secondary" id="btn-view-guide" disabled>学習ガイドを見る</button>
+        </div>
+
+        <div class="sub-actions">
+          <button type="button" class="btn btn-secondary" id="btn-wrongbox">苦手ボックスから10問</button>
+          <button type="button" class="btn btn-ghost" id="btn-stats">これまでの記録</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-quiz" hidden>
+      <div class="card">
+        <div class="quiz-progress">
+          <span class="count" id="quiz-count">問 1 / 10</span>
+          <span class="score" id="quiz-score">正解 0</span>
+        </div>
+        <p class="quiz-unit" id="quiz-unit"></p>
+        <div class="dots" id="quiz-dots"></div>
+        <p class="q-prompt" id="quiz-prompt" hidden></p>
+        <p class="question-text" id="quiz-question"></p>
+        <pre class="code-block" id="quiz-code" hidden></pre>
+        <p class="q-source" id="quiz-source" hidden></p>
+        <div class="choices" id="quiz-choices"></div>
+
+        <div class="feedback" id="quiz-feedback" hidden>
+          <p class="verdict" id="feedback-verdict"></p>
+          <p class="word-head" id="feedback-head" hidden></p>
+          <div class="speak-box" id="feedback-speak" hidden>
+            <p class="en-sentence" lang="en" id="feedback-sentence"></p>
+            <div class="speak-row">
+              <button type="button" class="speak-btn" id="btn-speak" aria-label="英文を読み上げる">🔊 聞く</button>
+              <button type="button" class="speak-btn" id="btn-speak-slow" aria-label="英文をゆっくり読み上げる">🐢 ゆっくり</button>
+            </div>
+          </div>
+          <p class="explanation" id="feedback-explanation"></p>
+          <div class="translation" id="feedback-translation" hidden>
+            <span class="label">和訳</span>
+            <span id="feedback-translation-text"></span>
+          </div>
+          <p class="meta-note" id="feedback-meta" hidden></p>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-next-question" hidden>次の問題へ</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-result" hidden>
+      <div class="card">
+        <div class="result-head">
+          <div class="stamp"><span class="frac" id="result-frac">0/10</span><span class="of">正解</span></div>
+          <p class="result-message" id="result-message"></p>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-wrong-only" hidden>間違えた問題だけもう一度</button>
+          <button type="button" class="btn btn-secondary" id="btn-retry-quiz">同じ問題にもう一度挑戦</button>
+          <button type="button" class="btn btn-secondary" id="btn-new-quiz">違う10問に挑戦する</button>
+          <button type="button" class="btn btn-secondary" id="btn-guide-from-result">学習ガイドを見る</button>
+          <button type="button" class="btn btn-ghost" id="btn-change-unit">別の単元を選ぶ</button>
+          <button type="button" class="btn btn-ghost" id="btn-stats-from-result">記録を見る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-stats" hidden>
+      <div class="card">
+        <h2 class="card-title">これまでの記録</h2>
+        <div id="stats-body"></div>
+        <p class="privacy-note">
+          記録はこの端末のブラウザの中だけに保存されます。先生や他の人に送られることはありません。
+          ブラウザの履歴やサイトデータを消すと記録も消えます。
+        </p>
+        <div class="actions" style="margin-top:18px">
+          <button type="button" class="btn btn-secondary" id="btn-stats-back">単元選択に戻る</button>
+          <button type="button" class="btn btn-ghost" id="btn-stats-reset">記録を消す</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-guide" hidden>
+      <div class="card">
+        <div class="guide-content" id="guide-content"></div>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-guide-quiz">この範囲でクイズを始める</button>
+          <button type="button" class="btn btn-secondary" id="btn-guide-back">単元選択に戻る</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>情報道場 情報Ⅰ 計算・プログラム<br>問題・解説はすべて独自に作成しています（市販教材・入試問題からの転載はありません）。<br>試作版です。問題や解説の誤りに気づいたら、先生に知らせてください。</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var CONFIG = {"storeKey":"johoKeisan.v1","unitWord":"単元","lowScoreMessage":"まずは学習ガイドで要点を確認してから、もう一度挑戦してみましょう。プログラムの問題は変数の値を表に書き出すのがコツです。","maxNo":0};
+  var UNITS = [{"chapter":"計算","items":[{"id":"kisuu","label":"2進数と16進数","hint":"基数変換、2進数の足し算、補数による負の数、ビット数と表せる数"},{"id":"dataryo","label":"データ量の計算","hint":"画像・音声・動画のデータ量、圧縮率、通信時間、単位の換算"},{"id":"ronri","label":"論理回路","hint":"AND・OR・NOT・XOR、真理値表、半加算器、論理式の値"}]},{"chapter":"プログラム","items":[{"id":"program","label":"プログラムの読み取り","hint":"変数と代入、条件分岐、繰り返し、トレース、空欄補充"},{"id":"hairetsu","label":"配列とアルゴリズム","hint":"配列、最大値・合計、線形探索、二分探索、バブルソート、比較回数"}]}];
+  var POOL = [{"g":"kisuu","q":"10進数の 26 を2進数で表したものはどれか。","c":["11010","01011","11100","01101"],"a":0,"e":"26=16+8+2 なので 11010。2で割った余りを「下から」読むのが正しく、上から読むと 01011 になる。11100 は2の位の1を4の位に置いた誤り、01101 は26の半分の13。","p":"10進数を2進数に変換する。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"2進数の 10110 を10進数で表したものはどれか。","c":["22","13","44","11"],"a":0,"e":"右端から1・2・4・8・16の位なので 16+4+2=22。13 は左右を逆にして読んだ値、44 は右端を2の位として数えた値、11 は右端の0を読み落として 1011 とした値。","p":"2進数を10進数に変換する。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"16進数の 2F を10進数で表したものはどれか。","c":["47","35","46","30"],"a":0,"e":"F は15、上の桁は16の位なので 2×16+15=47。35 は上の桁を10の位として計算した値、46 は A を9から数えて F を14とした値、30 は2とFを掛けた値。","p":"16進数を10進数に変換する。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"2進数の 11010110 を16進数で表したものはどれか。","c":["D6","6D","B6","E6"],"a":0,"e":"右から4桁ずつ 1101|0110 と区切り、1101=13=D、0110=6 で D6。6D は区切った2組の順を逆にした誤り、B6 は1101を逆から読んだ誤り、E6 は A を9から数えて13をEとした誤り。","p":"2進数を16進数に変換する。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"6ビットで表せる値は何通りあるか。","c":["64通り","63通り","36通り","12通り"],"a":0,"e":"1ビットごとに0と1の2通りなので、2を6回掛けて2の6乗=64通り。63 は表せる最大の値（0から数えて63まで）と混同した数、36 は6の2乗、12 は2×6と足し算的に考えた数。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"2進数の 1011 と 0110 を足した結果を2進数で表したものはどれか。","c":["10001","1101","1111","0001"],"a":0,"e":"11+6=17 で 10001。各桁で1+1=10 となり上の桁へ繰り上がる。1101 は繰り上がりを無視した値、1111 は1+1を1とした値、0001 は最上位への繰り上がりを書き落とした値。","p":"2進数の足し算をする。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"16進数の1桁は、2進数の何桁分の情報に当たるか。","c":["4桁","8桁","16桁","3桁"],"a":0,"e":"16通りは2の4乗なので、16進数1桁は2進数4桁に当たる。このため2進数は4桁ずつ区切って16進数に直せる。8桁は1バイト（16進数2桁分）、3桁は8進数1桁との混同、16桁は基数の16との混同。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"2進数で表された整数の右端に0を1つ付け加えると、値は元の数の何倍になるか。","c":["2倍","10倍","4倍","1/2倍"],"a":0,"e":"2進数では位が1つ上がるごとに2倍になるので、右端に0を付けると全体が2倍になる（101=5 → 1010=10）。10倍は10進数の感覚のまま答えた誤り、4倍は0を2つ付けた場合、1/2倍は右端の桁を取り除いた場合。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"8ビットの 11111010 が表す10進数の値はどれか。","c":["-6","250","-5","-122"],"a":0,"e":"最上位が1なので負の数。全ビットを反転して1を足すと 00000110=6 なので -6。250 は符号を考えずに読んだ値、-5 は反転だけで1を足し忘れた値、-122 は最上位を符号とし残り7桁をそのまま読んだ値。","p":"負の数は2の補数で表すものとする。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"8ビットの2の補数で表せる整数の範囲はどれか。","c":["-128〜127","-127〜127","-128〜128","0〜255"],"a":0,"e":"256通りのうち半分の128通りが負（-128〜-1）、残りが0と正（0〜127）。-127〜127 は最上位を単なる符号とする表し方との混同、-128〜128 は0の分を数え忘れた範囲、0〜255 は負の数を扱わない場合。","p":"負の数は2の補数で表すものとする。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"16進数の 3A と 5C を足した結果を16進数で表したものはどれか。","c":["96","86","92","94"],"a":0,"e":"A+C=10+12=22=16+6 なので下の桁は6で1繰り上がり、3+5+1=9 で 96。86 は繰り上がりを忘れた値、92 は10進数のように22の一の位2を書いて1繰り上げた値、94 は A を9、C を11と数えた値。","p":"16進数の足し算をする。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"10進数の 200 を16進数で表したものはどれか。","c":["C8","8C","D8","B8"],"a":0,"e":"200÷16=12余り8。商の12はC、余りの8を下の桁にして C8。8C は商と余りの位置を逆にした誤り、D8 は A を9から数えて12をDとした誤り、B8 は A を11から数えて12をBとした誤り。","p":"10進数を16進数に変換する。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"0以上の整数だけを表すとき、8ビットで表せる最大の値はどれか。","c":["255","256","127","128"],"a":0,"e":"8ビットで256通りの値を表せるが、0から数えるので最大は255（11111111）。256 は通り数と最大値の混同、127 は2の補数で負の数も表す場合の最大値、128 は2の7乗と1ビット少なく計算した値。","p":"次の問いに答えなさい。","m":"難易度 ★☆☆ 基礎"},{"g":"kisuu","q":"00000101 と 11111101 を足した結果が表す10進数の値はどれか。","c":["2","258","8","3"],"a":0,"e":"11111101 は -3 を表すので 5+(-3)=2。実際に足すと 100000010 となり、9ビット目を捨てた 00000010=2。258 は繰り上がりを捨てずに符号なしで読んだ値、8 は -3 を +3 と読んだ値、3 は 11111101 を反転だけして -2 と読んだ値。","p":"負の数は2の補数で表す。8ビットの計算で、9ビット目への繰り上がりは捨てる。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"16進数3桁で表せる最大の値を10進数で表したものはどれか。","c":["4095","4096","999","255"],"a":0,"e":"最大は FFF。16進数3桁は2進数12桁に当たるので 2の12乗−1=4095。4096 は通り数と最大値の混同、999 は10進数3桁の最大値と混同した値、255 は2桁（FF）で計算した値。","p":"次の問いに答えなさい。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"正しい記述はどれか。","c":["右端のビットが1なら奇数である","左端のビットが1なら奇数である","右端のビットが1なら偶数である","1の個数が奇数なら奇数である"],"a":0,"e":"右端は1の位で、ほかの位はすべて2の倍数なので、右端が1なら奇数、0なら偶数になる。左端は最上位（最も大きい位）で偶奇と関係しない。1の個数の偶奇も、数の偶奇とは関係がない（110=6 は1が2個で偶数、11=3 も1が2個で奇数）。","p":"2進数で表した0以上の整数について考える。","m":"難易度 ★★☆ 標準"},{"g":"kisuu","q":"0101（5）と 0100（4）を足した結果のビット列が表す値はどれか。","c":["-7","9","-1","-6"],"a":0,"e":"0101+0100=1001。4ビットの2の補数では最上位が1なので負で、反転して1を足すと0111=7、よって -7（表せる範囲 -8〜7 を超えたあふれ）。9 は符号なしで読んだ値、-1 は最上位を単なる符号として読んだ値、-6 は反転だけして1を足し忘れた値。","p":"4ビットの2の補数で計算する。5ビット目への繰り上がりは捨てる。","m":"難易度 ★★★ 発展"},{"g":"kisuu","q":"2進数の 101.11 を10進数で表したものはどれか。","c":["5.75","5.3","5.5","5.11"],"a":0,"e":"小数点の右は 1/2、1/4 の位なので 0.11 は 0.5+0.25=0.75、整数部は5で 5.75。5.3 は小数部の11を整数と同じく3と読んだ値、5.5 は 1/4 の位を落とした値、5.11 は小数部をそのまま10進数として書いた値。","p":"小数を含む2進数を10進数に変換する。","m":"難易度 ★★★ 発展"},{"g":"kisuu","q":"10進数の 0.375 を2進数で表したものはどれか。","c":["0.011","0.110","0.0011","0.01"],"a":0,"e":"0.375×2=0.75（0）、0.75×2=1.5（1）、0.5×2=1.0（1）。取り出した順に上から並べて 0.011（=1/4+1/8）。0.110 は逆順に並べた誤り、0.0011 は最初の0.375の整数部0も並べた誤り、0.01 は1.5を得たところで打ち切った誤り。","p":"小数を2進数に変換する。小数部に2を掛け、整数部を取り出す操作を繰り返す。","m":"難易度 ★★★ 発展"},{"g":"kisuu","q":"2進数の 1011011 を16進数で表したものはどれか。","c":["5B","B3","B6","B5"],"a":0,"e":"4桁ずつの区切りは右から取る。101|1011 で 101=5、1011=B なので 5B（=91）。B3 は左から区切り、残りの011を3とした誤り、B6 は左から区切って残りの右に0を補った誤り、B5 は正しく区切ったあと上下の桁を逆に書いた誤り。","p":"2進数を16進数に変換する。","m":"難易度 ★★★ 発展"},{"g":"dataryo","q":"2KB は何ビットか。","c":["16000ビット","2000ビット","250ビット","16384ビット"],"a":0,"e":"2KB=2000バイト、1バイト=8ビットなので 2000×8=16000ビット。2000 はバイトのまま答えた値、250 は8で割ってしまった値、16384 は問題の条件と違う1KB=1024バイトで計算した値。","p":"1KB＝1000バイト、1バイト＝8ビットとする。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"1500文字の文章のデータ量は何KBか。","c":["3KB","24KB","1.5KB","192KB"],"a":0,"e":"16ビット=2バイトなので 1500×2=3000バイト=3KB。24 はビット数（24000ビット）のまま1000で割った値、1.5 は1文字を1バイトとした値、192 はビットをバイトに直すとき8で割らずに掛けた値。","p":"1文字を16ビットで表す文字コードを使う。1KB＝1000バイトとする。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"横800画素×縦600画素で、1画素を24ビットで表す画像のデータ量は何MBか。","c":["1.44MB","11.52MB","0.48MB","0.18MB"],"a":0,"e":"24ビット=3バイトなので 800×600×3=1440000バイト=1.44MB。11.52 はビットのまま計算した値、0.48 は1画素を1バイトとした値、0.18 は3バイトに直したあとさらに8で割った値。","p":"非圧縮の画像を考える。1MB＝1000KB、1KB＝1000バイトとする。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"1画素で表せる色は何通りか。","c":["16,777,216通り","16,777,215通り","768通り","256通り"],"a":0,"e":"赤・緑・青それぞれ256通りの組み合わせなので 256×256×256=2の24乗=16,777,216通り。16,777,215 は最大値（0から数える）と混同した数、768 は掛けずに足した数、256 は1色分だけ数えた数。","p":"RGB の各色を8ビット（256段階）で表す。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"標本化周波数44100Hz、量子化ビット数16ビット、ステレオ（2チャンネル）で10秒間録音したときのデータ量は何KBか。","c":["1764KB","14112KB","882KB","176.4KB"],"a":0,"e":"1秒あたり 44100×16×2=1411200ビット。10秒で14112000ビット、8で割って1764000バイト=1764KB。14112 はバイトに直していない値、882 はチャンネル数2を掛け忘れた値、176.4 は10秒を掛け忘れた値。","p":"非圧縮の音声を考える。1KB＝1000バイトとする。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"40MB のファイルを圧縮したところ 10MB になった。圧縮率は何%か。","c":["25%","75%","400%","30%"],"a":0,"e":"10÷40×100=25%。圧縮率は「元の何%の大きさになったか」を表し、小さいほどよく縮んでいる。75% は減った分の割合、400% は割る順序を逆にした値、30% は差の30MBをそのまま%とした値。","p":"圧縮率は「圧縮後のデータ量÷圧縮前のデータ量×100（%）」で求める。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"600MB のファイルを 40Mbps の回線で送るのにかかる時間は何秒か。","c":["120秒","15秒","1.875秒","2秒"],"a":0,"e":"600MB=600×8=4800Mビット。4800÷40=120秒。bps は「ビット毎秒」なのでバイトをビットに直す。15 は8を掛け忘れた値、1.875 は8で割ってしまった値、2 は120秒を分に直した数を秒として答えた値。","p":"1MB＝1000KB、1Mbps＝1000kbps とし、伝送効率は100%とする。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"標本化周波数などほかの条件を変えずに、量子化ビット数を8ビットから16ビットにすると、データ量は何倍になるか。","c":["2倍","256倍","4倍","8倍"],"a":0,"e":"データ量は量子化ビット数に比例するので 16÷8=2倍。256倍は表せる段階数の比（2の16乗÷2の8乗）と混同した値、4倍は2乗で増えると考えた値、8倍はビットとバイトの換算の8を掛けた値。","p":"非圧縮の音声を考える。","m":"難易度 ★☆☆ 基礎"},{"g":"dataryo","q":"横1920画素×縦1080画素、1画素24ビット、毎秒30フレームの動画10秒分のデータ量はおよそ何GBか。","c":["約1.87GB","約14.9GB","約0.62GB","約0.062GB"],"a":0,"e":"1フレームは 1920×1080×3=6220800バイト。30フレーム×10秒で300フレーム分なので 1866240000バイト≒1.87GB。14.9 はビットのまま計算した値、0.62 は1画素を1バイトとした値、0.062 はフレーム数30を掛け忘れた値。","p":"非圧縮の動画を考える。1GB＝1000MB、1MB＝1000KB、1KB＝1000バイトとする。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"横4000画素×縦3000画素、1画素24ビットの画像を 1/10 に圧縮し、8Mbps の回線で送る。かかる時間は何秒か。","c":["3.6秒","0.45秒","36秒","1.2秒"],"a":0,"e":"元は 4000×3000×3=36MB、1/10 で3.6MB=28.8Mビット。28.8÷8=3.6秒。0.45 はビットに直さず3.6MBを8で割った値、36 は圧縮を反映しなかった値、1.2 は1画素を1バイトとして計算した値。","p":"1MB＝1000KB、1KB＝1000バイト、1Mbps＝1000kbps、1kbps＝1000bps とし、伝送効率は100%とする。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"2GB の記憶装置に、1枚 4MB の写真は最大何枚保存できるか。","c":["512枚","500枚","256枚","4096枚"],"a":0,"e":"2GB=2×1024=2048MB。2048÷4=512枚。500 は問題の条件と違う1GB=1000MBで計算した値、256 は2GBの2を掛け忘れた値、4096 は記憶装置の容量だけをビットに直し（8倍し）、写真はMBのまま割った値。","p":"1GB＝1024MB とする。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"4.8MB の空き容量に、標本化周波数16000Hz、量子化ビット数16ビット、モノラルで録音できる時間は最大何秒か。","c":["150秒","18.75秒","1200秒","2.5秒"],"a":0,"e":"1秒あたり 16000×16=256000ビット=32000バイト。4800000÷32000=150秒。18.75 は4.8MBをバイトのまま256000ビットで割った値、1200 は8倍してしまった値、2.5 は150秒を分に直した数。","p":"非圧縮の音声を考える。1MB＝1000KB、1KB＝1000バイトとする。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"横と縦の画素数をそれぞれ2倍にし、1画素のビット数を24ビットから8ビットにすると、データ量は元の何倍になるか。","c":["4/3倍","2/3倍","12倍","1/3倍"],"a":0,"e":"画素数は 2×2=4倍、1画素のデータ量は 8/24=1/3倍なので 4×1/3=4/3倍。2/3倍は画素数を2倍としか考えなかった値、12倍はビット数の変化を3倍と逆にした値、1/3倍は画素数の増加を見落とした値。","p":"非圧縮の画像を考える。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"1.2GB のファイルを 100Mbps の回線で送るのにかかる時間は何秒か。","c":["120秒","96秒","15秒","76.8秒"],"a":0,"e":"1.2GB=9600Mビット。実際の速度は 100×0.8=80Mbps なので 9600÷80=120秒。96 は伝送効率を考えなかった値、15 は8を掛け忘れた値、76.8 は時間に0.8を掛けてしまった値（効率が下がると時間は長くなる）。","p":"1GB＝1000MB、1Mbps＝1000kbps とする。伝送効率は80%で、実際に使える速度は回線速度の80%になる。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"20画素の行「白8個、黒4個、白8個」を圧縮すると、データ量は元の何%になるか。","c":["75%","25%","60%","50%"],"a":0,"e":"同じ色の続きは3つで、1つにつき1+4=5ビット、合計15ビット。15÷20=75%。25% は減った分の割合、60% は色の1ビットを数えず4ビット×3とした値、50% は両端の白を一続きと数えて2組とした値。","p":"白と黒だけの画像の1行を、同じ色の続く部分ごとに「色（1ビット）＋続く個数（4ビット）」で表して圧縮する。元のデータは1画素1ビットとする。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"誤りを含む記述はどれか。","c":["画像の縦横の画素数をともに2倍にすると、データ量は約2倍になる","標本化周波数を2倍にすると、音声のデータ量は約2倍になる","1KB を1000バイトとするか1024バイトとするかは、場面で異なる","1MB＝1000KBのとき、100Mbps では毎秒12.5MB 送れる"],"a":0,"e":"縦横をともに2倍にすると画素数は 2×2=4倍になり、データ量も約4倍になる。標本化周波数とデータ量は比例する。1KBの扱いは場面で異なるので問題文で確かめる。100Mbps は毎秒100Mビット＝12.5MB（伝送効率100%のとき）。","p":"データ量について考える。","m":"難易度 ★★☆ 標準"},{"g":"dataryo","q":"横1280画素×縦720画素、1画素24ビット、毎秒30フレームの1分間の動画を 1/100 に圧縮し、40Mbps の回線で送る。かかる時間はおよそ何秒か。","c":["約10秒","約1.2秒","約995秒","約0.17秒"],"a":0,"e":"1フレーム 1280×720×3=2764800バイト、30×60=1800フレームで約4977MB。1/100 で約49.8MB=約398Mビット、40で割って約10秒。1.2 は8を掛け忘れた値、995 は圧縮を反映しなかった値、0.17 は1分=60秒を掛け忘れた値。","p":"非圧縮の動画を圧縮してから送る。1MB＝1000KB、1KB＝1000バイト、1Mbps＝1000kbps とし、伝送効率は100%とする。","m":"難易度 ★★★ 発展"},{"g":"dataryo","q":"700MB の記録媒体に、標本化周波数44100Hz、量子化ビット数16ビット、ステレオの音声を録音できる時間はおよそ何分か。","c":["約69分","約66分","約139分","約8.7分"],"a":0,"e":"1秒あたり 44100×16×2÷8=176400バイト。700×1024×1024=734003200バイトを割ると約4161秒≒約69分。66 は条件と違う1000で換算した値、139 は2チャンネルを考えなかった値、8.7 はバイトとビットを取り違えて8で割った値。","p":"1MB＝1024KB、1KB＝1024バイトとする。音声は非圧縮とする。","m":"難易度 ★★★ 発展"},{"g":"dataryo","q":"25MB のファイルを10秒以内に送るには、回線速度は最低何Mbps必要か。","c":["25Mbps","16Mbps","20Mbps","3.125Mbps"],"a":0,"e":"25MB=200Mビットを10秒で送るには実際の速度が20Mbps必要。回線速度×0.8=20 より 20÷0.8=25Mbps。16 は0.8で割らずに掛けた値、20 は伝送効率を考えなかった値、3.125 は8を掛け忘れた値。","p":"1MB＝1000KB、1Mbps＝1000kbps とする。伝送効率は80%で、実際に使える速度は回線速度の80%になる。","m":"難易度 ★★★ 発展"},{"g":"dataryo","q":"32GB の記憶装置に、横4032画素×縦3024画素、1画素24ビットの画像を 1/10 に圧縮して保存する。最大何枚保存できるか。","c":["9393枚","8748枚","939枚","1174枚"],"a":0,"e":"1枚は 4032×3024×3÷10≒3657830バイト。32×1024×1024×1024 を割って9393枚（端数切り捨て）。8748 は条件と違う1000で換算した値、939 は圧縮を反映しなかった値、1174 は1画素24ビットをバイトに直さず、24バイトとして計算した値。","p":"1GB＝1024MB、1MB＝1024KB、1KB＝1024バイトとする。","m":"難易度 ★★★ 発展"},{"g":"ronri","q":"A AND B の値が1になるのはどのようなときか。","c":["A と B がともに1のとき","A と B の少なくとも一方が1のとき","A と B の値が異なるとき","A と B がともに0のとき"],"a":0,"e":"AND（論理積）は、入力がすべて1のときだけ1を出力する。「少なくとも一方が1」は OR（論理和）、「値が異なる」は XOR（排他的論理和）の説明で、AND と取り違えやすい。「ともに0」で1になるのは NOT (A OR B) である。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"次の真理値表の X を表す式はどれか。","c":["A OR B","A AND B","A XOR B","NOT (A AND B)"],"a":0,"e":"A と B の少なくとも一方が1なら1なので OR。AND は 1 1 の行だけが1、XOR は 1 1 の行が0になる。NOT (A AND B) は 0 0 の行が1になる点が表と違う。","p":"論理演算について答えなさい。1を真、0を偽とする。","k":"A B | X\n----+--\n0 0 | 0\n0 1 | 1\n1 0 | 1\n1 1 | 1","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"2つの入力の値が異なるときだけ1を出力する論理演算はどれか。","c":["排他的論理和（XOR）","論理和（OR）","論理積（AND）","否定論理積（NAND）"],"a":0,"e":"XOR は 0 1 と 1 0 のときだけ1になる。OR は 1 1 のときも1になる点が違う。AND は 1 1 のときだけ1。NAND は AND の結果を反転したもので、1 1 以外のとき（0 0 も含む）1になる。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"A=1、B=0 のとき、値が1になる式はどれか。","c":["NOT (A AND B)","A AND B","NOT A","NOT (A OR B)"],"a":0,"e":"A AND B=0 なので、その否定の NOT (A AND B) は1。A AND B は0のまま、NOT A は A=1 の否定で0。NOT (A OR B) は A OR B=1 の否定なので0になり、AND と OR を取り違えると誤る。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"入力が A、B、C の3つある論理回路の真理値表は、入力の組み合わせで何行になるか。","c":["8行","6行","9行","7行"],"a":0,"e":"入力1つにつき0と1の2通りなので 2×2×2=2の3乗=8行。6行は 3×2 と掛け算を取り違えた数、9行は3の2乗と逆にした数、7行は2の3乗−1（すべて1の行を最大値と考えた数）。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"A=1、B=1 のときの出力はどれか。","c":["C=1、S=0","C=0、S=1","C=1、S=1","C=0、S=0"],"a":0,"e":"1+1=10（2進数）なので、上の桁への桁上がり C=1、その桁の和 S=0。C と S を逆にすると C=0、S=1。S を OR で考えると S=1 になる。C=0、S=0 は桁上がりを書き落とした場合。","p":"半加算器は、1ビットの A と B を足し、桁上がり C と和 S を出力する回路である。","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"C と S を表す式の組として正しいものはどれか。","c":["C=A AND B、S=A XOR B","C=A XOR B、S=A AND B","C=A AND B、S=A OR B","C=A OR B、S=A XOR B"],"a":0,"e":"桁上がりは 1+1 のときだけ起きるので AND、和の桁は 0+1 と 1+0 のとき1、1+1 のとき0なので XOR。「C=A XOR B、S=A AND B」は C と S を逆にした組、「S=A OR B」は XOR を OR と、「C=A OR B」は AND を OR と取り違えた組。","p":"半加算器は、1ビットの A と B を足し、桁上がり C と和 S を出力する回路である。","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"A=1 のとき、B の値にかかわらず必ず1になる式はどれか。","c":["A OR B","A AND B","A XOR B","(NOT A) OR B"],"a":0,"e":"OR はどちらかが1なら1なので、A=1 なら B によらず1。A AND B は B の値そのものになり、A XOR B は B=1 のとき0。(NOT A) OR B は NOT A=0 なので B の値になり、NOT の有無を見落とすと誤る。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★☆☆ 基礎"},{"g":"ronri","q":"式 (A AND B) OR (NOT C) の値が0になる A、B、C の組み合わせはどれか。","c":["A=1、B=0、C=1","A=1、B=1、C=1","A=1、B=0、C=0","A=0、B=1、C=0"],"a":0,"e":"OR が0になるのは両側とも0のとき。A AND B=0 かつ NOT C=0（C=1）が必要で、1 0 1 が当てはまる。1 1 1 は A AND B=1 なので1（AND を XOR と取り違えると0に見える）。C=0 の2つは NOT C=1 なので1（NOT を見落とすと0に見える）。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"次の真理値表の X を表す式はどれか。","c":["(NOT A) OR B","A OR (NOT B)","(NOT A) AND B","NOT (A OR B)"],"a":0,"e":"X が0になるのは A=1、B=0 の行だけ。(NOT A) OR B はこの行だけ 0 OR 0=0 になる。A OR (NOT B) は NOT の付く位置を取り違えた式（A=0、B=1 で0）。(NOT A) AND B は OR を AND にした式、NOT (A OR B) は NOT の範囲を広げた式。","p":"論理演算について答えなさい。1を真、0を偽とする。","k":"A B | X\n----+--\n0 0 | 1\n0 1 | 1\n1 0 | 0\n1 1 | 1","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"式 A AND (NOT B) の真理値表で、X の列を上から順に並べたものはどれか。","c":["0, 0, 1, 0","0, 1, 0, 0","1, 0, 1, 1","1, 1, 1, 0"],"a":0,"e":"A=1 かつ B=0 のときだけ1なので、3行目（1 0）だけが1。0,1,0,0 は NOT を A に付けた (NOT A) AND B、1,0,1,1 は AND を OR にした A OR (NOT B)、1,1,1,0 は全体を否定した NOT (A AND B) の列。","p":"論理演算について答えなさい。1を真、0を偽とする。","k":"A B | X\n----+--\n0 0 | ?\n0 1 | ?\n1 0 | ?\n1 1 | ?","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"A、B、C の8通りの組み合わせのうち、式 (A OR B) AND C の値が1になるのは何通りか。","c":["3通り","7通り","1通り","4通り"],"a":0,"e":"C=1 の4通りのうち、A OR B=1 になるのは A、B が 0 0 以外の3通り。7通りは AND を OR にした (A OR B) OR C、1通りは OR を AND にした (A AND B) AND C の場合。4通りは A OR B の条件を見落とし、C=1 だけで数えた場合。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"式 NOT (A AND B) と、すべての入力で同じ値になる式はどれか。","c":["(NOT A) OR (NOT B)","(NOT A) AND (NOT B)","(NOT A) OR B","NOT (A OR B)"],"a":0,"e":"NOT (A AND B) は 1 1 のときだけ0。(NOT A) OR (NOT B) も 1 1 のときだけ0になる（ド・モルガンの法則）。NOT を分けるときに AND のままにすると 0 0 のときだけ1の式になる。(NOT A) OR B は NOT を片方にだけ付けた式、NOT (A OR B) は AND を OR にした式。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"X を表す式はどれか。","c":["A AND (NOT B)","A AND B","A OR (NOT B)","(NOT A) AND B"],"a":0,"e":"「開いている」かつ「押されていない」なので、A と NOT B の AND。A AND B は「押されていない」の否定を見落とした式、A OR (NOT B) は「かつ」を OR にした式で、ドアが閉じていても B=0 なら鳴ってしまう。(NOT A) AND B は NOT を付ける相手を取り違えた式。","p":"ある警報装置は、ドアが開いていて（A=1）、解除スイッチが押されていない（B=0）ときに鳴る（X=1）。","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"誤りを含む記述はどれか。","c":["A XOR B は、A と B が等しいとき1になる","NOT A は、A が0のとき1になる","A AND B が1なら、A OR B も必ず1になる","入力2つの真理値表は、入力の組み合わせで4行になる"],"a":0,"e":"XOR は A と B が「異なる」ときに1になり、等しいときは0。NOT は0と1を入れ替える。A AND B=1 なら A=B=1 なので A OR B も1。入力2つの組み合わせは 2の2乗=4通り。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"半加算器の真理値表で、S の列を上から順に並べたものはどれか。","c":["0, 1, 1, 0","0, 0, 0, 1","0, 1, 1, 1","1, 0, 0, 1"],"a":0,"e":"和の桁は 0+0=0、0+1=1、1+0=1、1+1=10 の下の桁で0なので 0,1,1,0（XOR）。0,0,0,1 は桁上がり C の列と取り違えたもの、0,1,1,1 は OR で考えたもの、1,0,0,1 は「異なるとき1」を「等しいとき1」と逆にしたもの。","p":"半加算器は、1ビットの A と B を足し、桁上がり C と和 S を出力する回路である。","k":"A B | C S\n----+----\n0 0 | 0 ?\n0 1 | 0 ?\n1 0 | 0 ?\n1 1 | 1 ?","m":"難易度 ★★☆ 標準"},{"g":"ronri","q":"式 (A XOR B) XOR B の値は、A、B の値によらず何と等しいか。","c":["A の値","B の値","常に0","常に1"],"a":0,"e":"4通りを調べると、A=0 なら0、A=1 なら1で、A の値と同じになる（同じ B と2回 XOR すると元に戻る）。「常に0」は B XOR B=0 だけを見て A を落とした誤り。B の値や「常に1」は、真理値表を途中まで調べて決めつけると選びやすい。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★★ 発展"},{"g":"ronri","q":"3つの入力 A、B、C のうち2つ以上が1のとき1になる（多数決）式はどれか。","c":["(A AND B) OR (B AND C) OR (A AND C)","(A AND B) OR (B AND C)","(A AND B) AND (B AND C) AND (A AND C)","(A XOR B) OR (B XOR C) OR (A XOR C)"],"a":0,"e":"2つが1になる組は A と B、B と C、A と C の3組で、どれか1組が成り立てばよいので OR でつなぐ。「(A AND B) OR (B AND C)」は A と C の組を書き落としていて、1 0 1 のとき0になる。3つを AND でつなぐと3つとも1のときだけ1、XOR にすると値がそろわないとき1になる。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★★ 発展"},{"g":"ronri","q":"A=1 のとき、出力が常に NOT B と等しくなる式はどれか。","c":["A XOR B","A AND B","A OR B","(NOT A) XOR B"],"a":0,"e":"A=1 のとき、A XOR B は B=0 で1、B=1 で0 なので NOT B と等しい。A AND B は B そのもの、A OR B は常に1。(NOT A) XOR B は NOT A=0 なので B そのものになり、NOT の位置で結果が変わる。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★★ 発展"},{"g":"ronri","q":"4つの入力 A、B、C、D の16通りの組み合わせのうち、式 (A XOR B) AND (C OR D) の値が1になるのは何通りか。","c":["6通り","9通り","2通り","14通り"],"a":0,"e":"A XOR B=1 は A、B の4通りのうち2通り、C OR D=1 は4通りのうち3通り。両方成り立つのは 2×3=6通り。9通りは XOR を OR にした場合（3×3）、2通りは C OR D を C AND D にした場合（2×1）、14通りは中央の AND を OR にした場合。","p":"論理演算について答えなさい。1を真、0を偽とする。","m":"難易度 ★★★ 発展"},{"g":"program","q":"実行後の変数 a と b の値の組はどれか。","c":["a=8、b=5","a=8、b=2","a=5、b=8","a=8、b=-5"],"a":0,"e":"3行目で a=5+3=8。4行目の a はすでに8なので b=8-3=5。b=2 は4行目で元の a=5 を使った誤り、a=5、b=8 は値が入れ替わるだけと考えた誤り、b=-5 は引き算の順を逆にして 3-8 とした誤り。","p":"次のプログラムを実行する。","k":"a = 5\nb = 3\na = a + b\nb = a - b","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"hyouka が \"C\" になるのは、ten がどの範囲のときか。","c":["60以上70未満","60以上70以下","60より大きく70未満","60以上80未満"],"a":0,"e":"上から順に調べ、最初に当てはまった所だけを実行する。70以上は「B」になるので、C は60以上70未満。70以下とすると ten=70 を含めてしまう。「より大きく」は >= を > と読んだ誤り、80未満は2つ目の条件で先に B に決まることを見落とした誤り。","p":"次のプログラムを実行する。変数 ten には0以上100以下の整数が入っている。","k":"もし ten >= 80 ならば:\n｜ hyouka = \"A\"\nそうでなくもし ten >= 70 ならば:\n｜ hyouka = \"B\"\nそうでなくもし ten >= 60 ならば:\n｜ hyouka = \"C\"\nそうでなければ:\n⎿ hyouka = \"D\"\n表示する(hyouka)","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"表示される値はどれか。","c":["9","15","4","16"],"a":0,"e":"i は 1、3、5 と変わり、5 で終わる（「まで」は5を含む）。1+3+5=9。15 は2ずつ増えることを見落とし1〜5をすべて足した値、4 は終わりの5を含めなかった値、16 は5を超えて7まで足した値。","p":"次のプログラムを実行する。","k":"goukei = 0\ni を 1 から 5 まで 2 ずつ増やしながら繰り返す:\n⎿ goukei = goukei + i\n表示する(goukei)","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"繰り返しが終わったときの kaisu と n の値の組はどれか。","c":["kaisu=4、n=81","kaisu=3、n=27","kaisu=4、n=27","kaisu=5、n=243"],"a":0,"e":"n は 3、9、27、81 と変わる。n=27 のときはまだ 27<50 なのでもう1回繰り返し、n=81、kaisu=4 になってから終わる。kaisu=3、n=27 は条件を満たす最後の値で止めた誤り、kaisu=4、n=27 は n の更新を1回数え落とした誤り、kaisu=5 は1回多く繰り返した誤り。","p":"次のプログラムを実行する。","k":"n = 1\nkaisu = 0\nn < 50 の間繰り返す:\n｜ n = n * 3\n⎿ kaisu = kaisu + 1","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"空欄【ア】に入る行はどれか。","c":["b = tmp","b = a","tmp = b","a = tmp"],"a":0,"e":"3行目で元の a（4）を tmp に避難させ、4行目で a に b（9）を入れた。残りは b に元の a を入れればよいので b = tmp。b = a では a がすでに9なので b も9のまま。tmp = b は代入の向きが逆、a = tmp は代入先を取り違えて a が4に戻る。","p":"変数 a と b の値を入れ替えるプログラムを作る。","k":"a = 4\nb = 9\ntmp = a\na = b\n【ア】","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"表示されるものはどれか。","c":["B","A","C","B と C"],"a":0,"e":"x=15 は10より大きいが奇数。1つ目は and なので両方必要で偽、2つ目は or なのでどちらかでよく真、B を表示して終わる。A は and を or と読んだ誤り、C は or を and と読んだ誤り、「B と C」は「そうでなければ」も続けて実行されると考えた誤り。","p":"次のプログラムを実行する。","k":"x = 15\nもし x > 10 and x % 2 == 0 ならば:\n｜ 表示する(\"A\")\nそうでなくもし x > 10 or x % 2 == 0 ならば:\n｜ 表示する(\"B\")\nそうでなければ:\n⎿ 表示する(\"C\")","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"実行後の mai と nokori の値の組はどれか。","c":["mai=2、nokori=300","mai=300、nokori=2","mai=2.6、nokori=300","mai=2、nokori=800"],"a":0,"e":"1300÷500 は商2余り300なので、mai=2、nokori=300。mai=300、nokori=2 は ÷ と % の役割を逆にした誤り、mai=2.6 は ÷ を小数まで求める / と同じと考えた誤り、nokori=800 は500を1回だけ引いた誤り。","p":"次のプログラムを実行する。÷ は整数の商、% は余りを求める演算子である。","k":"okane = 1300\nmai = okane ÷ 500\nnokori = okane % 500","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"表示されるものはどれか。","c":["情報道場","数学道場","道場情報","数学"],"a":0,"e":"2行目の時点で s は「情報」なので、t には「情報道場」が入る。そのあと s を変えても、すでに入った t の中身は変わらない。「数学道場」は t が s に連動すると考えた誤り、「道場情報」はつなぐ順を逆にした誤り、「数学」は最後に代入した s を表示すると読んだ誤り。","p":"次のプログラムを実行する。文字列どうしは + でつなげることができる。","k":"s = \"情報\"\nt = s + \"道場\"\ns = \"数学\"\n表示する(t)","m":"難易度 ★☆☆ 基礎"},{"g":"program","q":"\"*\" は全部で何回表示されるか。","c":["6回","9回","3回","10回"],"a":0,"e":"内側の繰り返しは j を1から i まで回すので、i=1 で1回、i=2 で2回、i=3 で3回、合計6回。9回は内側も毎回3回と考えた誤り、3回は外側の回数だけ数えた誤り、10回は外側を4まで回した誤り。","p":"次のプログラムを実行する。","k":"i を 1 から 3 まで 1 ずつ増やしながら繰り返す:\n｜ j を 1 から i まで 1 ずつ増やしながら繰り返す:\n⎿ ⎿ 表示する(\"*\")","m":"難易度 ★★☆ 標準"},{"g":"program","q":"表示される値はどれか。","c":["10","7","8","3"],"a":0,"e":"n%10 で一の位を取り出して足し、n÷10 で一の位を消す。2、5、3 を順に足して10。7 は n が1桁になった時点で終わると考え、最後の3を足さなかった値。8 は2行の順を逆に読み、先に n÷10 をして一の位の2を飛ばした値。3 は足さずに上書きすると読んだ値。","p":"次のプログラムを実行する。÷ は整数の商、% は余りを求める演算子である。","k":"n = 352\nwa = 0\nn > 0 の間繰り返す:\n｜ wa = wa + n % 10\n⎿ n = n ÷ 10\n表示する(wa)","m":"難易度 ★★☆ 標準"},{"g":"program","q":"空欄【ア】に入る条件はどれか。","c":["i % 7 == 0","i ÷ 7 == 0","7 % i == 0","i % 7 != 0"],"a":0,"e":"7の倍数は7で割った余りが0の数なので i % 7 == 0（7個）。i ÷ 7 == 0 は商と余りを取り違えた条件で、1〜6の6個を数える。7 % i == 0 は割る順を逆にした条件で、7の約数の1と7を数える。i % 7 != 0 は == と != を取り違え、倍数でない43個を数える。","p":"1以上50以下の整数のうち、7の倍数の個数を表示したい。÷ は整数の商、% は余りを求める演算子である。","k":"kazu = 0\ni を 1 から 50 まで 1 ずつ増やしながら繰り返す:\n｜ もし 【ア】 ならば:\n⎿ ⎿ kazu = kazu + 1\n表示する(kazu)","m":"難易度 ★★☆ 標準"},{"g":"program","q":"表示される値はどれか。","c":["8","7","9","10"],"a":0,"e":"kingaku は 1100、1210、1331、1464、1610、1771、1948、2142 と、毎回そのときの1割（小数切り捨て）が増える。2000以上になるのは8回目。7 は最後の1回を数えなかった値、9 は1回多く数えた値、10 は毎回最初の1000の1割（100）ずつ増えると考えた値。","p":"次のプログラムを実行する。÷ は整数の商を求める演算子である。","k":"kingaku = 1000\nnen = 0\nkingaku < 2000 の間繰り返す:\n｜ kingaku = kingaku + kingaku ÷ 10\n⎿ nen = nen + 1\n表示する(nen)","m":"難易度 ★★☆ 標準"},{"g":"program","q":"表示される値はどれか。","c":["70","60","72","7"],"a":0,"e":"67/10+0.5=7.2、整数(7.2)=7、7×10=70。一の位を四捨五入する処理になっている。60 は0.5を足すことを見落として切り捨てた値、72 は整数() の切り捨てを見落とした値、7 は最後の ×10 を見落とした値。","p":"次のプログラムを実行する。整数(x) は x の小数点以下を切り捨てた値を返す関数である。","k":"ten = 67\nkekka = 整数(ten / 10 + 0.5) * 10\n表示する(kekka)","m":"難易度 ★★☆ 標準"},{"g":"program","q":"空欄【ア】に入る条件はどれか。","c":["goukei <= 105","goukei < 105","goukei > 105","n <= 105"],"a":0,"e":"「〜の間繰り返す」には続ける条件を書く。合計が105以下の間は足し続ければよい。1〜14の合計はちょうど105なので、goukei < 105 では105で止まり14を表示してしまう。goukei > 105 は終わる条件を書いた誤りで、1回も繰り返さない。n <= 105 は合計でなく足す数を比べた誤り。","p":"1から順に整数を足していき、合計が初めて105を超えたときに足した最後の数を表示したい。","k":"goukei = 0\nn = 0\n【ア】 の間繰り返す:\n｜ n = n + 1\n⎿ goukei = goukei + n\n表示する(n)","m":"難易度 ★★☆ 標準"},{"g":"program","q":"繰り返しが終わったときの x と y の値の組はどれか。","c":["x=16、y=15","x=8、y=7","x=32、y=31","x=16、y=30"],"a":0,"e":"4回繰り返す。y には更新前の x（1、2、4、8）が足されて15、x は2倍を4回で16。x=8、y=7 は3回で終えた誤り、x=32、y=31 は5回繰り返した誤り、y=30 は2行の順を逆に読み、2倍した後の x（2、4、8、16）を足した誤り。","p":"次のプログラムを実行する。","k":"x = 1\ny = 0\ni を 1 から 4 まで 1 ずつ増やしながら繰り返す:\n｜ y = y + x\n⎿ x = x * 2","m":"難易度 ★★☆ 標準"},{"g":"program","q":"実行後の a と b の値の組はどれか。","c":["a=10、b=4","a=10、b=6","a=8、b=6","a=10、b=2"],"a":0,"e":"3の倍数（10個）は a に数え、それ以外で5の倍数のもの（5、10、20、25）だけが b に入る。15と30は先に a の条件に当てはまるので b に入らない。b=6 は「そうでなくもし」を独立した「もし」と読んだ誤り、a=8、b=6 は5の条件を先に調べると考えた誤り、b=2 は15の倍数だけを数えた誤り。","p":"次のプログラムを実行する。","k":"a = 0\nb = 0\ni を 1 から 30 まで 1 ずつ増やしながら繰り返す:\n｜ もし i % 3 == 0 ならば:\n｜ ｜ a = a + 1\n｜ そうでなくもし i % 5 == 0 ならば:\n⎿ ⎿ b = b + 1","m":"難易度 ★★☆ 標準"},{"g":"program","q":"表示される値はどれか。","c":["321","3210","32","6"],"a":0,"e":"r は 0、3、32、321 と変わる。最初に取り出す一の位は0なので r=0×10+0=0 のままで、数としての 0321 は321になる。3210 は末尾の0がそのまま残ると考えた誤り、32 は n が1桁になった時点で終えた誤り、6 は r*10 を見落として各桁を足しただけの値。","p":"次のプログラムを実行する。÷ は整数の商、% は余りを求める演算子である。","k":"n = 1230\nr = 0\nn > 0 の間繰り返す:\n｜ r = r * 10 + n % 10\n⎿ n = n ÷ 10\n表示する(r)","m":"難易度 ★★★ 発展"},{"g":"program","q":"表示される値はどれか。","c":["12","0","36","18"],"a":0,"e":"(84,36) → 余り12 → (36,12) → 余り0 → (12,0) で終わり、a=12 を表示する（最大公約数）。0 は終わったときの b（または r）の値と取り違えた誤り、36 は1回で終わると考えた誤り、18 は % を商と取り違え、84÷36=2、36÷2=18、2÷18=0 と進めた誤り。","p":"次のプログラムを実行する。% は余りを求める演算子である。","k":"a = 84\nb = 36\nb != 0 の間繰り返す:\n｜ r = a % b\n｜ a = b\n⎿ b = r\n表示する(a)","m":"難易度 ★★★ 発展"},{"g":"program","q":"空欄【ア】に入るものはどれか。","c":["文字列(n % 2) + kekka","kekka + 文字列(n % 2)","文字列(n ÷ 2) + kekka","文字列(2 % n) + kekka"],"a":0,"e":"2で割った余りを求めるたびに、それを今までの文字列の「左」につなぐと、下の位から上の位へ並ぶ。kekka + 文字列(n % 2) は右につなぐので逆順の 1011 になる。文字列(n ÷ 2) は余りでなく商を並べた誤り、文字列(2 % n) は割る順を逆にした誤り。","p":"10進数 n を2進数の文字列にして表示したい。n=13 なら 1101 と表示する。文字列(x) は数値 x を文字列に変える関数、÷ は整数の商、% は余りを求める演算子である。","k":"n = 13\nkekka = \"\"\nn > 0 の間繰り返す:\n｜ kekka = 【ア】\n⎿ n = n ÷ 2\n表示する(kekka)","m":"難易度 ★★★ 発展"},{"g":"program","q":"表示される値はどれか。","c":["8","7","9","16"],"a":0,"e":"n は 6→3→10→5→16→8→4→2→1 と変わり、矢印の数だけ kaisu が増えるので8。7 は最後に1になる回を数えなかった値、9 は最初の6も1回と数えた値、16 は回数ではなく途中で n がとる最大の値と取り違えた値。","p":"次のプログラムを実行する。÷ は整数の商、% は余りを求める演算子である。","k":"n = 6\nkaisu = 0\nn != 1 の間繰り返す:\n｜ もし n % 2 == 0 ならば:\n｜ ｜ n = n ÷ 2\n｜ そうでなければ:\n｜ ⎿ n = 3 * n + 1\n⎿ kaisu = kaisu + 1\n表示する(kaisu)","m":"難易度 ★★★ 発展"},{"g":"hairetsu","q":"Data[1] + Data[3] の値はどれか。","c":["10","37","43","4"],"a":0,"e":"添字は0から数えるので Data[1]=7、Data[3]=3 で、7+3=10。37 は添字を1から数えて1番目の12と3番目の25を足した値、43 は1つ先にずれて25と18を足した値、4 は要素ではなく添字の1と3を足した値。","p":"配列の添字は0から始まる。配列 Data = [12, 7, 25, 3, 18] がある。","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"要素数(Data) の値と、Data[要素数(Data) - 1] の値の組はどれか。","c":["5 と 50","4 と 40","5 と 40","4 と 50"],"a":0,"e":"要素は5個なので要素数(Data)=5。添字は0〜4なので Data[5-1]=Data[4]=50（最後の要素）。「4 と 50」は要素数を最大の添字4と混同した組、「4 と 40」はさらにその4から1を引いた Data[3] を答えた組、「5 と 40」は Data[4] を1から数えて4番目の40とした組。","p":"配列の添字は0から始まる。配列 Data = [10, 20, 30, 40, 50] がある。要素数(Data) は配列の要素の個数を返す。","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"表示される値はどれか。","c":["23","27","22","18"],"a":0,"e":"i は1から始まるので Data[0] の4は足さない。9+2+7+5=23。27 は i が0から始まると読み、全部を足した値。22 は先頭から始め、さらに最後の5を足さなかった値（4+9+2+7）。18 は最後の要素まで回ることを見落とし、9+2+7 で止めた値。","p":"次のプログラムを実行する。配列の添字は0から始まる。要素数(Data) は配列の要素の個数を返す。","k":"Data = [4, 9, 2, 7, 5]\ngoukei = 0\ni を 1 から 要素数(Data) - 1 まで 1 ずつ増やしながら繰り返す:\n⎿ goukei = goukei + Data[i]\n表示する(goukei)","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"20 を探すときと、10 を探すときの比較回数の組はどれか。","c":["20は4回、10は6回","20は3回、10は6回","20は4回、10は7回","20は4回、10は5回"],"a":0,"e":"20 は4番目にあるので4回で見つかる。10 はないので6個すべてと比べて6回で終わる。「3回」は20の添字3を回数と混同した誤り、「7回」は最後の要素の後にもう1回比べると考えた誤り、「5回」は最後の要素を比べずに終わると考えた誤り。","p":"配列 Data = [5, 12, 9, 20, 7, 14] を先頭から順に調べ、探す値と等しい要素が見つかった時点で終える（線形探索）。","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"二分探索を使うために、データが満たしている必要がある条件はどれか。","c":["値が大きさの順に並んでいる","データの個数が偶数である","データの個数が2の累乗である","同じ値が2つ以上含まれていない"],"a":0,"e":"二分探索は、中央の値と比べて「探す値は左半分か右半分か」を決めるので、値が順に並んでいることが必要。個数が奇数でも偶数でも中央は (左+右)÷2 で決められ、2の累乗である必要もない。同じ値があっても、どれか1つは見つけられる。","p":"二分探索について考える。","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"隣り合う2つの要素を比べ、順序が逆なら入れ替える操作を繰り返す方法はどれか。","c":["バブルソート","選択ソート","挿入ソート","クイックソート"],"a":0,"e":"隣どうしの比較と交換をくり返し、大きい値が泡のように端へ移っていくのがバブルソート。選択ソートは残りの中の最小（最大）を探して先頭と交換する方法、挿入ソートは整列済みの部分の適切な位置に差し込む方法、クイックソートは基準値より小さいか大きいかで分けていく方法。","p":"並べ替え（ソート）の方法について考える。","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"heikin の値はどれか。","c":["76.25","約101.7","58.75","76"],"a":0,"e":"4つをすべて足して305、要素数4で割って76.25。約101.7 は最大の添字3で割った値、58.75 は添字を1から数えて先頭の70を足さなかった値、76 は / を整数の商を求める ÷ と取り違えた値。","p":"次のプログラムを実行する。配列の添字は0から始まる。要素数(Tensu) は配列の要素の個数を返す。","k":"Tensu = [70, 85, 60, 90]\ngoukei = 0\ni を 0 から 要素数(Tensu) - 1 まで 1 ずつ増やしながら繰り返す:\n⎿ goukei = goukei + Tensu[i]\nheikin = goukei / 要素数(Tensu)","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"最初に比べる要素の値はどれか。","c":["11","14","8","3"],"a":0,"e":"(0+7)÷2=3 なので Data[3]=11。14 は migi を要素数の8として (0+8)÷2=4 とした誤り、8 は添字3を1から数えて3番目の要素とした誤り、3 は要素の値ではなく添字を答えた誤り。","p":"配列 Data = [2, 5, 8, 11, 14, 17, 20, 23] で二分探索を行う。最初は hidari=0、migi=7（最後の添字）とし、aida = (hidari + migi) ÷ 2 の位置の要素と比べる。÷ は整数の商を求める。","m":"難易度 ★☆☆ 基礎"},{"g":"hairetsu","q":"実行後の配列 Data の中身はどれか。","c":["[3, 4, 5, 6]","[3, 4, 7, 10]","[3, 4, 5, 12]","[7, 10, 13, 12]"],"a":0,"e":"i=0 で Data[1]=3+1=4、i=1 では書き換わった4を使って Data[2]=5、i=2 で Data[3]=6。[3, 4, 7, 10] は右辺に書き換える前の値（3、6、9）を使うと考えた誤り、[3, 4, 5, 12] は i=2 まで回ることを見落とした誤り、[7, 10, 13, 12] は左辺と右辺の添字を逆に読んだ誤り。","p":"次のプログラムを実行する。配列の添字は0から始まる。","k":"Data = [3, 6, 9, 12]\ni を 0 から 2 まで 1 ずつ増やしながら繰り返す:\n⎿ Data[i + 1] = Data[i] + 1","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"表示される値はどれか。","c":["1","3","2","4"],"a":0,"e":"42 は添字1と3にあるが、条件は「>」なので、等しい Data[3] では更新されず basho=1 のまま。3 は > を >= と読んで後ろの42に更新した誤り、2 は添字を1から数えた誤り、4 は >= と読んだうえで1から数えた誤り。","p":"次のプログラムを実行する。配列の添字は0から始まる。要素数(Data) は配列の要素の個数を返す。","k":"Data = [15, 42, 8, 42, 30]\nsaidai = Data[0]\nbasho = 0\ni を 1 から 要素数(Data) - 1 まで 1 ずつ増やしながら繰り返す:\n｜ もし Data[i] > saidai ならば:\n｜ ｜ saidai = Data[i]\n⎿ ⎿ basho = i\n表示する(basho)","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"表示される値はどれか。","c":["3","4","2","6"],"a":0,"e":"隣どうしの6組のうち、右が大きいのは (3,8)、(1,8)、(5,9) の3組。4 は < を <= と読み、等しい (8,8) も数えた値。2 は最後の組 (5,9) まで回ることを見落とした値。6 は条件に関係なく比べた組の数を数えた値。","p":"次のプログラムを実行する。配列の添字は0から始まる。要素数(Data) は配列の要素の個数を返す。","k":"Data = [3, 8, 8, 1, 8, 5, 9]\nkazu = 0\ni を 0 から 要素数(Data) - 2 まで 1 ずつ増やしながら繰り返す:\n｜ もし Data[i] < Data[i + 1] ならば:\n⎿ ⎿ kazu = kazu + 1\n表示する(kazu)","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"39 を探すとき、中央の要素と比べる回数は何回か。","c":["4回","13回","3回","12回"],"a":0,"e":"比べる要素は 24（添字7）→ 36（添字11）→ 42（添字13）→ 39（添字12）の順で、4回目に見つかる。13回は先頭から順に調べる線形探索の回数、3回は見つかった回を数えなかった回数、12回は39の添字を回数と混同した数。","p":"配列 Data = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45] で二分探索を行う。hidari=0、migi=14 から始め、aida = (hidari + migi) ÷ 2 の要素と比べ、探す値より小さければ hidari = aida + 1、大きければ migi = aida - 1 とする。÷ は整数の商を求める。","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"実行後の配列 Data の中身はどれか。","c":["[3, 5, 1, 4, 8]","[1, 3, 4, 5, 8]","[3, 5, 1, 8, 4]","[5, 8, 3, 4, 1]"],"a":0,"e":"隣どうしを左から比べ、左が大きければ交換する操作を1周だけ行う。5と3を交換、5と8はそのまま、8と1、8と4を交換して最大の8が右端に来る。[1, 3, 4, 5, 8] は1周で並べ替えが終わると考えた誤り、[3, 5, 1, 8, 4] は最後の組を比べなかった誤り、[5, 8, 3, 4, 1] は > を < と読んだ誤り。","p":"次のプログラムを実行する。配列の添字は0から始まる。要素数(Data) は配列の要素の個数を返す。","k":"Data = [5, 3, 8, 1, 4]\ni を 0 から 要素数(Data) - 2 まで 1 ずつ増やしながら繰り返す:\n｜ もし Data[i] > Data[i + 1] ならば:\n｜ ｜ tmp = Data[i]\n｜ ｜ Data[i] = Data[i + 1]\n⎿ ⎿ Data[i + 1] = tmp","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"並べ替えが終わるまでの比較回数は全部で何回か。","c":["15回","36回","30回","21回"],"a":0,"e":"比べる組は 5、4、3、2、1 と減っていくので、5+4+3+2+1=15回。36回は毎回6組を6周比べると考えた数、30回は毎回5組を減らさずに6周比べると考えた数、21回は 6+5+4+3+2+1 と1周目を6組と数えた数。","p":"要素が6個の配列をバブルソートで並べ替える。1周目は隣どうしを5組比べ、1周ごとに右端の値が決まるので、比べる組を1つずつ減らす。","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"空欄【ア】に入る条件はどれか。","c":["Data[i] < Data[basho]","Data[i] > Data[basho]","Data[i] < Data[i - 1]","i < basho"],"a":0,"e":"basho にはそれまでの最小値の添字が入っているので、Data[i] がそれより小さいときに更新する（1を表示）。> にすると最大値の9になる。Data[i - 1] と比べると直前の要素との比較になり、最後に下がった位置の3を表示する。i < basho は値でなく添字を比べる誤りで、更新されずに6を表示する。","p":"配列 Data の最小値を表示したい。配列の添字は0から始まり、要素数(Data) は配列の要素の個数を返す。","k":"Data = [6, 2, 9, 1, 4, 3]\nbasho = 0\ni を 1 から 要素数(Data) - 1 まで 1 ずつ増やしながら繰り返す:\n｜ もし 【ア】 ならば:\n⎿ ⎿ basho = i\n表示する(Data[basho])","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"表示される値はどれか。","c":["3","1","4","2"],"a":0,"e":"見つけても繰り返しは止まらず最後まで調べるので、basho は最後に見つかった9の添字3になる。1 は最初に見つけた時点で終わると考えた誤り、4 は最後の9の位置を1から数えた誤り、2 は最初の9の位置を1から数えた誤り。","p":"次のプログラムを実行する。配列の添字は0から始まる。要素数(Data) は配列の要素の個数を返す。","k":"Data = [4, 9, 1, 9, 6]\natai = 9\nbasho = -1\ni を 0 から 要素数(Data) - 1 まで 1 ずつ増やしながら繰り返す:\n｜ もし Data[i] == atai ならば:\n⎿ ⎿ basho = i\n表示する(basho)","m":"難易度 ★★☆ 標準"},{"g":"hairetsu","q":"並べ替えが終わるまでに、要素を交換する回数は全部で何回か。","c":["5回","10回","3回","4回"],"a":0,"e":"交換1回で大小が逆の組が1つだけ減る。逆になっている組は (2,1)(5,1)(5,4)(5,3)(4,3) の5組なので5回。10回は交換ではなく比較の回数（4+3+2+1）、3回は1周目の交換だけを数えた回数、4回は1周目の比較の回数と取り違えた数。","p":"配列 [2, 5, 1, 4, 3] を、バブルソート（1周ごとに比べる組を1つずつ減らす）で小さい順に並べ替える。","m":"難易度 ★★★ 発展"},{"g":"hairetsu","q":"中央の要素と比べる回数は、最も多い場合で何回か。","c":["7回","6回","50回","100回"],"a":0,"e":"範囲は 100→約50→約25→12→6→3→1 と半分ずつになり、最後の1個と比べるまで数えると最大7回（2の7乗=128 が100以上）。6回は2の6乗=64 で足りると考え、最後の1回を数えなかった誤り。50回は全体の半分を調べると考えた誤り、100回は線形探索と混同した回数。","p":"大きさの順に並んだ100個のデータから、二分探索で値を探す。中央の要素と1回比べるごとに、調べる範囲はおよそ半分になる。","m":"難易度 ★★★ 発展"},{"g":"hairetsu","q":"正しく並べ替えられ、存在しない添字を使わず、比較の回数が最も少なくなるように、空欄【ア】に入れるものはどれか。","c":["n - 2 - i","n - 1 - i","n - 2","n - 3 - i"],"a":0,"e":"1周目（i=0）は j=n-2 まで比べれば Data[n-1] まで届き、1周ごとに右端が1つ決まるので n-2-i。n-1-i は1周目に Data[n] という存在しない要素を使う。n-2 は並べ替えられるが決まった右端とも毎回比べ、比較が多くなる。n-3-i は最後の組を比べず、並べ替えが終わらない。","p":"配列 Data を小さい順に並べ替えるバブルソートを作る。配列の添字は0から始まり、要素数(Data) は配列の要素の個数を返す。","k":"n = 要素数(Data)\ni を 0 から n - 2 まで 1 ずつ増やしながら繰り返す:\n｜ j を 0 から 【ア】 まで 1 ずつ増やしながら繰り返す:\n｜ ｜ もし Data[j] > Data[j + 1] ならば:\n｜ ｜ ｜ tmp = Data[j]\n｜ ｜ ｜ Data[j] = Data[j + 1]\n⎿ ⎿ ⎿ Data[j + 1] = tmp","m":"難易度 ★★★ 発展"},{"g":"hairetsu","q":"実行後の配列 Data の中身はどれか。","c":["[3, 7, 8, 10, 15]","[3, 8, 10, 10, 15]","[3, 7, 10, 8, 15]","[3, 7, 8, 0, 0]"],"a":0,"e":"8より大きい15、10を1つずつ右へずらし（i は3→2→1）、7で止まる。空いた Data[i + 1]=Data[2] に8を入れる。[3, 8, 10, 10, 15] は最後の代入先を Data[i] と読んだ誤り、[3, 7, 10, 8, 15] は1回ずらしただけで止まると考えた誤り、[3, 7, 8, 0, 0] はずらす代入の左右を逆に読んだ誤り。","p":"次のプログラムを実行する。配列の添字は0から始まる。Data の最後の要素 0 は空き場所として使う。","k":"Data = [3, 7, 10, 15, 0]\nx = 8\ni = 3\ni >= 0 and Data[i] > x の間繰り返す:\n｜ Data[i + 1] = Data[i]\n⎿ i = i - 1\nData[i + 1] = x","m":"難易度 ★★★ 発展"}];
+  var GUIDES = {"kisuu":"## 2進数と16進数のポイント\n\nコンピュータの中では、すべての情報を0と1の並び（2進数）で扱う。人が読みやすくするため、2進数4桁をまとめて16進数1桁で書くことが多い。\n\n## 位の重み\n\n| 位 | 2進数 | 16進数 |\n|---|---|---|\n| 右端 | 1 | 1 |\n| 2つ目 | 2 | 16 |\n| 3つ目 | 4 | 256 |\n| 4つ目 | 8 | 4096 |\n\n16進数では10〜15を A〜F で表す（A=10, B=11, C=12, D=13, E=14, F=15）。A を9や11と数えるずれが多い。\n\n## 基数変換の手順\n\n- **10進数→2進数**: 2で割った余りを書き、最後に**下から上へ**読む。例: 19 → 余りが 1,1,0,0,1 → 10011\n- **2進数→10進数**: 1の立っている位の重みを足す。例: 1101 → 8+4+1=13\n- **2進数→16進数**: **右から**4桁ずつ区切る。例: 111010 → 11|1010 → 3A\n- **小数**: 小数点の右は 1/2, 1/4, 1/8 の位。10進数の小数は「2を掛けて整数部を取り出す」を繰り返し、取り出した順に並べる\n\n## ビット数と表せる数\n\nnビットで表せるのは2のn乗通り。0から数えるので、最大値は2のn乗−1。\n\n| ビット数 | 通り数 | 最大値（0以上のみ） |\n|---|---|---|\n| 4 | 16 | 15 |\n| 8 | 256 | 255 |\n| 16 | 65536 | 65535 |\n\n「何通りか」と「最大はいくつか」を混同しない。「N種類を区別するには何ビット必要か」は、2のn乗がN以上になる最小のnを探す。\n\n## 2進数の足し算と2の補数\n\n1+1=10 なので、上の桁に1繰り上がる。負の数は**2の補数**で表すのが一般的で、正の数の全ビットを反転して1を足す。\n\n```\n 6 = 00000110\n反転 11111001\n+1  11111010  ← -6\n```\n\n8ビットの2の補数で表せる範囲は -128〜127。最上位ビットが1なら負の数になる。決められたビット数を超える繰り上がりは捨てる。範囲を超える計算（4ビットで 5+4 など）では、答えが負の数に化ける「あふれ」が起きる。\n\n## よくある誤り\n\n- 余りを上から読んでしまう\n- 16進数に直すとき、左から4桁ずつ区切る\n- 2の補数で、反転したあと1を足し忘れる\n- 通り数（2のn乗）と最大値（2のn乗−1）を混同する\n\n## 共通テストでの問われ方\n\n単独の変換問題だけでなく、文字コード・色の表し方（RGBを各8ビットの16進数で書く）・IPアドレスなどの題材の中で、変換や「必要なビット数」の計算が問われる。表を見ながら変換できるよう、位の重みを書き出す習慣をつけておくとよい。\n","dataryo":"## データ量の計算のポイント\n\nデータ量の計算は「1つ分のビット数 × 個数」が基本。最後に単位をそろえる。\n\n## 単位の換算\n\n| 単位 | 関係 |\n|---|---|\n| 1バイト（B） | 8ビット（bit） |\n| 1KB | 1000B または 1024B |\n| 1MB | 1000KB または 1024KB |\n| 1GB | 1000MB または 1024MB |\n\n1000 と 1024 のどちらを使うかは**問題文の指示に従う**。指示を読み飛ばすのが一番多いミス。\n\n## 画像・音声・動画の公式\n\n- **画像** = 横の画素数 × 縦の画素数 × 1画素のビット数\n- **音声** = 標本化周波数（Hz） × 量子化ビット数 × チャンネル数 × 秒数\n- **動画** = 1フレームのデータ量 × フレームレート（fps） × 秒数\n\n例: 横100×縦50画素、1画素24ビットの画像は 100×50×24=120000ビット=15000バイト（1KB=1000Bなら15KB）。\n\nRGB各8ビット（合計24ビット）で表せる色は 256×256×256 = 約1677万色。**色の数は掛け算、データ量はビット数に比例**、と区別する。\n\n## 圧縮率\n\n圧縮率 = 圧縮後 ÷ 圧縮前 × 100（%）。「元の何%の大きさか」なので、小さいほどよく縮んでいる。問題によって定義が違うことがあるので、必ず問題文の定義を確かめる。\n\nランレングス圧縮では、同じ値が続く部分を「値＋個数」にまとめる。変化の多いデータでは、かえって大きくなることもある。\n\n## 通信時間\n\n通信時間（秒） = データ量（ビット） ÷ 通信速度（bps）\n\n```\n40MB を 20Mbps で送る（伝送効率100%）\n40MB = 40×8 = 320Mビット\n320 ÷ 20 = 16秒\n```\n\nbps は「ビット毎秒」。ファイルの大きさはバイトで書かれていることが多いので、**8を掛けてビットに直す**。伝送効率が80%なら、使える速度は 20×0.8=16Mbps になり、時間は長くなる。\n\n## よくある誤り\n\n- ビットとバイトの取り違え（8倍・1/8倍のずれ）\n- 1000 と 1024 の取り違え\n- ステレオの2チャンネル、動画の秒数やフレーム数の掛け忘れ\n- 縦横2倍でデータ量を2倍と考える（正しくは4倍）\n- 伝送効率を掛けて時間を短くしてしまう\n\n## 共通テストでの問われ方\n\n数値そのものより、「条件を変えたら何倍になるか」「どちらが先に容量を超えるか」といった比の考え方がよく問われる。式を立ててから約分すると、大きな数を計算せずに済む。\n","ronri":"## 論理回路のポイント\n\nコンピュータの計算は、0と1を入力して0と1を出力する論理回路の組み合わせでできている。共通テストでは回路図の代わりに式や真理値表で問われることが多い。\n\n## 基本の論理演算\n\n| A | B | A AND B | A OR B | A XOR B |\n|---|---|---|---|---|\n| 0 | 0 | 0 | 0 | 0 |\n| 0 | 1 | 0 | 1 | 1 |\n| 1 | 0 | 0 | 1 | 1 |\n| 1 | 1 | 1 | 1 | 0 |\n\n- **AND（論理積）**: すべて1のときだけ1\n- **OR（論理和）**: 少なくとも1つが1なら1\n- **XOR（排他的論理和）**: 値が異なるときだけ1\n- **NOT（否定）**: 0と1を入れ替える（入力は1つ）\n\nOR と XOR の違いは「1 1 の行」だけ。ここを必ず確かめる。\n\n## 式の値の求め方\n\n括弧の内側から順に計算する。NOT がどこまでかかっているかに注意する。\n\n```\nA=1, B=0, C=1 のとき\n(A AND B) OR (NOT C)\n= (1 AND 0) OR (NOT 1)\n= 0 OR 0\n= 0\n```\n\nNOT A AND B と NOT (A AND B) は別の式。真理値表を作ると違いがはっきりする。\n\n## 真理値表の作り方\n\n入力が n 個なら行数は2のn乗。入力の列を 00, 01, 10, 11 のように2進数の順に並べると、書き漏れがない。\n\n## 半加算器\n\n1ビットどうしの足し算をする回路。\n\n| A | B | C（桁上がり） | S（和） |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n| 0 | 1 | 0 | 1 |\n| 1 | 0 | 0 | 1 |\n| 1 | 1 | 1 | 0 |\n\nC = A AND B、S = A XOR B。1+1=10 の「1」が C、「0」が S になる。下の桁からの桁上がりも足せるようにしたものが全加算器。\n\n## よくある誤り\n\n- OR と XOR を取り違える（1 1 の行で差が出る）\n- NOT のかかる範囲を読み違える\n- 半加算器の C と S を逆にする\n- 3入力の真理値表を6行や9行と数える\n\n## 共通テストでの問われ方\n\n「条件を満たすときに1を出す回路」を文章で示し、それに合う式や真理値表を選ぶ形がよく出る。文章の「かつ」は AND、「または」は OR、「〜でない」は NOT に置き換え、候補の式に具体的な値を入れて確かめるとよい。\n","program":"## プログラムの読み取りのポイント\n\n共通テストでは、大学入試センターの「共通テスト用プログラム表記」で書かれたプログラムを読む。特定の言語の知識より、**変数の値を1行ずつ追う力（トレース）**が問われる。\n\n## 表記の基本\n\n| 書き方 | 意味 |\n|---|---|\n| `x = x + 1` | 右辺を計算して左辺の変数に入れる（代入） |\n| `a ÷ b` / `a % b` | 整数の商 / 余り |\n| `表示する(x, \"個\")` | 値や文字列をつなげて表示 |\n| `もし 〜 ならば:` | 条件分岐 |\n| `そうでなくもし 〜 ならば:` | 前の条件が偽のときだけ次を調べる |\n| `i を 1 から 5 まで 1 ずつ増やしながら繰り返す:` | 回数の決まった繰り返し（5を含む） |\n| `〜 の間繰り返す:` | 条件が真の間、繰り返す |\n\nブロックの範囲は行頭の `｜` と `⎿` で示す。`⎿` はそのブロックの最後の行。\n\n## トレース表を書く\n\n```\ngoukei = 0\ni を 1 から 4 まで 1 ずつ増やしながら繰り返す:\n⎿ goukei = goukei + i * 2\n```\n\n| i | goukei |\n|---|---|\n| 1 | 2 |\n| 2 | 6 |\n| 3 | 12 |\n| 4 | 20 |\n\n頭の中だけで追わず、変数ごとに列を作って1行ずつ書く。行の順番が変わると結果が変わることにも注意する。\n\n## 条件分岐\n\n「もし〜そうでなくもし〜」は、**上から調べて最初に真になった所だけ**を実行する。境界の値（70点ちょうどなど）を入れて、どこに入るか確かめるとよい。\n\n## 繰り返しの終わり方\n\n- 「1 から 5 まで」は 5 を含む\n- 「〜の間繰り返す」は、条件が偽になった時点で終わる。**続ける条件**を書くので、終わる条件と逆になる\n- 最後の1回を数えるかどうかで1ずれやすい。終わる直前と直後の値を必ず書き出す\n\n## ÷ と %\n\n47 ÷ 10 = 4、47 % 10 = 7。% 10 で一の位、÷ 10 で一の位を取り除く。% 2 == 0 なら偶数。\n\n## よくある誤り\n\n- 代入した後の値ではなく、前の値で計算してしまう\n- 繰り返しの回数を1つ多く・少なく数える\n- and と or、== と != を取り違える\n- 「そうでなくもし」を独立した「もし」として読む\n\n## 共通テストでの問われ方\n\nプログラムの一部が空欄になっていて、目的どおり動くものを選ぶ問題が中心。選択肢を1つずつ入れて、小さな値でトレースして確かめる。\n","hairetsu":"## 配列とアルゴリズムのポイント\n\n配列は、同じ種類のデータを番号（添字）で並べて管理するしくみ。共通テスト用プログラム表記では、**特に説明がなければ添字は0から始まる**。\n\n```\nData = [12, 7, 25]\nData[0] は 12、Data[2] は 25\n要素数(Data) は 3、最後の要素は Data[要素数(Data) - 1]\n```\n\n## 基本の処理\n\n- **合計**: goukei を0にして、i を 0 から 要素数-1 まで回して足す\n- **最大値**: 最初の要素を仮の最大とし、それより大きい要素があれば置き換える。「>」と「>=」で、同じ値が複数あるときに残る位置が変わる\n- **隣どうしの比較**: Data[i] と Data[i + 1] を比べるときは、i を 要素数-2 までにしないと存在しない添字を使ってしまう\n\n## 探索\n\n| 方法 | しくみ | 比較回数（最大） |\n|---|---|---|\n| 線形探索 | 先頭から順に調べる | データの個数 |\n| 二分探索 | 中央と比べて範囲を半分にする | 約 log2(個数)+1 |\n\n二分探索は**データが順に並んでいる**ことが前提。中央の添字は (hidari + migi) ÷ 2 で、探す値より小さければ hidari = aida + 1、大きければ migi = aida - 1 とする。100個なら最大7回、1000個でも最大10回で済む。\n\n## バブルソート\n\n隣どうしを比べ、順序が逆なら交換する。1周ごとに最大の値が右端に決まる。\n\n```\n[5, 3, 8, 1] の1周目\n[3, 5, 8, 1] → [3, 5, 8, 1] → [3, 5, 1, 8]\n```\n\nn 個のとき、比較回数は (n-1)+(n-2)+…+1。交換は、大小が逆になっている組の数だけ行われる。\n\n## 交換のしかた\n\na と b を入れ替えるには、一時的な変数を使う。\n\n```\ntmp = a\na = b\nb = tmp\n```\n\na = b、b = a と2行で書くと、両方とも同じ値になってしまう。\n\n## よくある誤り\n\n- 添字を1から数える（Data[1] を先頭と考える）\n- 繰り返しの終わりを1つずらし、最後の要素を調べ忘れる・範囲外を使う\n- 比較回数と交換回数、添字と値を混同する\n- 見つけた後も繰り返しが続くかどうかを見落とす\n\n## 共通テストでの問われ方\n\n探索や並べ替えのプログラムの空欄補充と、「何回比べるか」「途中で配列はどうなっているか」のトレースが中心。小さな配列で1周ずつ書き出すと確実に解ける。\n"};
+  var WORDS = [];
+
+  var els = {};
+  ["unit-groups","selected-unit-box","selected-unit-label","selected-unit-count",
+   "btn-make-quiz","btn-view-guide",
+   "error-banner","error-text","error-close",
+   "view-setup","view-quiz","view-result","view-guide","view-stats",
+   "quiz-count","quiz-score","quiz-unit","quiz-dots","quiz-prompt","quiz-question","quiz-code","quiz-source","quiz-choices",
+   "quiz-feedback","feedback-speak","feedback-sentence","btn-speak","btn-speak-slow","feedback-verdict","feedback-head","feedback-explanation","feedback-translation","feedback-translation-text","feedback-meta",
+   "btn-next-question",
+   "result-frac","result-message","btn-retry-quiz","btn-new-quiz","btn-guide-from-result","btn-change-unit",
+   "guide-content","btn-guide-back","btn-guide-quiz",
+   "stats-body","btn-stats","btn-stats-back","btn-stats-reset","btn-stats-from-result",
+   "btn-wrongbox","btn-wrong-only","range-from","range-to","btn-range"
+  ].forEach(function(id){ els[id.replace(/-([a-z])/g, function(_,c){return c.toUpperCase();})] = document.getElementById(id); });
+
+  var SET_SIZE = 10;
+  var quizData = [];
+  var currentIndex = 0;
+  var score = 0;
+  var results = [];
+  var selectedUnit = null;
+  var isWrongReview = false;
+
+  // 問題文と正解から安定したIDを作る（データの並び順が変わってもずれない）
+  function qid(text){
+    var h = 5381, s = String(text);
+    for(var i=0;i<s.length;i++){ h = ((h*33) ^ s.charCodeAt(i)) >>> 0; }
+    return h.toString(36);
+  }
+  var QID_MAP = {};
+  POOL.forEach(function(q){
+    q.id = qid(q.q + "|" + q.c[q.a]);
+    QID_MAP[q.id] = q;
+  });
+
+  // ===================== 学習記録（この端末のブラウザ内だけに保存） =====================
+  var RECENT_MAX = 60;
+  var DAYS_MAX  = 400;
+
+  function emptyStore(){ return { units:{}, wrong:[], recent:{}, days:[] }; }
+
+  var store = (function(){
+    try{
+      var raw = window.localStorage.getItem(CONFIG.storeKey);
+      if(!raw) return emptyStore();
+      var o = JSON.parse(raw);
+      return {
+        units:  o.units  || {},
+        wrong:  Array.isArray(o.wrong) ? o.wrong : [],
+        recent: o.recent || {},
+        days:   o.days   || []
+      };
+    }catch(e){ return emptyStore(); }
+  })();
+
+  var storageOK = true;
+  function saveStore(){
+    try{ window.localStorage.setItem(CONFIG.storeKey, JSON.stringify(store)); }
+    catch(e){ storageOK = false; }
+  }
+
+  function rangeUnit(from, to){
+    return { id: "r" + from + "-" + to, label: "No." + from + "〜" + to, from: from, to: to };
+  }
+
+  function findUnit(uid){
+    var found = null;
+    UNITS.forEach(function(g){
+      g.items.forEach(function(it){ if(it.id === uid) found = it; });
+    });
+    if(!found){
+      var m = /^r(\d+)-(\d+)$/.exec(uid);
+      if(m) found = rangeUnit(+m[1], +m[2]);
+    }
+    return found;
+  }
+  function unitLabelOf(uid){
+    var u = findUnit(uid);
+    return u ? u.label : uid;
+  }
+
+  function poolOf(unit){
+    if(unit.from){
+      return POOL.filter(function(q){ return q.no >= unit.from && q.no <= unit.to; });
+    }
+    return POOL.filter(function(q){ return q.g === unit.id; });
+  }
+
+  function todayKey(){
+    var d = new Date();
+    function p(n){ return (n<10?"0":"") + n; }
+    return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());
+  }
+
+  function recordAnswer(id, isCorrect){
+    var at = store.wrong.indexOf(id);
+    if(isCorrect){
+      if(at >= 0) store.wrong.splice(at, 1);   // 正解したら苦手ボックスから外す
+    } else if(at < 0){
+      store.wrong.push(id);
+    }
+  }
+
+  function recordQuizFinished(unitId, asked, correct){
+    var u = store.units[unitId] || { attempts:0, asked:0, correct:0, last:"" };
+    u.attempts += 1;
+    u.asked    += asked;
+    u.correct  += correct;
+    u.last      = todayKey();
+    store.units[unitId] = u;
+    if(store.days.indexOf(u.last) < 0){
+      store.days.push(u.last);
+      if(store.days.length > DAYS_MAX) store.days = store.days.slice(-DAYS_MAX);
+    }
+    saveStore();
+  }
+
+  function rememberAsked(unitId, questions){
+    var seen = store.recent[unitId] || [];
+    questions.forEach(function(q){
+      var at = seen.indexOf(q.id);
+      if(at >= 0) seen.splice(at, 1);
+      seen.push(q.id);
+    });
+    if(seen.length > RECENT_MAX) seen = seen.slice(-RECENT_MAX);
+    store.recent[unitId] = seen;
+    saveStore();
+  }
+
+  function wrongBoxQuestions(limit){
+    var out = [];
+    store.wrong.forEach(function(id){ if(QID_MAP[id]) out.push(QID_MAP[id]); });
+    return shuffleArray(out).slice(0, limit || SET_SIZE);
+  }
+  function wrongBoxCount(){
+    return store.wrong.filter(function(id){ return QID_MAP[id]; }).length;
+  }
+
+  function switchView(name){
+    ["setup","quiz","result","guide","stats"].forEach(function(v){
+      els["view"+v[0].toUpperCase()+v.slice(1)].hidden = (v !== name);
+    });
+    if(name !== "quiz") stopSpeaking();
+    window.scrollTo(0, 0);
+  }
+
+  function showError(msg){
+    els.errorText.textContent = msg;
+    els.errorBanner.hidden = false;
+  }
+  function clearError(){ els.errorBanner.hidden = true; }
+  els.errorClose.addEventListener("click", clearError);
+
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, function(ch){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch];
+    });
+  }
+  // $...$ を数式として組む（KaTeX が読めないときは元の文字のまま）
+  function typeset(el){
+    try{
+      if(el && window.renderMathInElement){
+        window.renderMathInElement(el, {
+          delimiters: [{left:"$$", right:"$$", display:true}, {left:"$", right:"$", display:false}],
+          throwOnError: false
+        });
+      }
+    }catch(e){}
+  }
+
+  // 《》で囲んだ部分を傍線にする
+  function markup(s){
+    return escapeHTML(s).replace(/《(.+?)》/g, '<span class="bosen">$1</span>');
+  }
+
+  // ---- 単元選び ----
+  function renderUnitGroups(){
+    els.unitGroups.innerHTML = "";
+    UNITS.forEach(function(group){
+      var wrap = document.createElement("div");
+      wrap.className = "unit-group";
+      var h3 = document.createElement("h3");
+      h3.textContent = group.chapter;
+      wrap.appendChild(h3);
+      var chips = document.createElement("div");
+      chips.className = "chips";
+      group.items.forEach(function(item){
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip";
+        btn.textContent = item.label;
+        btn.dataset.unitId = item.id;
+        btn.addEventListener("click", function(){ selectUnit(item); });
+        chips.appendChild(btn);
+      });
+      wrap.appendChild(chips);
+      els.unitGroups.appendChild(wrap);
+    });
+  }
+  renderUnitGroups();
+
+  function selectUnit(item){
+    selectedUnit = item;
+    Array.prototype.forEach.call(els.unitGroups.querySelectorAll(".chip"), function(chip){
+      chip.classList.toggle("active", chip.dataset.unitId === item.id);
+    });
+    els.selectedUnitLabel.textContent = item.label + (item.hint ? "（" + item.hint + "）" : "");
+    els.selectedUnitCount.textContent = " 全" + poolOf(item).length + "問";
+    els.selectedUnitBox.hidden = false;
+    els.btnMakeQuiz.disabled = false;
+    els.btnViewGuide.disabled = false;
+    clearError();
+  }
+
+  if(els.btnRange){
+    els.btnRange.addEventListener("click", function(){
+      var a = parseInt(els.rangeFrom.value, 10), b = parseInt(els.rangeTo.value, 10);
+      if(isNaN(a) || isNaN(b)){ showError("はじめとおわりの番号を数字で入れてください。"); return; }
+      if(a > b){ var t = a; a = b; b = t; }
+      a = Math.max(1, a); b = Math.min(CONFIG.maxNo, b);
+      var u = rangeUnit(a, b);
+      if(!poolOf(u).length){ showError("No." + a + "〜" + b + " には問題がありません。"); return; }
+      els.rangeFrom.value = a; els.rangeTo.value = b;
+      selectUnit(u);
+      els.selectedUnitBox.scrollIntoView({ block:"nearest" });
+    });
+  }
+
+  // ---- 出題 ----
+  function shuffleArray(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function shuffleChoices(q){
+    var order = shuffleArray(q.c.map(function(_, i){ return i; }));
+    var copy = {};
+    Object.keys(q).forEach(function(k){ copy[k] = q[k]; });
+    copy.c = order.map(function(i){ return q.c[i]; });
+    copy.a = order.indexOf(q.a);
+    return copy;
+  }
+
+  // 同じ語が1セットに重ならないように選ぶ（足りなければ重ねる）
+  function pickDistinct(list, n){
+    var used = {}, out = [], rest = [];
+    list.forEach(function(q){
+      if(out.length >= n){ return; }
+      if(q.w && used[q.w]){ rest.push(q); return; }
+      if(q.w) used[q.w] = true;
+      out.push(q);
+    });
+    return out.concat(rest).slice(0, n);
+  }
+
+  function pickQuizForUnit(unit){
+    var pool = poolOf(unit);
+    if(!pool.length) return null;
+    // 直近に出した問題をいったん後回しにして、同じ問題の再出現を減らす
+    var seen = store.recent[unit.id] || [];
+    var fresh = pool.filter(function(q){ return seen.indexOf(q.id) < 0; });
+    var picked;
+    if(fresh.length >= SET_SIZE){
+      picked = pickDistinct(shuffleArray(fresh), SET_SIZE);
+    } else {
+      // 未出題が足りなくなったら一巡したとみなし、記憶を流して全体から選び直す
+      picked = pickDistinct(shuffleArray(fresh).concat(
+        shuffleArray(pool.filter(function(q){ return fresh.indexOf(q) < 0; }))
+      ), SET_SIZE);
+      store.recent[unit.id] = [];
+    }
+    rememberAsked(unit.id, picked);
+    return picked.map(shuffleChoices);
+  }
+
+  function beginQuiz(questions, title){
+    quizData = questions;
+    currentIndex = 0; score = 0; results = [];
+    renderQuizDots();
+    els.quizUnit.textContent = title;
+    renderQuestion();
+    switchView("quiz");
+  }
+
+  function startQuizWith(questions, title){
+    if(!questions || !questions.length) return false;
+    isWrongReview = true;
+    beginQuiz(questions.map(shuffleChoices), title);
+    return true;
+  }
+
+  function startQuiz(){
+    clearError();
+    if(!selectedUnit) return;
+    isWrongReview = false;
+    var qs = pickQuizForUnit(selectedUnit);
+    if(!qs){
+      showError("「" + selectedUnit.label + "」の問題は準備中です。別の単元をお試しください。");
+      switchView("setup");
+      return;
+    }
+    beginQuiz(qs, CONFIG.unitWord + ": " + selectedUnit.label);
+  }
+
+  function renderQuizDots(){
+    els.quizDots.innerHTML = "";
+    quizData.forEach(function(){ els.quizDots.appendChild(document.createElement("span")); });
+    updateDots();
+  }
+  function updateDots(){
+    var dots = els.quizDots.children;
+    for(var i=0;i<dots.length;i++){
+      dots[i].className = "";
+      if(results[i] === "correct") dots[i].classList.add("done-correct");
+      else if(results[i] === "wrong") dots[i].classList.add("done-wrong");
+      else if(i === currentIndex) dots[i].classList.add("current");
+    }
+  }
+
+  // ---- 英語 ----
+  function isEnglish(s){
+    return false;
+    var t = String(s || "").replace(/[\s\d\p{P}《》]/gu, "");
+    if(!t) return false;
+    var ascii = t.replace(/[^A-Za-z]/g, "").length;
+    return ascii / t.length > 0.6;
+  }
+  var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+  var enVoice = null;
+  function pickVoice(){
+    if(!canSpeak) return;
+    var vs = window.speechSynthesis.getVoices() || [];
+    var en = vs.filter(function(v){ return /^en[-_]/i.test(v.lang); });
+    var pref = function(re){ return en.filter(function(v){ return re.test(v.lang); }); };
+    var us = pref(/US/i), gb = pref(/GB/i);
+    var cand = us.length ? us : (gb.length ? gb : en);
+    // 高品質な音声（Enhanced / Premium / Google / Natural）を優先
+    enVoice = cand.filter(function(v){ return /enhanced|premium|natural|google|samantha/i.test(v.name); })[0] || cand[0] || null;
+  }
+  if(canSpeak){
+    pickVoice();
+    if(window.speechSynthesis.addEventListener) window.speechSynthesis.addEventListener("voiceschanged", pickVoice);
+  }
+  function stopSpeaking(){
+    if(!canSpeak) return;
+    try{ window.speechSynthesis.cancel(); }catch(e){}
+    if(els.btnSpeak){ els.btnSpeak.setAttribute("aria-pressed","false"); els.btnSpeakSlow.setAttribute("aria-pressed","false"); }
+  }
+  function speak(text, rate, btn){
+    if(!canSpeak || !text) return;
+    stopSpeaking();
+    // 長い文で読み上げが途中で止まるブラウザがあるので、文ごとに分けて順に読む
+    var parts = String(text).match(/[^.!?]+[.!?]*["')]*\s*/g) || [text];
+    btn.setAttribute("aria-pressed","true");
+    parts.forEach(function(part, i){
+      var u = new SpeechSynthesisUtterance(part.trim());
+      u.lang = enVoice ? enVoice.lang : "en-US";
+      if(enVoice) u.voice = enVoice;
+      u.rate = rate;
+      if(i === parts.length-1){ u.onend = u.onerror = function(){ btn.setAttribute("aria-pressed","false"); }; }
+      window.speechSynthesis.speak(u);
+    });
+  }
+  els.btnSpeak.addEventListener("click", function(){ speak(quizData[currentIndex].en, 0.95, els.btnSpeak); });
+  els.btnSpeakSlow.addEventListener("click", function(){ speak(quizData[currentIndex].en, 0.7, els.btnSpeakSlow); });
+
+  function renderQuestion(){
+    var q = quizData[currentIndex];
+    els.quizCount.textContent = "問 " + (currentIndex+1) + " / " + quizData.length;
+    els.quizScore.textContent = "正解 " + score;
+    els.quizPrompt.textContent = q.p || "";
+    els.quizPrompt.hidden = !q.p;
+    els.quizQuestion.innerHTML = markup(q.q);
+    els.quizQuestion.lang = isEnglish(q.q) ? "en" : "ja";
+    stopSpeaking();
+    els.quizQuestion.classList.toggle("big", !!q.big);
+    els.quizCode.textContent = q.k || "";
+    els.quizCode.hidden = !q.k;
+    els.quizSource.textContent = q.s || "";
+    els.quizSource.hidden = !q.s;
+    els.quizFeedback.hidden = true;
+    els.btnNextQuestion.hidden = true;
+    updateDots();
+
+    els.quizChoices.innerHTML = "";
+    var letters = ["A","B","C","D","E","F"];
+    q.c.forEach(function(choiceText, idx){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "choice";
+      btn.innerHTML = '<span class="badge">' + letters[idx] + '</span><span></span>';
+      var label = btn.querySelector("span:last-child");
+      label.textContent = choiceText;
+      if(isEnglish(choiceText)){ label.className = "en"; label.lang = "en"; }
+      btn.addEventListener("click", function(){ onChoose(idx); });
+      els.quizChoices.appendChild(btn);
+    });
+    typeset(els.quizPrompt);
+    typeset(els.quizQuestion);
+    typeset(els.quizChoices);
+  }
+
+  function onChoose(idx){
+    var q = quizData[currentIndex];
+    var buttons = els.quizChoices.querySelectorAll(".choice");
+    Array.prototype.forEach.call(buttons, function(b){ b.disabled = true; });
+
+    var isCorrect = (idx === q.a);
+    buttons[idx].classList.add(isCorrect ? "correct" : "incorrect");
+    if(!isCorrect) buttons[q.a].classList.add("correct");
+
+    if(isCorrect) score++;
+    results[currentIndex] = isCorrect ? "correct" : "wrong";
+    recordAnswer(q.id, isCorrect);
+    saveStore();
+    updateDots();
+    els.quizScore.textContent = "正解 " + score;
+
+    els.feedbackVerdict.textContent = isCorrect ? "○ 正解！" : "× 残念、不正解";
+    els.feedbackVerdict.className = "verdict " + (isCorrect ? "correct" : "incorrect");
+    els.feedbackHead.textContent = q.h || "";
+    els.feedbackHead.hidden = !q.h;
+    els.feedbackExplanation.textContent = q.e || "";
+    els.feedbackSentence.textContent = q.en || "";
+    els.feedbackSpeak.hidden = !q.en;
+    els.btnSpeak.hidden = els.btnSpeakSlow.hidden = !canSpeak;
+    if(q.t){
+      els.feedbackTranslationText.innerHTML = markup(q.t);
+      els.feedbackTranslation.hidden = false;
+    } else {
+      els.feedbackTranslation.hidden = true;
+    }
+    els.feedbackMeta.textContent = q.m || "";
+    els.feedbackMeta.hidden = !q.m;
+    els.quizFeedback.hidden = false;
+    typeset(els.quizFeedback);
+    els.btnNextQuestion.hidden = false;
+    els.btnNextQuestion.textContent = (currentIndex === quizData.length-1) ? "結果を見る" : "次の問題へ";
+    // 解説とボタンが画面の外に出ないように寄せる
+    try{
+      var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      els.btnNextQuestion.scrollIntoView({ block: "end", behavior: reduceMotion ? "auto" : "smooth" });
+    }catch(e){
+      els.btnNextQuestion.scrollIntoView(false);
+    }
+  }
+
+  els.btnNextQuestion.addEventListener("click", function(){
+    if(currentIndex < quizData.length-1){
+      currentIndex++;
+      renderQuestion();
+      els.quizCount.scrollIntoView({ block: "nearest" });
+    } else {
+      showResult();
+    }
+  });
+
+  function showResult(){
+    var total = quizData.length;
+    els.resultFrac.textContent = score + "/" + total;
+    var ratio = score/total;
+    var msg;
+    if(score === total) msg = "満点です！お見事な出来栄え。もう一つ別の範囲にも挑戦してみましょう。";
+    else if(ratio >= 0.7) msg = "よくできました。間違えた問題の解説を読み返して、仕上げていきましょう。";
+    else if(ratio >= 0.4) msg = "もう少しです。解説を読み直して、同じ範囲にもう一度挑戦してみましょう。";
+    else msg = CONFIG.lowScoreMessage;
+    els.resultMessage.textContent = msg;
+
+    if(selectedUnit && !isWrongReview){
+      recordQuizFinished(selectedUnit.id, total, score);
+    } else {
+      saveStore();
+    }
+
+    var wrongCount = results.filter(function(r){ return r === "wrong"; }).length;
+    els.btnWrongOnly.hidden = (wrongCount === 0);
+    if(wrongCount) els.btnWrongOnly.textContent = "間違えた" + wrongCount + "問だけもう一度";
+    els.btnGuideFromResult.hidden = !selectedUnit || isWrongReview;
+    els.btnNewQuiz.hidden = !selectedUnit || isWrongReview;
+
+    switchView("result");
+  }
+
+  els.btnRetryQuiz.addEventListener("click", function(){
+    beginQuiz(quizData.map(shuffleChoices), els.quizUnit.textContent);
+  });
+  els.btnNewQuiz.addEventListener("click", function(){ startQuiz(); });
+  els.btnChangeUnit.addEventListener("click", function(){ clearError(); refreshWrongBoxButton(); switchView("setup"); });
+  els.btnGuideFromResult.addEventListener("click", function(){ showGuide(); });
+  els.btnGuideBack.addEventListener("click", function(){ clearError(); refreshWrongBoxButton(); switchView("setup"); });
+  els.btnGuideQuiz.addEventListener("click", function(){ startQuiz(); });
+
+  // ---- 学習ガイド / 単語一覧 ----
+  function renderMarkdown(text){
+    // Markdown の変換で数式の \\ や _ が崩れないよう、数式をいったん退避する
+    var math = [];
+    var safe = String(text).replace(/\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/g, function(m){
+      math.push(m); return "@@MATH" + (math.length-1) + "@@";
+    });
+    try{
+      if(window.marked && typeof window.marked.parse === "function"){
+        return window.marked.parse(safe).replace(/@@MATH(\d+)@@/g, function(_, i){ return escapeHTML(math[+i]); });
+      }
+    }catch(e){}
+    return escapeHTML(text).replace(/\n/g, "<br>");
+  }
+
+  function wordListHTML(unit){
+    var rows = WORDS.filter(function(w){
+      return unit.from ? (w.no >= unit.from && w.no <= unit.to) : w.g === unit.id;
+    });
+    if(!rows.length) return "";
+    var html = '<h2>' + escapeHTML(unit.label) + ' の語</h2>'
+             + '<div style="overflow-x:auto"><table class="word-table"><thead><tr>'
+             + '<th>' + (unit.from ? "No." : "頁") + '</th><th>語</th><th>意味</th></tr></thead><tbody>';
+    rows.forEach(function(w){
+      html += '<tr><td class="no">' + (unit.from ? w.no : "p." + w.pg) + '</td>'
+           +  '<td class="w"><span lang="en">' + escapeHTML(w.w) + '</span>'
+           +  (canSpeak ? ' <button type="button" class="speak-mini" data-say="' + escapeHTML(w.w) + '" aria-label="' + escapeHTML(w.w) + ' の発音を聞く">🔊</button>' : '')
+           +  (w.k ? '<small>' + escapeHTML(w.k) + (w.h ? "・" + escapeHTML(w.h) : "") + '</small>' : "") + '</td>'
+           +  '<td>' + escapeHTML(w.m) + (unit.from && w.pg ? ' <span style="color:var(--ink-soft);font-size:.78rem">p.' + w.pg + '</span>' : "") + '</td></tr>';
+    });
+    return html + '</tbody></table></div>';
+  }
+
+  els.guideContent.addEventListener("click", function(ev){
+    var b = ev.target.closest ? ev.target.closest(".speak-mini") : null;
+    if(b) speak(b.getAttribute("data-say"), 0.85, b);
+  });
+
+  function showGuide(){
+    clearError();
+    if(!selectedUnit) return;
+    var html = GUIDES[selectedUnit.id] ? renderMarkdown(GUIDES[selectedUnit.id]) : wordListHTML(selectedUnit);
+    els.guideContent.innerHTML = html || "<p>「" + escapeHTML(selectedUnit.label) + "」のガイドは準備中です。</p>";
+    typeset(els.guideContent);
+    switchView("guide");
+  }
+
+  // ===================== 記録画面 =====================
+  function pct(n, d){ return d ? Math.round(n / d * 100) : 0; }
+
+  function dayKey(d){
+    function p(x){ return (x<10?"0":"") + x; }
+    return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());
+  }
+  function streakDays(){
+    if(!store.days.length) return 0;
+    var set = {};
+    store.days.forEach(function(d){ set[d] = true; });
+    var n = 0, cur = new Date();
+    if(!set[dayKey(cur)]) cur.setDate(cur.getDate() - 1);   // 今日まだなら昨日から数える
+    while(set[dayKey(cur)]){ n++; cur.setDate(cur.getDate() - 1); }
+    return n;
+  }
+
+  function calendarHTML(){
+    var now = new Date();
+    var year = now.getFullYear(), month = now.getMonth();
+    var first = new Date(year, month, 1).getDay();
+    var last = new Date(year, month+1, 0).getDate();
+    var set = {};
+    store.days.forEach(function(d){ set[d] = true; });
+    var html = '<div class="cal">';
+    ["日","月","火","水","木","金","土"].forEach(function(w){ html += '<span class="head">' + w + '</span>'; });
+    for(var i=0;i<first;i++) html += '<span></span>';
+    for(var d=1; d<=last; d++){
+      var cls = [];
+      if(set[dayKey(new Date(year, month, d))]) cls.push("on");
+      if(d === now.getDate()) cls.push("today");
+      html += '<span class="' + cls.join(" ") + '">' + d + '</span>';
+    }
+    return html + '</div>';
+  }
+
+  function renderStats(){
+    var uids = Object.keys(store.units);
+    var totalAttempts = 0, totalAsked = 0, totalCorrect = 0;
+    uids.forEach(function(u){
+      totalAttempts += store.units[u].attempts;
+      totalAsked    += store.units[u].asked;
+      totalCorrect  += store.units[u].correct;
+    });
+
+    var html = "";
+    if(!storageOK){
+      html += '<p class="stats-empty">このブラウザでは記録を保存できない設定になっています（プライベートモードなど）。'
+           +  'その場合でも、いま解いている分の「間違えた問題だけもう一度」は使えます。</p>';
+    }
+    if(!totalAttempts){
+      html += '<p class="stats-empty">まだ記録がありません。範囲を選んで10問解くと、ここに正答率と学習した日が残ります。</p>';
+      els.statsBody.innerHTML = html;
+      return;
+    }
+
+    html += '<div class="stat-grid">'
+         +  '<div class="stat-tile"><span class="k">挑戦した回数</span><span class="v">' + totalAttempts + '<small>回</small></span></div>'
+         +  '<div class="stat-tile"><span class="k">解いた問題</span><span class="v">' + totalAsked + '<small>問</small></span></div>'
+         +  '<div class="stat-tile"><span class="k">通算の正答率</span><span class="v">' + pct(totalCorrect, totalAsked) + '<small>%</small></span></div>'
+         +  '<div class="stat-tile"><span class="k">連続学習日数</span><span class="v">' + streakDays() + '<small>日</small></span></div>'
+         +  '</div>';
+
+    var wn = wrongBoxCount();
+    html += '<div class="stats-section-title">苦手ボックス</div>';
+    if(wn){
+      html += '<div class="wrongbox-line"><span>間違えたまま正解していない問題が <strong>' + wn + '問</strong> あります。</span>'
+           +  '<button type="button" class="btn btn-primary" id="btn-wrongbox-2">ここから10問解く</button></div>';
+    } else {
+      html += '<p class="stats-empty">いまは空です。間違えた問題がここにたまり、正解すると消えます。</p>';
+    }
+
+    uids.sort(function(a,b){
+      return pct(store.units[a].correct, store.units[a].asked) - pct(store.units[b].correct, store.units[b].asked);
+    });
+    html += '<div class="stats-section-title">' + CONFIG.unitWord + 'ごとの成績（正答率の低い順）</div>';
+    html += '<div style="overflow-x:auto"><table class="stat-table"><thead><tr>'
+         +  '<th>' + CONFIG.unitWord + '</th><th class="num">挑戦</th><th class="num">正答率</th><th style="width:90px"></th><th class="num">最終</th>'
+         +  '</tr></thead><tbody>';
+    uids.forEach(function(uid){
+      var u = store.units[uid];
+      var r = pct(u.correct, u.asked);
+      var cls = r < 50 ? "low" : (r < 80 ? "mid" : "");
+      html += '<tr><td>' + escapeHTML(unitLabelOf(uid)) + '</td>'
+           +  '<td class="num">' + u.attempts + '回</td>'
+           +  '<td class="num">' + r + '%</td>'
+           +  '<td><span class="rate-bar"><i class="' + cls + '" style="width:' + r + '%"></i></span></td>'
+           +  '<td class="num">' + (u.last || "-").slice(5).replace("-", "/") + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    html += '<div class="stats-section-title">今月の学習した日</div>' + calendarHTML();
+
+    els.statsBody.innerHTML = html;
+    var btn2 = document.getElementById("btn-wrongbox-2");
+    if(btn2) btn2.addEventListener("click", openWrongBox);
+  }
+
+  function openWrongBox(){
+    clearError();
+    var qs = wrongBoxQuestions(SET_SIZE);
+    if(!qs.length){
+      showError("苦手ボックスは空です。まずは範囲を選んで挑戦してみましょう。");
+      switchView("setup");
+      return;
+    }
+    startQuizWith(qs, "苦手ボックス(" + qs.length + "問)");
+  }
+
+  function showStats(){ clearError(); renderStats(); switchView("stats"); }
+
+  els.btnStats.addEventListener("click", showStats);
+  els.btnStatsFromResult.addEventListener("click", showStats);
+  els.btnStatsBack.addEventListener("click", function(){ clearError(); refreshWrongBoxButton(); switchView("setup"); });
+  els.btnWrongbox.addEventListener("click", openWrongBox);
+
+  els.btnStatsReset.addEventListener("click", function(){
+    if(!window.confirm("これまでの記録と苦手ボックスをすべて消します。よろしいですか？")) return;
+    store = emptyStore();
+    try{ window.localStorage.removeItem(CONFIG.storeKey); }catch(e){}
+    renderStats();
+  });
+
+  els.btnWrongOnly.addEventListener("click", function(){
+    var wrong = quizData.filter(function(_, i){ return results[i] === "wrong"; });
+    if(!wrong.length) return;
+    startQuizWith(wrong, "間違えた問題の解き直し(" + wrong.length + "問)");
+  });
+
+  function refreshWrongBoxButton(){
+    var n = wrongBoxCount();
+    els.btnWrongbox.textContent = n ? ("苦手ボックスから10問(" + n + "問たまっています)") : "苦手ボックスから10問";
+    els.btnWrongbox.disabled = (n === 0);
+  }
+  refreshWrongBoxButton();
+
+  els.btnMakeQuiz.addEventListener("click", function(){ startQuiz(); });
+  els.btnViewGuide.addEventListener("click", function(){ showGuide(); });
+})();
+</script>
+</body>
+</html>
