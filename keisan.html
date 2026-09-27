@@ -1205,6 +1205,7 @@ nav.sister a[aria-current]{ background:var(--ai); border-color:var(--ai); color:
 
   function showResult(){
     var total = quizData.length;
+    if(window.Riyou) Riyou.finish(total, score);   // 利用記録（道場共通/riyou）
     els.resultFrac.textContent = score + "/" + total;
     var ratio = score/total;
     var msg;
@@ -1424,5 +1425,6 @@ nav.sister a[aria-current]{ background:var(--ai); border-color:var(--ai); color:
   els.btnViewGuide.addEventListener("click", function(){ showGuide(); });
 })();
 </script>
+<script src="riyou.js" data-site="joho"></script>
 </body>
 </html>
